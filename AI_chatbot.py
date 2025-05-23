@@ -1,136 +1,39 @@
-from groq import Groq
+from openai import OpenAI
 import os
 import streamlit as st
 import re
 import string
-#from dotenv import load_dotenv
 
-#load_dotenv()
-#api_key = os.getenv("api_key")
-
-def generate_text_groq(prompt, fitur, kata_terdapat_cag):
-    client = Groq(
-        # ================ STREAMLIT ================
-        api_key=st.secrets["api_key"],
-        # ================ STREAMLIT ================
-
-        # ================ LOKAL ================
-        # api_key=api_key,
-        # ================ LOKAL ================
+# Fungsi untuk memanggil Deepseek API
+def call_deepseek_api(history, prompt):
+    # Ganti ini dengan API key kamu
+    client = OpenAI(
+        api_key=st.secrets["API_KEY"],  # Simpan API key DeepSeek di secrets Streamlit
+        base_url="https://api.deepseek.com"
     )
 
-    tugas = {
-        "chatbot": "Jawab ini Menggunakan Bahasa Sunda Loma",
-        "terjemahindosunda": "Terjemahkan Kalimat Bahasa Indonesia ini ke Bahasa Sunda Loma.",
-        "terjemahsundaindo": "Terjemahkan Kalimat Bahasa Sunda Loma ini ke Bahasa Sunda Indonesia.",
-    }
-
-    print(tugas[fitur])
-
-    chat_completion = client.chat.completions.create(
-        messages=[
-            {
-                "role": "system",
-                "content": "Namamu adalah Lestari. Kamu berperan sebagai teman ngobrol bahasa sunda. Kamu selalu mengajukan pertanyaan di akhir pembicaraan dan memiliki gaya berbicara yang ramah, aktif, serta sesuai dengan konteks.",
-            },
-            {
-                "role": "user",
-                "content": f""" {tugas[fitur]}
-            Pertanyaan:
-            {prompt}
-            Jawaban:""",
-            },
-        ],
-        model="meta-llama/llama-4-scout-17b-16e-instruct",
-    )
-
-    return chat_completion.choices[0].message.content
-
-def generate_text_groq_2prompt(prompt, fitur, kata_terdapat_cag):
-    client = Groq(
-        # ================ STREAMLIT ================
-        # This is the default and can be omitted
-        api_key=st.secrets["api_key"],
-        # ================ STREAMLIT ================
-
-        # ================ LOKAL ================
-        #api_key=api_key,
-        # ================ LOKAL ================
-    )
-
-    chat_completion = client.chat.completions.create(
-        messages=[
-            {
-                "role": "system",
-                "content": "Namamu adalah Lestari. Kamu berperan sebagai teman ngobrol. Kamu selalu mengajukan pertanyaan di akhir pembicaraan dan memiliki gaya berbicara yang ramah, aktif, serta sesuai dengan konteks.",
-            },
-            {
-                "role": "user",
-                "content": prompt
-            },
-        ],
-        model="meta-llama/llama-4-scout-17b-16e-instruct",
-    )
-
-    chatbot_respons = chat_completion.choices[0].message.content
-
-    tugas = {
-        "chatbot": "Jawab ini Menggunakan Bahasa Sunda Loma",
-        "terjemahindosunda": "Terjemahkan Kalimat Bahasa Indonesia ini ke Bahasa Sunda Loma.",
-        "terjemahsundaindo": "Terjemahkan Kalimat Bahasa Sunda Loma ini ke Bahasa Sunda Indonesia.",
-    }
-
-    print(tugas[fitur])
-
-    chat_completion = client.chat.completions.create(
-        messages=[
-            {
-                "role": "system",
-                "content": "Namamu adalah Lestari. Kamu berperan sebagai teman ngobrol. Kamu selalu mengajukan pertanyaan di akhir pembicaraan dan memiliki gaya berbicara yang ramah, aktif, serta sesuai dengan konteks.",
-            },
-            {
-                "role": "user",
-                "content": f""" {tugas[fitur]}
-            Pertanyaan:
-            {prompt}
-            Jawaban:""",
-            },
-        ],
-        model="meta-llama/llama-4-scout-17b-16e-instruct",
-    )
-    return chat_completion.choices[0].message.content
-
-# Fungsi untuk memanggil Groq API
-def call_groq_api(history, prompt):
-    client = Groq(
-        # ================ STREAMLIT ================
-        api_key=st.secrets["api_key"],
-        # ================ STREAMLIT ================
-
-        # ================ LOKAL ================
-        # api_key=api_key,
-        # ================ LOKAL ================
-    )
-    messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": prompt}
-            ]
+    # Menyusun format pesan sesuai dengan DeepSeek
+    messages = [{"role": "system", "content": "You are a helpful assistant."}]
+    
     if history:
         for user_msg, bot_msg, _ in history:
             messages.append({"role": "user", "content": user_msg})
             messages.append({"role": "assistant", "content": bot_msg})
 
+    # Tambahkan prompt terbaru dari user
     messages.append({"role": "user", "content": prompt})
+
     try:
         response = client.chat.completions.create(
+            model="deepseek-chat",
             messages=messages,
-            model="meta-llama/llama-4-scout-17b-16e-instruct",
-            temperature=0.7
+            temperature=0.7,
+            stream=False
         )
         return response.choices[0].message.content
-        
+
     except Exception as e:
-        print(f"Error saat memanggil Groq API: {e}")
+        print(f"Error saat memanggil DeepSeek API: {e}")
         return "Maaf, terjadi kesalahan saat memproses permintaan Anda."
 
 def generate_text_groq2(user_input, fitur, pasangan_cag, mode_bahasa="Sunda", history=None):
@@ -181,7 +84,7 @@ def generate_text_groq2(user_input, fitur, pasangan_cag, mode_bahasa="Sunda", hi
         final_prompt = f"Jawablah dengan sopan dan informatif: {user_input}"
 
     # === Panggil LLM Groq API di sini ===
-    response = call_groq_api(history=history, prompt=final_prompt)  # Fungsi ini kamu sesuaikan dengan API Groq kamu
+    response = call_deepseek_api(history=history, prompt=final_prompt)  # Fungsi ini kamu sesuaikan dengan API Groq kamu
     return response
     
 def kapitalisasi_awal_kalimat(teks):
