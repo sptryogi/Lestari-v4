@@ -28,7 +28,7 @@ def call_deepseek_api(history, prompt):
             model="deepseek-chat",
             messages=messages,
             temperature=0.7,
-            stream=True
+            stream=False
         )
         return response.choices[0].message.content
 
