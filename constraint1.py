@@ -4,6 +4,10 @@ import pandas as pd
 import numpy as np
 
  # ================= PENGURAIAN SUBLEMA =================
+def bersihkan_teks(teks):
+    # Menghapus semua karakter kecuali huruf, angka, spasi, dan tanda minus
+    return re.sub(r'[^A-Za-z0-9\s-]', '', teks)
+ 
 def urai_awalan(kata):
     """
     Fungsi ini mengurai kata hasil imbuhan (misal: 'sublema') sehingga
@@ -85,6 +89,8 @@ def urai_kata_sunda(kata):
     Fungsi gabungan untuk mengurai awalan dan akhiran dari sebuah kata
     dalam Bahasa Sunda, mengembalikan bentuk dasar (lema) tanpa duplikat.
     """
+    kata = bersihkan_teks(kata)
+
     # Uraikan awalan saja
     hasil_awalan = urai_awalan(kata)
 
