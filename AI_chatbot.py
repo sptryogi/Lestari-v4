@@ -36,7 +36,7 @@ def call_deepseek_api(history, prompt):
         print(f"Error saat memanggil DeepSeek API: {e}")
         return "Maaf, terjadi kesalahan saat memproses permintaan Anda."
 
-def generate_text_groq2(user_input, fitur, pasangan_cag, mode_bahasa="Sunda", history=None):
+def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda", history=None):
     # Instruksi berdasarkan fitur dan mode bahasa
     if fitur == "chatbot":
         if mode_bahasa == "Sunda":
@@ -83,7 +83,7 @@ def generate_text_groq2(user_input, fitur, pasangan_cag, mode_bahasa="Sunda", hi
         # fallback
         final_prompt = f"Jawablah dengan sopan dan informatif: {user_input}"
 
-    # === Panggil LLM Groq API di sini ===
+    # === Panggil LLM Deepseek API di sini ===
     response = call_deepseek_api(history=history, prompt=final_prompt)  # Fungsi ini kamu sesuaikan dengan API Groq kamu
     return response
     
