@@ -13,7 +13,7 @@ st.markdown(
     """
     <style>
     .stApp {
-        background-image: url('https://i.pinimg.com/474x/66/9e/ac/669eacb46e8253c21492569ed5a21093.jpg');
+        background-image: url('https://static.vecteezy.com/system/resources/thumbnails/000/665/577/small/blue-batik-megamendung-vector-pattern.jpg');
         background-attachment: fixed;
         background-size: cover;
         background-repeat: no-repeat;
