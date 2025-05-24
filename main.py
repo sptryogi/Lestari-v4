@@ -61,6 +61,7 @@ st.markdown(
         max-width: 70%;
         align-self: flex-end;
         margin-left: auto;
+        font-size: 16px;
     }
 
     .chat-bubble-bot {
@@ -72,6 +73,7 @@ st.markdown(
         max-width: 70%;
         align-self: flex-start;
         margin-right: auto;
+        font-size: 16px;
     }
 
     .fixed-input {
