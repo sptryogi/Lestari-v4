@@ -169,15 +169,23 @@ with st.sidebar:
     
 st.title("Lestari Bahasa")
 # st.markdown(f"<div style='text-align:left; color: black; padding-top: 8px;'>🧠 Mode Aktif: {option}<b>{' - ' + mode_bahasa if mode_bahasa else ''}</b></div>", unsafe_allow_html=True)
-mode_bahasa_display = f"<b>{mode_bahasa}</b>" if mode_bahasa else ""
+bahasa_list = ["Sunda", "Indonesia", "English"]
+
+bahasa_display = []
+for bhs in bahasa_list:
+    if bhs == mode_bahasa:
+        bahasa_display.append(f"<i>{bhs}</i>")  # italic untuk bahasa aktif
+    else:
+        bahasa_display.append(bhs)
+
+bahasa_str = " ".join(bahasa_display)
 
 st.markdown(
     f"<div style='text-align:left; color: black; padding-top: 8px;'>"
-    f"🧠 Mode Aktif: {option} {(' - ' + mode_bahasa_display) if mode_bahasa else ''}"
+    f"🧠 Mode Aktif: {option} - {bahasa_str}"
     f"</div>", 
     unsafe_allow_html=True
 )
-
 
 st.write("Selamat datang! Silakan ajukan pertanyaan.")
 
