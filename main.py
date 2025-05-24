@@ -277,7 +277,7 @@ with col1:
         on_change=handle_send, label_visibility="collapsed"
     )
 with col2:
-    st.button("Kirim", on_click=handle_send)
+    st.button("➡", on_click=handle_send, )
 
 col_left, col_right = st.columns([1, 2])
 
