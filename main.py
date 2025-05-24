@@ -294,19 +294,15 @@ def handle_send():
         f"<p style='color: yellow;'>{pasangan_cag}</p>",
     ]
 
-    st.session_state.chat_history.append((user_input, bot_response, text_constraint, html_block))
+    st.session_state.chat_history.append((user_input, text_constraint, html_block))
     clear_input()
     
 # CHAT HISTORY WRAPPER
 #st.markdown("<div class='chat-container-outer'>", unsafe_allow_html=True)
 
-for user_msg, bot_response, bot_msg, html_block in st.session_state.chat_history:
+for user_msg, bot_msg, html_block in st.session_state.chat_history:
     st.markdown(
         f"<div class='chat-container'><div class='chat-bubble-user'>{user_msg}</div></div>",
-        unsafe_allow_html=True
-    )
-    st.markdown(
-        f"<div class='chat-container'><div class='chat-bubble-bot'>{bot_response}</div></div>",
         unsafe_allow_html=True
     )
     st.markdown(
