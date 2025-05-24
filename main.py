@@ -168,7 +168,7 @@ with st.sidebar:
     status = st.toggle("🔍 Lihat Constraint")
     
 st.title("Lestari Bahasa")
-st.markdown(f"<div style='text-align:right; color: yellow; padding-top: 8px;'>🧠 Mode Aktif: <b>{option}</b>{' - ' + mode_bahasa if mode_bahasa else ''}</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='text-align:left; color: black; padding-top: 8px;'>🧠 Mode Aktif: <b>{option}</b>{' - ' + mode_bahasa if mode_bahasa else ''}</div>", unsafe_allow_html=True)
 st.write("Selamat datang! Silakan ajukan pertanyaan.")
 
 if "chat_history" not in st.session_state:
@@ -318,8 +318,8 @@ col_left, col_right = st.columns([1, 2])
 with col_left:
     st.button("🔄 Delete Chat History", on_click=lambda: st.session_state.update(chat_history=[]))
 
-with col_right:
-    st.markdown(f"<div style='text-align:right; color: yellow; padding-top: 8px;'>🧠 Mode Aktif: <b>{option}</b>{' - ' + mode_bahasa if mode_bahasa else ''}</div>", unsafe_allow_html=True)
+#with col_right:
+    # st.markdown(f"<div style='text-align:right; color: yellow; padding-top: 8px;'>🧠 Mode Aktif: <b>{option}</b>{' - ' + mode_bahasa if mode_bahasa else ''}</div>", unsafe_allow_html=True)
 
 # Tambah anchor di akhir chat
 st.markdown('<a name="scroll-bottom"></a>', unsafe_allow_html=True)
