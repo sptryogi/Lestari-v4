@@ -15,7 +15,7 @@ st.markdown(
     .stApp {
         background-image: url('https://i.pinimg.com/474x/66/9e/ac/669eacb46e8253c21492569ed5a21093.jpg');
         background-attachment: fixed;
-        background-size: auto;
+        background-size: cover;
         background-repeat: no-repeat;
         background-position: center;
         color: black;
