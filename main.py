@@ -12,8 +12,8 @@ st.markdown(
     """
     <style>
     .stApp {
-        background-color: #1E1E2F;
-        color: white;
+        background-color: white;
+        color: black;
         font-family: Arial, sans-serif;
     }
     .chat-scroll {
