@@ -140,7 +140,7 @@ df_idiom = pd.read_excel("dataset/data_idiom (3).xlsx")
 # df_paribasa = pd.read_excel("dataset/paribasa 27-3-25.xlsx")
 
 st.title("Lestari Bahasa")
-st.write("Selamat datang! Silakan ajukan pertanyaan dalam bahasa Sunda.")
+st.write("Selamat datang! Silakan ajukan pertanyaan.")
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
