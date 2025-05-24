@@ -180,7 +180,7 @@ for bhs in bahasa_list:
     if bhs == mode_bahasa:
         bahasa_display.append(f"<span style='color: black !important'><b>{bhs}</b></span>")    # italic untuk bahasa aktif
     else:
-        bahasa_display.append(f"<span style='color: #888888 !important'>{bhs}</span>")
+        bahasa_display.append(f"<span style='color: white !important'>{bhs}</span>")
 
 bahasa_str = " ".join(bahasa_display)
 
