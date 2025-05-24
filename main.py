@@ -138,8 +138,37 @@ df_kamus = pd.read_excel("dataset/data_kamus_full_14-5-25.xlsx")
 df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']] = df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']].apply(lambda col: col.str.lower())
 df_idiom = pd.read_excel("dataset/data_idiom (3).xlsx")
 # df_paribasa = pd.read_excel("dataset/paribasa 27-3-25.xlsx")
+# ========== Sidebar Controls ==========
+with st.sidebar:
+    st.header("⚙️ Pengaturan")
 
+    option = st.selectbox(
+        "Pilih Fitur",
+        ["Chatbot", "Terjemah Indo → Sunda", "Terjemah Sunda → Indo"],
+        key="fitur_selector"
+    )
+
+    fitur = "chatbot"
+    if option == "Chatbot":
+        fitur = "chatbot"
+    elif option == "Terjemah Indo → Sunda":
+        fitur = "terjemahindosunda"
+    else:
+        fitur = "terjemahsundaindo"
+
+    if fitur == "chatbot":
+        mode_bahasa = st.selectbox(
+            "🌐 Mode Bahasa",
+            ["Sunda", "Indonesia", "English"],
+            key="mode_selector"
+        )
+    else:
+        mode_bahasa = None
+
+    status = st.toggle("🔍 Lihat Constraint")
+    
 st.title("Lestari Bahasa")
+st.markdown(f"<div style='text-align:right; color: yellow; padding-top: 8px;'>🧠 Mode Aktif: <b>{option}</b>{' - ' + mode_bahasa if mode_bahasa else ''}</div>", unsafe_allow_html=True)
 st.write("Selamat datang! Silakan ajukan pertanyaan.")
 
 if "chat_history" not in st.session_state:
@@ -169,33 +198,33 @@ def clear_input():
 # user_input_ekuivalen = ubah_ke_lema(user_input, df_kamus)
 
 # ========== Sidebar Controls ==========
-with st.sidebar:
-    st.header("⚙️ Pengaturan")
+# with st.sidebar:
+#     st.header("⚙️ Pengaturan")
 
-    option = st.selectbox(
-        "Pilih Fitur",
-        ["Chatbot", "Terjemah Indo → Sunda", "Terjemah Sunda → Indo"],
-        key="fitur_selector"
-    )
+#     option = st.selectbox(
+#         "Pilih Fitur",
+#         ["Chatbot", "Terjemah Indo → Sunda", "Terjemah Sunda → Indo"],
+#         key="fitur_selector"
+#     )
 
-    fitur = "chatbot"
-    if option == "Chatbot":
-        fitur = "chatbot"
-    elif option == "Terjemah Indo → Sunda":
-        fitur = "terjemahindosunda"
-    else:
-        fitur = "terjemahsundaindo"
+#     fitur = "chatbot"
+#     if option == "Chatbot":
+#         fitur = "chatbot"
+#     elif option == "Terjemah Indo → Sunda":
+#         fitur = "terjemahindosunda"
+#     else:
+#         fitur = "terjemahsundaindo"
 
-    if fitur == "chatbot":
-        mode_bahasa = st.selectbox(
-            "🌐 Mode Bahasa",
-            ["Sunda", "Indonesia", "English"],
-            key="mode_selector"
-        )
-    else:
-        mode_bahasa = None
+#     if fitur == "chatbot":
+#         mode_bahasa = st.selectbox(
+#             "🌐 Mode Bahasa",
+#             ["Sunda", "Indonesia", "English"],
+#             key="mode_selector"
+#         )
+#     else:
+#         mode_bahasa = None
 
-    status = st.toggle("🔍 Lihat Constraint")
+#     status = st.toggle("🔍 Lihat Constraint")
 
 def handle_send():
     pasangan_cag = {}
