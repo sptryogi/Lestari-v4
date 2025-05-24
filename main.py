@@ -168,7 +168,7 @@ with st.sidebar:
     status = st.toggle("🔍 Lihat Constraint")
     
 st.title("Lestari Bahasa")
-# st.markdown(f"<div style='text-align:left; color: black; padding-top: 8px;'>🧠 Mode Aktif: {option}<b>{' - ' + mode_bahasa if mode_bahasa else ''}</b></div>", unsafe_allow_html=True)
+# st.markdown(f"<div style='text-align:left; color: black; padding-top: 8px;'>🧠 {' - ' + mode_bahasa if mode_bahasa else ''}</b></div>", unsafe_allow_html=True)
 bahasa_list = ["Sunda", "Indonesia", "English"]
 
 bahasa_display = []
