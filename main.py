@@ -12,7 +12,12 @@ st.markdown(
     """
     <style>
     .stApp {
-        background-color: white;
+        #background-color: white;
+        background-image: url('dataset/mega mendung.jpg');
+        background-attachment: fixed;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
         color: black;
         font-family: Arial, sans-serif;
     }
