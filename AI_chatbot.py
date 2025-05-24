@@ -55,7 +55,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
         Jangan memberikan informasi yang tidak tentu kebenarannya.
         Jawab pertanyaan secara sederhana saja jangan terlalu panjang dan jangan cerewet.
         Jangan gunakan huruf-huruf aneh seperti kanji korea, kanji jepang, atau kanji china.
-        Selalu akhiri jawaban anda dengan pertanyaan agar pengguna terus berlatih bahasa.
+        Selalu akhiri dengan pertanyaan agar pengguna terus berlatih bahasa.
         Pertanyaan dari pengguna: "{user_input}"
         """
 
