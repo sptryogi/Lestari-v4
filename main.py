@@ -139,7 +139,7 @@ df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']] = df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1
 df_idiom = pd.read_excel("dataset/data_idiom (3).xlsx")
 # df_paribasa = pd.read_excel("dataset/paribasa 27-3-25.xlsx")
 
-st.title("Chatbot Bahasa Sunda Loma")
+st.title("Lestari Bahasa")
 st.write("Selamat datang! Silakan ajukan pertanyaan dalam bahasa Sunda.")
 
 if "chat_history" not in st.session_state:
