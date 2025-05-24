@@ -53,8 +53,8 @@ st.markdown(
     }
 
     .chat-bubble-user {
-        background-color: #4CAF50;
-        color: white;
+        background-color: white;
+        color: black;
         padding: 10px 15px;
         border-radius: 15px 15px 0 15px;
         margin: 5px 0;
@@ -64,8 +64,8 @@ st.markdown(
     }
 
     .chat-bubble-bot {
-        background-color: #2E2E3E;
-        color: white;
+        background-color: white;
+        color: black;
         padding: 10px 15px;
         border-radius: 15px 15px 15px 0;
         margin: 5px 0;
