@@ -73,7 +73,7 @@ st.markdown(
         max-width: 70%;
         align-self: flex-start;
         margin-right: auto;
-        font-size: 20px;
+        font-size: 18px;
         font-family: Times New Roman;
     }
 
