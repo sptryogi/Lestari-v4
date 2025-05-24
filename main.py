@@ -74,6 +74,7 @@ st.markdown(
         align-self: flex-start;
         margin-right: auto;
         font-size: 20px;
+        font-family: arial, sans serif;
     }
 
     .fixed-input {
