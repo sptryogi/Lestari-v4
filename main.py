@@ -1,21 +1,19 @@
 import streamlit as st
 import pandas as pd
 import re
-import base64
 from AI_chatbot import generate_text_deepseek, call_deepseek_api, kapitalisasi_awal_kalimat
 from constraint1 import highlight_text, constraint_text, ubah_ke_lema, find_the_lema_pair, cari_arti_lema
 from streamlit.components.v1 import html as components_html
 
 st.set_page_config(layout="centered")  # atau "centered"
-with open("dataset/mega mendung.jpg", "rb") as img_file:
-    base64_img = base64.b64encode(img_file.read()).decode()
-    
+
 # UI Styling
 st.markdown(
     """
     <style>
     .stApp {
-        background-image: url('data:image/jpg;base64,{base64_img}');
+        #background-color: white;
+        background-image: url('dataset/mega mendung.jpg');
         background-attachment: fixed;
         background-size: cover;
         background-repeat: no-repeat;
@@ -180,9 +178,9 @@ bahasa_list = ["Sunda", "Indonesia", "English"]
 bahasa_display = []
 for bhs in bahasa_list:
     if bhs == mode_bahasa:
-        bahasa_display.append(f"<span style='color: white'><b>{bhs}</b></span>")    # italic untuk bahasa aktif
+        bahasa_display.append(f"<span style='color: black !important'><b>{bhs}</b></span>")    # italic untuk bahasa aktif
     else:
-        bahasa_display.append(f"<span style='color: white'>{bhs}</span>")
+        bahasa_display.append(f"<span style='color: #888888 !important'>{bhs}</span>")
 
 bahasa_str = " ".join(bahasa_display)
 
