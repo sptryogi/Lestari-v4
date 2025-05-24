@@ -1,21 +1,20 @@
 import streamlit as st
 import pandas as pd
 import re
-import base64
 from AI_chatbot import generate_text_deepseek, call_deepseek_api, kapitalisasi_awal_kalimat
 from constraint1 import highlight_text, constraint_text, ubah_ke_lema, find_the_lema_pair, cari_arti_lema
 from streamlit.components.v1 import html as components_html
 
 st.set_page_config(layout="centered")  # atau "centered"
-with open("dataset/mega mendung.jpg", "rb") as img_file:
-    base64_img = base64.b64encode(img_file.read()).decode()
+# with open("dataset/mega mendung.jpg", "rb") as img_file:
+#     base64_img = base64.b64encode(img_file.read()).decode()
 
 # UI Styling
 st.markdown(
     """
     <style>
     .stApp {
-        background-image: url('data:image/jpg;base64,{base64_img}');
+        background-image: url('https://i.pinimg.com/474x/66/9e/ac/669eacb46e8253c21492569ed5a21093.jpg');
         background-attachment: fixed;
         background-size: cover;
         background-repeat: no-repeat;
