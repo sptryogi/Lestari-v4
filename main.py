@@ -182,7 +182,7 @@ bahasa_str = " ".join(bahasa_display)
 
 st.markdown(
     f"<div style='text-align:left; color: black; padding-top: 8px;'>"
-    f"🧠 Mode Aktif: {option} - {bahasa_str}"
+    f"🧠 {bahasa_str}"
     f"</div>", 
     unsafe_allow_html=True
 )
