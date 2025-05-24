@@ -6,8 +6,7 @@ from constraint1 import highlight_text, constraint_text, ubah_ke_lema, find_the_
 from streamlit.components.v1 import html as components_html
 
 st.set_page_config(layout="centered")  # atau "centered"
-# with open("dataset/mega mendung.jpg", "rb") as img_file:
-#     base64_img = base64.b64encode(img_file.read()).decode()
+
 
 # UI Styling
 st.markdown(
@@ -16,7 +15,7 @@ st.markdown(
     .stApp {
         background-image: url('https://i.pinimg.com/474x/66/9e/ac/669eacb46e8253c21492569ed5a21093.jpg');
         background-attachment: fixed;
-        background-size: contain;
+        background-size: auto;
         background-repeat: no-repeat;
         background-position: center;
         color: black;
