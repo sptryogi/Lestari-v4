@@ -168,7 +168,7 @@ with st.sidebar:
     status = st.toggle("🔍 Lihat Constraint")
     
 st.title("Lestari Bahasa")
-st.markdown(f"<div style='text-align:left; color: black; padding-top: 8px;'>🧠 Mode Aktif: <b>{option}</b>{' - ' + mode_bahasa if mode_bahasa else ''}</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='text-align:left; color: black; padding-top: 8px;'>🧠 Mode Aktif: {option}<b>{' - ' + mode_bahasa if mode_bahasa else ''}</b></div>", unsafe_allow_html=True)
 st.write("Selamat datang! Silakan ajukan pertanyaan.")
 
 if "chat_history" not in st.session_state:
