@@ -6,13 +6,7 @@ from AI_chatbot import generate_text_deepseek, call_deepseek_api, kapitalisasi_a
 from constraint1 import highlight_text, constraint_text, ubah_ke_lema, find_the_lema_pair, cari_arti_lema
 from streamlit.components.v1 import html as components_html
 
-st.set_page_config(layout="centered")  # atau "centered"
-
-components_html("""
-    <script>
-        document.title = "Lestari Bahasa";
-    </script>
-""", height=0)
+st.set_page_config(page_title="Lestari Bahasa", page_icon="🌐", layout="centered")  # atau "centered"
 
 # UI Styling
 st.markdown("""
