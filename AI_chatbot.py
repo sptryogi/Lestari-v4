@@ -55,6 +55,8 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
         Jangan memberikan informasi yang tidak tentu kebenarannya.
         Jawab pertanyaan secara sederhana saja jangan terlalu panjang dan jangan cerewet.
         Jangan gunakan huruf-huruf aneh seperti kanji korea, kanji jepang, atau kanji china.
+        Gunakan huruf pada awal kalimat dan setelah tanda titik.
+        Gunakan huruf kapital pada awal nama orang dan nama tempat.
         Selalu akhiri dengan pertanyaan. 
         Pertanyaan dari pengguna: "{user_input}"
         """
@@ -89,17 +91,48 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
     # === Panggil LLM Deepseek API di sini ===
     response = call_deepseek_api(history=history, prompt=final_prompt)  # Fungsi ini kamu sesuaikan dengan API Groq kamu
     return response
-    
+
+def bersihkan_superscript(teks):
+    # Menghapus superscript angka ¹²³⁴⁵⁶⁷⁸⁹⁰ atau angka biasa setelah huruf
+    return re.sub(r'([^\d\s])[\u00B9\u00B2\u00B3\u2070\u2074-\u2079\d]+', r'\1', teks)
+
 def kapitalisasi_awal_kalimat(teks):
-    # Pecah teks berdasarkan titik
-    kalimat_list = re.split(r'([.!?])', teks)
-    hasil = ""
-    for i in range(0, len(kalimat_list), 2):
-        kalimat = kalimat_list[i].strip()
-        if kalimat:
-            kapital = kalimat[0].upper() + kalimat[1:] if len(kalimat) > 1 else kalimat.upper()
-            hasil += kapital
-        if i+1 < len(kalimat_list):
-            hasil += kalimat_list[i+1] + " "
-    return hasil.strip()
+    # Bersihkan superscript dulu
+    teks = bersihkan_superscript(teks)
+
+    # Pecah berdasarkan paragraf (baris kosong)
+    paragraf_list = teks.split("\n\n")
+    paragraf_hasil = []
+
+    for paragraf in paragraf_list:
+        # Bagi kalimat dalam paragraf berdasarkan tanda baca yang diikuti spasi atau akhir kalimat
+        kalimat_list = re.split(r'([.!?]["']?\s+)', paragraf)
+        kalimat_terformat = ""
+
+        for i in range(0, len(kalimat_list), 2):
+            if i < len(kalimat_list):
+                kalimat = kalimat_list[i].strip()
+                if kalimat:
+                    kapital = kalimat[0].upper() + kalimat[1:] if len(kalimat) > 1 else kalimat.upper()
+                    kalimat_terformat += kapital
+            if i + 1 < len(kalimat_list):
+                kalimat_terformat += kalimat_list[i+1]
+
+        paragraf_hasil.append(kalimat_terformat.strip())
+
+    # Gabungkan kembali paragraf dengan \n\n
+    return "\n\n".join(paragraf_hasil)
+    
+# def kapitalisasi_awal_kalimat(teks):
+#     # Pecah teks berdasarkan titik
+#     kalimat_list = re.split(r'([.!?])', teks)
+#     hasil = ""
+#     for i in range(0, len(kalimat_list), 2):
+#         kalimat = kalimat_list[i].strip()
+#         if kalimat:
+#             kapital = kalimat[0].upper() + kalimat[1:] if len(kalimat) > 1 else kalimat.upper()
+#             hasil += kapital
+#         if i+1 < len(kalimat_list):
+#             hasil += kalimat_list[i+1] + " "
+#     return hasil.strip()
 
