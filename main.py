@@ -86,7 +86,7 @@ st.markdown(
         border-top: 1px solid #444;
     }
     
-    .textarea {
+    textarea {
         resize: none !important;
     }
     .chat-container-outer {
