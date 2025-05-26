@@ -15,7 +15,7 @@ hide_streamlit_style = """
     /* Menghilangkan footer Streamlit ("Made with Streamlit") */
     footer {visibility: hidden;}
     /* Menghilangkan tombol 'Deploy', 'GitHub', dll */
-    header {visibility: hidden;}
+    footer, .st-emotion-cache-1v0mbdj {visibility: hidden;}
     </style>
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
