@@ -27,15 +27,17 @@ st.markdown("""
     /* Hilangkan elemen Fork/GitHub khusus */
     a[href*="github.com"] {display: none !important;}
 
-    /* Ganti warna ikon toggle sidebar */
-    .css-1rs6os.edgvbvh3 {
-        color: gold !important;  /* Ganti jadi warna yang kamu mau */
-        font-size: 30px !important; /* Perbesar ukuran ikon */
+    /* Ubah background tombol sidebar (ikon >) */
+    [data-testid="collapsedControl"] {
+        background-color: #f0b90b !important;  /* Ganti dengan warna sesuai keinginan */
+        color: white !important;
+        border-radius: 0 6px 6px 0;
+        padding: 6px;
+        transition: background-color 0.3s ease;
     }
-
-    /* Ganti hover color jika mau */
-    .css-1rs6os.edgvbvh3:hover {
-        color: orange !important;
+    
+    [data-testid="collapsedControl"]:hover {
+        background-color: #f5c542 !important;
     }
     </style>
 """, unsafe_allow_html=True)
