@@ -106,7 +106,7 @@ def kapitalisasi_awal_kalimat(teks):
 
     for paragraf in paragraf_list:
         # Bagi kalimat dalam paragraf berdasarkan tanda baca yang diikuti spasi atau akhir kalimat
-        kalimat_list = re.split(r'([.!?]["']?\s+)', paragraf)
+        kalimat_list = re.split(r'([.!?]["\']?\s+)', paragraf)
         kalimat_terformat = ""
 
         for i in range(0, len(kalimat_list), 2):
