@@ -213,7 +213,7 @@ with st.sidebar:
 
     status = st.toggle("🔍 Lihat Constraint")
     
-st.title("Lestari Bahasa")
+st.markdown("<span style='color:white'>Lestari Bahasa</span>", unsafe_allow_html=True)
 bahasa_list = ["Sunda", "Indonesia", "English"]
 
 bahasa_display = []
@@ -232,7 +232,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.write("Selamat datang! Silakan ajukan pertanyaan.")
+st.markdown("<span style='color:white'>Selamat datang! Silakan ajukan pertanyaan.</span>", unsafe_allow_html=True)
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
