@@ -213,7 +213,7 @@ with st.sidebar:
 
     status = st.toggle("🔍 Lihat Constraint")
     
-st.markdown("<span style='color:white'>Lestari Bahasa</span>", unsafe_allow_html=True)
+st.markdown("<h1 style='color:white'>Lestari Bahasa</h1>", unsafe_allow_html=True)
 bahasa_list = ["Sunda", "Indonesia", "English"]
 
 bahasa_display = []
