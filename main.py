@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import re
 import pybase64
-from AI_chatbot import generate_text_deepseek, call_deepseek_api, kapitalisasi_awal_kalimat
+from AI_chatbot import generate_text_deepseek, call_deepseek_api, kapitalisasi_awal_kalimat, bersihkan_superscript
 from constraint1 import highlight_text, constraint_text, ubah_ke_lema, find_the_lema_pair, cari_arti_lema
 from streamlit.components.v1 import html as components_html
 
