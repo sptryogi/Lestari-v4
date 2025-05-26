@@ -5,3 +5,4 @@ openpyxl
 regex
 numpy
 scikit-learn
+pybase64
