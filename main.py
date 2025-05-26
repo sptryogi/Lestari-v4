@@ -87,6 +87,7 @@ st.markdown(
     }
     
     textarea {
+        text-align: justify !important;
         resize: none !important;
     }
     .chat-container-outer {
