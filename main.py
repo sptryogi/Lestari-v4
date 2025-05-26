@@ -370,12 +370,6 @@ st.markdown("</div>", unsafe_allow_html=True)  # ⬅️ END OF chat-container-ou
 
 # FIXED INPUT DI BAWAH
 st.markdown('<div class="stChatInputContainer">', unsafe_allow_html=True)
-
-def normalize_paragraph(text: str) -> str:
-    # Hilangkan spasi berlebih dan baris kosong ganda
-    paragraphs = text.split("\n")
-    clean_paragraphs = [p.strip() for p in paragraphs if p.strip() != ""]
-    return "\n\n".join(clean_paragraphs)
     
 col1, col2 = st.columns([6, 1])
 with col1:
@@ -383,7 +377,7 @@ with col1:
         label="", height=80, key="user_input", placeholder="Tulis pesan...", 
         on_change=handle_send, label_visibility="collapsed"
     )
-    user_input = normalize_paragraph(user_input)
+   
 with col2:
     st.button("➡", on_click=handle_send, )
 
