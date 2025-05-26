@@ -219,9 +219,9 @@ bahasa_list = ["Sunda", "Indonesia", "English"]
 bahasa_display = []
 for bhs in bahasa_list:
     if bhs == mode_bahasa:
-        bahasa_display.append(f"<span style='color: white !important'><b>{bhs}</b></span>")    # italic untuk bahasa aktif
+        bahasa_display.append(f"<span style='color:#FFD700;'><b>{bhs}</b></span>")    # italic untuk bahasa aktif
     else:
-        bahasa_display.append(f"<span style='color: white !important'>{bhs}</span>")
+        bahasa_display.append(f"<span style='color: white;'>{bhs}</span>")
 
 bahasa_str = " ".join(bahasa_display)
 
