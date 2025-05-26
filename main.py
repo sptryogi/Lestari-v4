@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import re
+import pybase64
 from AI_chatbot import generate_text_deepseek, call_deepseek_api, kapitalisasi_awal_kalimat
 from constraint1 import highlight_text, constraint_text, ubah_ke_lema, find_the_lema_pair, cari_arti_lema
 from streamlit.components.v1 import html as components_html
@@ -27,12 +28,33 @@ st.markdown("""
     a[href*="github.com"] {display: none !important;}
     </style>
 """, unsafe_allow_html=True)
+
+def set_background_from_file(file_path):
+    with open(file_path, "rb") as img_file:
+        b64 = pybase64.b64encode(img_file.read()).decode()
+
+    st.markdown(f"""
+        <style>
+        .stApp {{
+            background-image: url("data:image/jpg;base64,{b64}");
+            background-attachment: fixed;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: white;
+            color: black;
+            font-family: Arial, sans-serif;
+        }}
+        </style>
+    """, unsafe_allow_html=True)
+
+set_background_from_file("dataset/bg biru.jpg")
+
 st.markdown(
     """
     <style>
     .stApp {
-        #background-color: white;
-        background-image: url('dataset/mega mendung.jpg');
+        background-color: white;
         background-attachment: fixed;
         background-size: cover;
         background-repeat: no-repeat;
