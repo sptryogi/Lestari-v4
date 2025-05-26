@@ -57,7 +57,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
         Jangan gunakan huruf-huruf aneh seperti kanji korea, kanji jepang, atau kanji china.
         Gunakan huruf pada awal kalimat dan setelah tanda titik.
         Gunakan huruf kapital pada awal nama orang dan nama tempat.
-        Jika disuruh atau diperintahkan untuk menterjemahkan atau translate, tolong jaga agar format paragraf dan barisnya tetap sama persis seperti teks asli.
+        Jika disuruh atau diperintahkan untuk menterjemahkan atau translate, tolong jaga agar format paragraf dan barisnya tetap sama persis seperti teks asli atau input user.
         Selalu akhiri dengan pertanyaan. 
         Pertanyaan dari pengguna: "{user_input}"
         """
@@ -65,7 +65,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
     elif fitur == "terjemahindosunda":
         final_prompt = f"""Kamu adalah penerjemah yang ahli bahasa sunda dan bahasa indonesia.
         Terjemahkan kalimat berikut ke dalam Bahasa Sunda LOMA secara alami seperti digunakan dalam kehidupan sehari-hari.
-        Jaga agar format paragraf dan barisnya tetap sama persis seperti teks asli.
+        Jaga agar format paragraf dan barisnya tetap sama persis seperti teks asli atau input user.
         Jangan mengajak mengobrol seperti fitur chatbot. anda hanya menterjemahkan input dari user seperti google translater.
         Jangan menambahkan kata bahasa sunda yang memang bukan arti dari kalimat bahasa indonesia tersebut.
         Sesuaikan gaya bahasanya agar cocok dengan konteks relasi antarpenutur dalam hal ini teman sebaya anak-anak umur 7 - 10 tahun.
@@ -79,7 +79,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
     elif fitur == "terjemahsundaindo":
         final_prompt = f"""Kamu adalah penerjemah yang ahli bahasa indonesia dan bahasa sunda.
         Terjemahkan kalimat berikut ke dalam Bahasa Indonesia yang baku dan mudah dimengerti.
-        Jaga agar format paragraf dan barisnya tetap sama persis seperti teks asli.
+        Jaga agar format paragraf dan barisnya tetap sama persis seperti teks asli atau input user.
         Jangan mengajak mengobrol seperti fitur chatbot, anda hanya menterjemahkan input dari user seperti google translate.
         Jangan tambahkan penjelasan atau keterangan apa pun. Langsung tampilkan hasil terjemahannya.
         Jangan jadikan semua huruf pada awal kata huruf kapital, kecuali nama orang dan nama tempat.
