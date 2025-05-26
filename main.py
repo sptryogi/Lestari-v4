@@ -8,17 +8,25 @@ from streamlit.components.v1 import html as components_html
 st.set_page_config(layout="centered")  # atau "centered"
 
 # UI Styling
-hide_streamlit_style = """
+st.markdown("""
     <style>
-    /* Menghilangkan menu Streamlit */
+    /* Hilangkan seluruh header (logo, GitHub, Share, Fork) */
+    header {visibility: hidden !important;}
+    [data-testid="stHeader"] {display: none;}
+
+    /* Hilangkan menu titik tiga */
     #MainMenu {visibility: hidden;}
-    /* Menghilangkan footer Streamlit ("Made with Streamlit") */
-    footer {visibility: hidden;}
-    /* Menghilangkan tombol 'Deploy', 'GitHub', dll */
-    footer, .st-emotion-cache-1v0mbdj {visibility: hidden;}
+    [data-testid="collapsedControl"] {display: none;}
+
+    /* Hilangkan footer (Made with Streamlit) */
+    footer {visibility: hidden !important;}
+    .st-emotion-cache-1v0mbdj {display: none !important;}
+    .st-emotion-cache-164pbft {display: none !important;}
+
+    /* Hilangkan elemen Fork/GitHub khusus */
+    a[href*="github.com"] {display: none !important;}
     </style>
-"""
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 st.markdown(
     """
     <style>
