@@ -27,17 +27,28 @@ st.markdown("""
     /* Hilangkan elemen Fork/GitHub khusus */
     a[href*="github.com"] {display: none !important;}
 
-    /* Ubah background tombol sidebar (ikon >) */
-    [data-testid="collapsedControl"] {
-        background-color: #f0b90b !important;  /* Ganti dengan warna sesuai keinginan */
+    /* Ubah warna background tombol collapse sidebar */
+    button[data-testid="collapsedControl"] {
+        background-color: #f0b90b !important; /* warna kuning */
         color: white !important;
-        border-radius: 0 6px 6px 0;
-        padding: 6px;
-        transition: background-color 0.3s ease;
+        border: none;
+        border-radius: 0 8px 8px 0;
+        padding: 8px 12px;
+        margin-top: 8px;
+        margin-left: -4px;
+        transition: all 0.3s ease;
     }
-    
-    [data-testid="collapsedControl"]:hover {
-        background-color: #f5c542 !important;
+
+    /* Saat hover */
+    button[data-testid="collapsedControl"]:hover {
+        background-color: #ffc107 !important;
+        color: black !important;
+    }
+
+    /* Tambahan agar ikon lebih besar */
+    button[data-testid="collapsedControl"] svg {
+        width: 1.2rem;
+        height: 1.2rem;
     }
     </style>
 """, unsafe_allow_html=True)
