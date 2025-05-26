@@ -8,11 +8,11 @@ from streamlit.components.v1 import html as components_html
 
 st.set_page_config(layout="centered")  # atau "centered"
 
-st.markdown("""
-    <head>
-        <title>Lestari Bahasa</title>
-    </head>
-""", unsafe_allow_html=True)
+components_html("""
+    <script>
+        document.title = "Lestari Bahasa";
+    </script>
+""", height=0)
 
 # UI Styling
 st.markdown("""
