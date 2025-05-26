@@ -26,6 +26,17 @@ st.markdown("""
 
     /* Hilangkan elemen Fork/GitHub khusus */
     a[href*="github.com"] {display: none !important;}
+
+    /* Ganti warna ikon toggle sidebar */
+    .css-1rs6os.edgvbvh3 {
+        color: gold !important;  /* Ganti jadi warna yang kamu mau */
+        font-size: 30px !important; /* Perbesar ukuran ikon */
+    }
+
+    /* Ganti hover color jika mau */
+    .css-1rs6os.edgvbvh3:hover {
+        color: orange !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
