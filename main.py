@@ -373,8 +373,8 @@ st.markdown('<div class="stChatInputContainer">', unsafe_allow_html=True)
 col1, col2 = st.columns([6, 1])
 with col1:
     user_input = st.text_area(
-        label="", key="user_input", placeholder="Tulis pesan...", 
-        on_change=handle_send, label_visibility="collapsed", height=80
+        label="", height=80, key="user_input", placeholder="Tulis pesan...", 
+        on_change=handle_send, label_visibility="collapsed"
     )
 with col2:
     st.button("➡", on_click=handle_send, )
