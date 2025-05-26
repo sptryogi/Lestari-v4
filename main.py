@@ -85,7 +85,10 @@ st.markdown(
         z-index: 999;
         border-top: 1px solid #444;
     }
-
+    
+    .textarea {
+        resize: none !important;
+    }
     .chat-container-outer {
         height: calc(100vh - 180px); /* beri ruang untuk input tetap tampil */
         overflow-y: auto;
@@ -371,7 +374,7 @@ col1, col2 = st.columns([6, 1])
 with col1:
     user_input = st.text_area(
         label="", key="user_input", placeholder="Tulis pesan...", 
-        on_change=handle_send, label_visibility="collapsed"
+        on_change=handle_send, label_visibility="collapsed", height=100
     )
 with col2:
     st.button("➡", on_click=handle_send, )
