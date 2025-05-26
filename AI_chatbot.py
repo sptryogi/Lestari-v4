@@ -55,7 +55,8 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
         Jangan memberikan informasi yang tidak tentu kebenarannya.
         Jawab pertanyaan secara sederhana saja jangan terlalu panjang dan jangan cerewet.
         Jangan gunakan huruf-huruf aneh seperti kanji korea, kanji jepang, atau kanji china.
-        Gunakan huruf kapital pada awal kalimat dan setelah tanda titik serta setelah petik dua.
+        Kenali format paragraf kalimat teks dari user.
+        Gunakan huruf kapital pada awal kalimat dan setelah tanda titik serta setelah petik dua atau setelah paragraf.
         Gunakan huruf kapital pada awal nama orang dan nama tempat.
         Gunakan huruf kapital yang sama jika pada kalimat atau kata pada input user menggunakan huruf kapital.
         Jika disuruh atau diperintahkan untuk menterjemahkan atau translate, tolong jaga agar format paragraf dan barisnya tetap sama persis seperti teks asli atau teks input user.
@@ -66,6 +67,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
     elif fitur == "terjemahindosunda":
         final_prompt = f"""Kamu adalah penerjemah yang ahli bahasa sunda dan bahasa indonesia.
         Terjemahkan kalimat berikut ke dalam Bahasa Sunda LOMA secara alami seperti digunakan dalam kehidupan sehari-hari.
+        Kenali format paragraf kalimat teks dari pengguna.
         Jaga agar format paragraf dan barisnya tetap sama persis seperti teks asli atau input user.
         Gunakan huruf kapital yang sama jika pada kalimat atau kata pada input user menggunakan huruf kapital.
         Jangan mengajak mengobrol seperti fitur chatbot. anda hanya menterjemahkan input dari user seperti google translater.
@@ -74,7 +76,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
         Perintah anda hanya terjemahkan dari input user, bukan menjawab hal lain. Jangan menggunakan kata awalan atau sapaan sebagai tambahan jawaban.
         Jangan beri penjelasan atau keterangan tambahan, langsung berikan hasil terjemahannya saja. 
         Jangan jadikan semua huruf pada awal kata huruf kapital kecuali nama tempat dan nama orang.
-        Huruf pada awal kalimat dan setelah titik serta setelah petik dua harus huruf kapital.
+        Huruf pada awal kalimat dan setelah titik serta setelah petik dua atau setelah paragraf harus huruf kapital.
         Nama orang dan nama tempat juga harus berawalan huruf kapital.
         Kalimat: {user_input}"""
         
@@ -86,7 +88,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
         Jangan mengajak mengobrol seperti fitur chatbot, anda hanya menterjemahkan input dari user seperti google translate.
         Jangan tambahkan penjelasan atau keterangan apa pun. Langsung tampilkan hasil terjemahannya.
         Jangan jadikan semua huruf pada awal kata huruf kapital, kecuali nama orang dan nama tempat.
-        Huruf pada awal kalimat dan setelah titik serta setelah petik dua harus huruf kapital.
+        Huruf pada awal kalimat dan setelah titik serta setelah petik dua atau setelah paragraf harus huruf kapital.
         Nama orang dan nama tempat juga harus berawalan huruf kapital.
         Kalimat: {user_input}"""
 
