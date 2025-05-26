@@ -8,6 +8,17 @@ from streamlit.components.v1 import html as components_html
 st.set_page_config(layout="centered")  # atau "centered"
 
 # UI Styling
+hide_streamlit_style = """
+    <style>
+    /* Menghilangkan menu Streamlit */
+    #MainMenu {visibility: hidden;}
+    /* Menghilangkan footer Streamlit ("Made with Streamlit") */
+    footer {visibility: hidden;}
+    /* Menghilangkan tombol 'Deploy', 'GitHub', dll */
+    header {visibility: hidden;}
+    </style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 st.markdown(
     """
     <style>
