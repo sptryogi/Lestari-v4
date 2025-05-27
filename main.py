@@ -281,8 +281,7 @@ st.markdown("""
          1px -1px 0 #00008B,
         -1px  1px 0 #00008B,
          1px  1px 0 #00008B;
-    font-size: 8px;
-    font-weight: bold;
+    font-size: 12px;
 '>
     Selamat datang! Silakan ajukan pertanyaan.
 </span>
