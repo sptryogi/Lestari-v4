@@ -23,13 +23,24 @@ st.markdown("""
     footer {visibility: hidden !important;}
     .st-emotion-cache-1v0mbdj {display: none !important;}
     .st-emotion-cache-164pbft {display: none !important;}
+    
+    /* Hilangkan semua footer */
+    footer, .st-emotion-cache-1v0mbdj, .st-emotion-cache-164pbft {
+        display: none !important;
+        visibility: hidden !important;
+    }
 
     /* Hilangkan elemen Fork/GitHub khusus */
     a[href*="github.com"] {display: none !important;}
+    
+    /* Hilangkan elemen GitHub (termasuk avatar foto) */
+    a[href*="github.com"], img[src*="githubusercontent"] {
+        display: none !important;
+    }
 
-    /* Ubah warna background tombol collapse sidebar */
+    /* Ubah warna background tombol collapse sidebar ( > ) */
     button[data-testid="collapsedControl"] {
-        background-color: #f0b90b !important; /* warna kuning */
+        background-color: #b0b0b0 !important;  /* abu-abu */
         color: white !important;
         border: none;
         border-radius: 0 8px 8px 0;
@@ -37,6 +48,7 @@ st.markdown("""
         margin-top: 8px;
         margin-left: -4px;
         transition: all 0.3s ease;
+        box-shadow: 1px 1px 5px rgba(0,0,0,0.2);
     }
 
     /* Saat hover */
