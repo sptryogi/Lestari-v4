@@ -502,7 +502,7 @@ st.markdown('<div class="stChatInputContainer">', unsafe_allow_html=True)
 
 #     # Hapus param setelah dikirim agar tidak terkirim ulang saat refresh
 #     st.experimental_set_query_params()    
-components.html(
+chat_input = components.html(
     """
     <style>
     .chat-wrapper {
@@ -537,7 +537,7 @@ components.html(
 
     <div class="chat-wrapper">
         <textarea id="userInput" class="chat-input" placeholder="Tulis pesan..."></textarea>
-        <button class="send-btn" onclick="parent.sendMessage()">
+        <button class="send-btn" onclick="sendMessage()">
             <svg viewBox="0 0 24 24">
                 <path d="M2 21l21-9L2 3v7l15 2-15 2v7z"></path>
             </svg>
@@ -545,19 +545,20 @@ components.html(
     </div>
 
     <script>
-    // Fungsi untuk menangani pengiriman pesan
     function sendMessage() {
         const input = document.getElementById("userInput").value;
         if (input.trim() !== "") {
-            // Menggunakan Streamlit's parent window communication
-            parent.postMessage({
+            // Send message to Streamlit
+            window.parent.postMessage({
+                isStreamlitMessage: true,
                 type: "streamlit:setComponentValue",
+                api: "component_value",
                 value: input
             }, "*");
         }
     }
 
-    // Tambahkan event listener untuk tombol Enter
+    // Handle Enter key press
     document.getElementById("userInput").addEventListener("keydown", function(e) {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
@@ -566,16 +567,13 @@ components.html(
     });
     </script>
     """,
-    height=150,
-    key="chat_input"
+    height=150
 )
 
-# Tangkap input dari komponen
-if "chat_input" in st.session_state and st.session_state.chat_input:
-    st.session_state.user_input = st.session_state.chat_input
+# Handle the input when received
+if chat_input is not None:
+    st.session_state.user_input = chat_input
     handle_send()
-    # Reset nilai komponen setelah diproses
-    st.session_state.chat_input = None
 col_left, col_right = st.columns([1, 2])
 
 with col_left:
