@@ -441,33 +441,44 @@ with col1:
    
 with col2:
     #st.button("➡", on_click=handle_send, use_container_width=True)
-    st.markdown(
-        """
+    # Gunakan st.button dengan label kosong + key
+    clicked = st.button(" ", key="send_button")
+
+    # Tambahkan ikon dan styling dengan CSS (SVG paper plane + tombol hijau)
+    st.markdown("""
         <style>
-        .send-button {
-            background-color: #007bff;
+        .stButton>button {
+            background-color: #25D366 !important; /* WhatsApp green */
+            color: white !important;
             border: none;
-            padding: 0.5rem;
-            border-radius: 10px;
-            cursor: pointer;
+            padding: 0.6rem;
+            border-radius: 12px;
             height: 60px;
             width: 60px;
         }
-        .send-button:hover {
-            background-color: #0056b3;
+        .stButton>button svg {
+            vertical-align: middle;
         }
         </style>
-        <form action="" method="post">
-            <button class="send-button" type="submit" name="send">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" fill="white" viewBox="0 0 24 24">
-                    <path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/>
-                </svg>
-            </button>
-        </form>
-        """,
-        unsafe_allow_html=True
-    )
-if "send" in st.session_state:
+    """, unsafe_allow_html=True)
+
+    # Tambahkan ikon SVG ke tombol
+    st.markdown("""
+        <style>
+        .stButton>button:after {
+            content: '';
+            display: inline-block;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 24 24'><path d='M2.01 21 23 12 2.01 3 2 10l15 2-15 2z'/></svg>");
+            background-size: 24px 24px;
+            background-repeat: no-repeat;
+            width: 24px;
+            height: 24px;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+# Panggil fungsi saat tombol diklik
+if clicked:
     handle_send()
 
 col_left, col_right = st.columns([1, 2])
