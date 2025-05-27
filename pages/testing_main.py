@@ -508,25 +508,32 @@ chat_input = components.html(
     .chat-wrapper {
         position: relative;
         width: 100%;
+        margin-bottom: 1rem;
     }
     .chat-input {
         width: 100%;
         height: 120px;
-        padding: 8px;
+        padding: 12px 48px 12px 12px;
         font-size: 16px;
         resize: none;
-        border-radius: 4px;
+        border-radius: 8px;
         border: 1px solid #ccc;
         box-sizing: border-box;
         font-family: inherit;
     }
     .send-btn {
         position: absolute;
-        bottom: 12px;
+        bottom: 16px;
         right: 12px;
         background: none;
         border: none;
         cursor: pointer;
+        padding: 8px;
+        border-radius: 50%;
+        transition: background 0.2s;
+    }
+    .send-btn:hover {
+        background: rgba(0,0,0,0.05);
     }
     .send-btn svg {
         width: 24px;
@@ -536,44 +543,54 @@ chat_input = components.html(
     </style>
 
     <div class="chat-wrapper">
-        <textarea id="userInput" class="chat-input" placeholder="Tulis pesan..."></textarea>
-        <button class="send-btn" onclick="sendMessage()">
+        <textarea id="userInput" class="chat-input" placeholder="Tulis pesan..." rows="4"></textarea>
+        <button class="send-btn" id="sendButton">
             <svg viewBox="0 0 24 24">
-                <path d="M2 21l21-9L2 3v7l15 2-15 2v7z"></path>
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
             </svg>
         </button>
     </div>
 
     <script>
+    const sendButton = document.getElementById('sendButton');
+    const userInput = document.getElementById('userInput');
+    
     function sendMessage() {
-        const input = document.getElementById("userInput").value;
-        if (input.trim() !== "") {
-            // Send message to Streamlit
+        const input = userInput.value.trim();
+        if (input) {
+            // Kirim ke Streamlit
             window.parent.postMessage({
                 isStreamlitMessage: true,
                 type: "streamlit:setComponentValue",
                 api: "component_value",
                 value: input
             }, "*");
+            
+            // Clear input (optional)
+            userInput.value = '';
         }
     }
-
-    // Handle Enter key press
-    document.getElementById("userInput").addEventListener("keydown", function(e) {
-        if (e.key === "Enter" && !e.shiftKey) {
+    
+    // Handle klik tombol
+    sendButton.addEventListener('click', sendMessage);
+    
+    // Handle Enter key (tanpa Shift)
+    userInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             sendMessage();
         }
     });
     </script>
     """,
-    height=150
+    height=170
 )
 
-# Handle the input when received
-if chat_input is not None:
+# Tangkap input dan panggil handle_send
+if chat_input is not None and chat_input != "":
     st.session_state.user_input = chat_input
     handle_send()
+    
 col_left, col_right = st.columns([1, 2])
 
 with col_left:
