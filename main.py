@@ -5,15 +5,6 @@ import pybase64
 from AI_chatbot import generate_text_deepseek, call_deepseek_api, kapitalisasi_awal_kalimat, bersihkan_superscript
 from constraint1 import highlight_text, constraint_text, ubah_ke_lema, find_the_lema_pair, cari_arti_lema
 import streamlit.components.v1 as components
-# from components import html as components_html
-
-components.html("""
-    <script>
-        setInterval(function() {
-            fetch(window.location.href);
-        }, 1000 * 60 * 1);  // ping setiap 1 menit
-    </script>
-""", height=0)
 
 st.set_page_config(page_title="Lestari Bahasa", page_icon="🌐", layout="centered")  # atau "centered"
 
@@ -443,4 +434,12 @@ st.markdown("""
     </style>
     <a href="#scroll-bottom"><button class="scroll-down-btn">⬇️</button></a>
 """, unsafe_allow_html=True)
+
+components.html("""
+    <script>
+        setInterval(function() {
+            fetch(window.location.href);
+        }, 1000 * 60 * 1);  // ping setiap 1 menit
+    </script>
+""", height=0)
 st.markdown("</div>", unsafe_allow_html=True)
