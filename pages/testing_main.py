@@ -62,6 +62,17 @@ st.markdown("""
         width: 1.2rem;
         height: 1.2rem;
     }
+    .stTextArea, .stButton {
+            margin-top: 0px;
+        }
+        div[data-testid="column"] {
+            display: flex;
+            align-items: center;
+        }
+        button[kind="primary"] {
+            background-color: #25D366;  /* WhatsApp green */
+            border-radius: 8px;
+        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -420,65 +431,16 @@ st.markdown("</div>", unsafe_allow_html=True)  # ⬅️ END OF chat-container-ou
 
 # FIXED INPUT DI BAWAH
 st.markdown('<div class="stChatInputContainer">', unsafe_allow_html=True)
-
-# CSS agar textarea dan tombol sejajar dan responsif
-st.markdown("""
-    <style>
-    .chat-container {
-        display: flex;
-        align-items: center;
-    }
-    .chat-input {
-        flex-grow: 1;
-        margin-right: 8px;
-    }
-    .chat-send-btn {
-        background-color: #25D366;
-        border: none;
-        padding: 10px;
-        border-radius: 8px;
-        cursor: pointer;
-    }
-    .chat-send-btn img {
-        width: 24px;
-        height: 24px;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-# Custom HTML input dan tombol kirim
-st.markdown("""
-    <div class="chat-container">
-        <textarea id="user_input" class="chat-input" rows="2" placeholder="Tulis pesan..."></textarea>
-        <button class="chat-send-btn" onclick="sendMessage()">
-            <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="Send">
-        </button>
-    </div>
-
-    <script>
-    const sendMessage = () => {
-        const input = document.getElementById("user_input");
-        const message = input.value;
-        if (message.trim() !== "") {
-            window.parent.postMessage({type: 'streamlit:setComponentValue', value: message}, '*');
-            input.value = "";  // Clear textarea
-        }
-    }
-    </script>
-""", unsafe_allow_html=True)
-user_input = st.experimental_get_query_params().get('message', [''])[0]
-if user_input:
-    handle_send(user_input)
     
-# col1, col2 = st.columns([6, 1])
-# with col1:
-#     user_input = st.text_area(
-#         label="", height=80, key="user_input", placeholder="Tulis pesan...",
-#         label_visibility="collapsed"
-#     )
+col1, col2 = st.columns([6, 1], gap="small")
+with col1:
+    user_input = st.text_area(
+        label="", height=80, key="user_input", placeholder="Tulis pesan...",
+        label_visibility="collapsed"
+    )
    
-# with col2:
-#     st.button("➡", on_click=handle_send, )
+with col2:
+    st.button("➡", on_click=handle_send, use_container_width=True)
 
 col_left, col_right = st.columns([1, 2])
 
