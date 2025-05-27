@@ -4,6 +4,10 @@ import pandas as pd
 import numpy as np
 
  # ================= PENGURAIAN SUBLEMA =================
+def bersihkan_teks(teks):
+    # Menghapus semua karakter kecuali huruf, angka, spasi, dan tanda minus
+    return re.sub(r'[^A-Za-z0-9\s-]', '', teks)
+ 
 def urai_awalan(kata):
     """
     Fungsi ini mengurai kata hasil imbuhan (misal: 'sublema') sehingga
@@ -16,8 +20,8 @@ def urai_awalan(kata):
     imbuhan_awalan = [
         "pang", "mang", "nyang", "barang", "silih",
         "para", "pada", "ting", "pri", "per", "pra",  # imbuhan berbentuk lebih dari 2 huruf
-        "pa", "pi", "sa", "si", "ti", "di", "ka",      # imbuhan dua huruf
-        "n", "m", "ng", "ny"                           # varian sengau (satu atau dua huruf)
+        "pa", "pi", "sa", "si", "ti", "di", "ka", "nga", "ar"   # imbuhan dua huruf
+
     ]
 
     # Jika ada kasus khusus: misalnya apabila kata diawali "sub",
@@ -50,11 +54,43 @@ def urai_akhiran(kata):
     # Bila tidak ditemukan imbuhan, kembalikan kata aslinya
     return kata
 
+def urai_peleburan(kata):
+    """
+    Fungsi ini mengurai kata dengan awalan hasil peleburan berdasarkan aturan peluluhan awalan:
+        - ng => k
+        - ny => c atau s (mengembalikan 2 kemungkinan)
+        - m => p
+        - n => t (opsional)
+
+    Jika ditemukan awalan 'ny', fungsi mengembalikan list 2 kata hasil peluluhan.
+    """
+
+    if len(kata) < 2:
+        return [kata]
+
+    hasil = []
+
+    if kata.startswith("ng"):
+        hasil.append("k" + kata[2:])
+    elif kata.startswith("ny"):
+        hasil.append("c" + kata[2:])  # kemungkinan 1
+        hasil.append("s" + kata[2:])  # kemungkinan 2
+    elif kata.startswith("m"):
+        hasil.append("p" + kata[1:])
+    elif kata.startswith("n"):
+        hasil.append("t" + kata[1:])
+    else:
+        hasil.append(kata)
+
+    return hasil
+
 def urai_kata_sunda(kata):
     """
     Fungsi gabungan untuk mengurai awalan dan akhiran dari sebuah kata
     dalam Bahasa Sunda, mengembalikan bentuk dasar (lema) tanpa duplikat.
     """
+    kata = bersihkan_teks(kata)
+
     # Uraikan awalan saja
     hasil_awalan = urai_awalan(kata)
 
@@ -64,8 +100,14 @@ def urai_kata_sunda(kata):
     # Uraikan kombinasi awalan dan akhiran
     hasil_kombinasi = urai_akhiran(hasil_awalan)
 
+    # Uraian Peleburan
+    hasil_awal_lebur = urai_peleburan(kata)
+
+    # Uraian kombinasi Peleburan dan akhiran
+    hasil_kombinas_lebur_akhiran = list(map(urai_akhiran, hasil_awal_lebur))
+
     # Gabungkan dan hilangkan duplikat
-    hasil_unik = list(set([hasil_awalan, hasil_akhiran, hasil_kombinasi]))
+    hasil_unik = list(set([hasil_awalan, hasil_akhiran, hasil_kombinasi] + hasil_awal_lebur + hasil_kombinas_lebur_akhiran))
 
     return {kata: hasil_unik}
 
