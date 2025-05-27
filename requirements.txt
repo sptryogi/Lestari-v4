@@ -6,3 +6,4 @@ regex
 numpy
 scikit-learn
 pybase64
+supabase
