@@ -631,3 +631,26 @@ def cari_arti_lema(teks, df):
                 break
 
     return hasil
+
+def filter_ucapan_langsung(teks_sebelum_constraint, text_sesudah_constraint):
+  # Ekstraksi kalimat dalam tanda petik (menggunakan tanda kutip khas bahasa Indonesia)
+  kutipan = re.findall(r'[“"]([^”"]+)[”"]|\'([^\']+)\'', teks_sebelum_constraint)
+  kutipan = [k1 or k2 for k1, k2 in kutipan]
+
+  # Fungsi pengganti yang pakai list pengganti satu per satu
+  def ganti_kutipan(teks, pengganti_list):
+      index = 0
+      def replacer(match):
+          nonlocal index
+          if index < len(pengganti_list):
+              hasil = f'"{pengganti_list[index]}"'  # Atau f'“{pengganti_list[index]}”' jika ingin tetap pakai kutipan miring
+              index += 1
+              return hasil
+          return match.group(0)  # Jika pengganti habis, biarkan asli
+      # Regex untuk kutipan “...” atau "..."
+      return re.sub(r'[“"](.+?)[”"]', replacer, teks)
+  
+  # Eksekusi
+  kalimat_baru = ganti_kutipan(text_sesudah_constraint, kutipan)
+  return kalimat_baru
+    
