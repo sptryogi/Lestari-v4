@@ -398,8 +398,8 @@ st.markdown('<div class="stChatInputContainer">', unsafe_allow_html=True)
 col1, col2 = st.columns([6, 1])
 with col1:
     user_input = st.text_area(
-        label="", height=80, key="user_input", placeholder="Tulis pesan...", 
-        on_change=handle_send, label_visibility="collapsed"
+        label="", height=80, key="user_input", placeholder="Tulis pesan...",
+        label_visibility="collapsed"
     )
    
 with col2:
