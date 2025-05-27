@@ -441,67 +441,118 @@ st.markdown('<div class="stChatInputContainer">', unsafe_allow_html=True)
    
 # with col2:
 #     st.button("➡", on_click=handle_send, use_container_width=True)
-components.html(
-    """
-    <style>
-    .chat-wrapper {
-        position: relative;
-        width: 100%;
-    }
-    .chat-input {
-        width: 100%;
-        height: 100px;
-        padding: 12px 48px 12px 12px;
-        font-size: 16px;
-        resize: none;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-        box-sizing: border-box;
-    }
-    .send-btn {
-        position: absolute;
-        bottom: 12px;
-        right: 12px;
-        background: none;
-        border: none;
-        cursor: pointer;
-    }
-    .send-btn svg {
-        width: 24px;
-        height: 24px;
-        fill: #1f77b4;
-    }
-    </style>
+# components.html(
+#     """
+#     <style>
+#     .chat-wrapper {
+#         position: relative;
+#         width: 100%;
+#     }
+#     .chat-input {
+#         width: 100%;
+#         height: 100px;
+#         padding: 12px 48px 12px 12px;
+#         font-size: 16px;
+#         resize: none;
+#         border-radius: 8px;
+#         border: 1px solid #ccc;
+#         box-sizing: border-box;
+#     }
+#     .send-btn {
+#         position: absolute;
+#         bottom: 12px;
+#         right: 12px;
+#         background: none;
+#         border: none;
+#         cursor: pointer;
+#     }
+#     .send-btn svg {
+#         width: 24px;
+#         height: 24px;
+#         fill: #1f77b4;
+#     }
+#     </style>
 
-    <div class="chat-wrapper">
-        <textarea id="userInput" class="chat-input" placeholder="Tulis pesan..."></textarea>
-        <button class="send-btn" onclick="sendMessage()">
+#     <div class="chat-wrapper">
+#         <textarea id="userInput" class="chat-input" placeholder="Tulis pesan..."></textarea>
+#         <button class="send-btn" onclick="sendMessage()">
+#             <svg viewBox="0 0 24 24">
+#                 <path d="M2 21l21-9L2 3v7l15 2-15 2v7z"></path>
+#             </svg>
+#         </button>
+#     </div>
+
+#     <script>
+#     function sendMessage() {
+#         const input = document.getElementById("userInput").value;
+#         const query = new URLSearchParams();
+#         query.set("user_input", input);
+#         window.location.href = window.location.pathname + "?" + query.toString();
+#     }
+#     </script>
+#     """,
+#     height=130,
+# )
+
+# # Tangkap input dari query params (setelah tombol diklik)
+# query_params = st.query_params
+# if "user_input" in query_params and query_params["user_input"]:
+#     st.session_state.user_input = query_params["user_input"]
+#     handle_send()
+
+#     # Hapus param setelah dikirim agar tidak terkirim ulang saat refresh
+#     st.experimental_set_query_params()    
+st.markdown("""
+<style>
+.chat-form {
+    position: relative;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+textarea[data-baseweb="textarea"] {
+    padding-right: 40px !important; /* ruang untuk tombol */
+}
+.send-button {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+.send-button svg {
+    width: 24px;
+    height: 24px;
+    fill: #1f77b4;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# Form agar tombol bisa trigger fungsi Python
+with st.form(key="chat_form"):
+    st.markdown('<div class="chat-form">', unsafe_allow_html=True)
+
+    user_input = st.text_area(
+        label="", 
+        key="user_input",
+        placeholder="Tulis pesan...",
+        label_visibility="collapsed"
+    )
+
+    st.markdown('''
+        <button class="send-button" type="submit">
             <svg viewBox="0 0 24 24">
                 <path d="M2 21l21-9L2 3v7l15 2-15 2v7z"></path>
             </svg>
         </button>
-    </div>
+    ''', unsafe_allow_html=True)
 
-    <script>
-    function sendMessage() {
-        const input = document.getElementById("userInput").value;
-        const query = new URLSearchParams();
-        query.set("user_input", input);
-        window.location.href = window.location.pathname + "?" + query.toString();
-    }
-    </script>
-    """,
-    height=130,
-)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-# Tangkap input dari query params (setelah tombol diklik)
-query_params = st.query_params
-if "user_input" in query_params and query_params["user_input"]:
-    st.session_state.user_input = query_params["user_input"]
+    submitted = st.form_submit_button(label="", help="Kirim")
+
+if submitted and st.session_state.user_input.strip():
     handle_send()
-
-    # Hapus param setelah dikirim agar tidak terkirim ulang saat refresh
-    st.experimental_set_query_params()    
 col_left, col_right = st.columns([1, 2])
 
 with col_left:
