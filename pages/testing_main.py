@@ -442,10 +442,33 @@ with col1:
 with col2:
     #st.button("➡", on_click=handle_send, use_container_width=True)
     st.markdown(
-    '<button onclick="window.dispatchEvent(new Event(\'send_click\'))" style="background:none;border:none;">'
-    '<img src="https://cdn-icons-png.flaticon.com/512/724/724954.png" width="30"/></button>',
-    unsafe_allow_html=True
+        """
+        <style>
+        .send-button {
+            background-color: #007bff;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            height: 60px;
+            width: 60px;
+        }
+        .send-button:hover {
+            background-color: #0056b3;
+        }
+        </style>
+        <form action="" method="post">
+            <button class="send-button" type="submit" name="send">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" fill="white" viewBox="0 0 24 24">
+                    <path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/>
+                </svg>
+            </button>
+        </form>
+        """,
+        unsafe_allow_html=True
     )
+if "send" in st.session_state:
+    handle_send()
 
 col_left, col_right = st.columns([1, 2])
 
