@@ -272,7 +272,17 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.markdown("<span style='color:white'>Selamat datang! Silakan ajukan pertanyaan.</span>", unsafe_allow_html=True)
+# st.markdown("<span style='color:white'>Selamat datang! Silakan ajukan pertanyaan.</span>", unsafe_allow_html=True)
+st.markdown("""
+<span style='
+    color: white;
+    -webkit-text-stroke: 1px #00008B;  /* Outline biru tua */
+    font-size: 24px;
+    font-weight: bold;
+'>
+    Selamat datang! Silakan ajukan pertanyaan.
+</span>
+""", unsafe_allow_html=True)
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
