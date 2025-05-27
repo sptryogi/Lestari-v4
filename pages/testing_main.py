@@ -432,56 +432,57 @@ st.markdown("</div>", unsafe_allow_html=True)  # ⬅️ END OF chat-container-ou
 # FIXED INPUT DI BAWAH
 st.markdown('<div class="stChatInputContainer">', unsafe_allow_html=True)
     
-col1, col2 = st.columns([6, 1], gap="small")
-with col1:
+# col1, col2 = st.columns([6, 1])
+# with col1:
+#     user_input = st.text_area(
+#         label="", height=80, key="user_input", placeholder="Tulis pesan...",
+#         label_visibility="collapsed"
+#     )
+   
+# with col2:
+#     st.button("➡", on_click=handle_send, use_container_width=True)
+    
+# col_left, col_right = st.columns([1, 2])
+# Custom CSS untuk menggeser tombol ke kanan bawah
+st.markdown("""
+    <style>
+    .chat-container {
+        display: flex;
+        flex-direction: row;
+        gap: 0.5rem;
+        align-items: flex-end;
+    }
+    .text-area-container {
+        flex: 1;
+    }
+    .send-button-container {
+        align-self: flex-end;
+        margin-bottom: 4px;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# HTML wrapper agar tombol sejajar di kanan bawah text_area
+st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+
+# Text area
+with st.container():
+    st.markdown('<div class="text-area-container">', unsafe_allow_html=True)
     user_input = st.text_area(
         label="", height=80, key="user_input", placeholder="Tulis pesan...",
         label_visibility="collapsed"
     )
-   
-with col2:
-    #st.button("➡", on_click=handle_send, use_container_width=True)
-    # Gunakan st.button dengan label kosong + key
-    clicked = st.button(" ", key="send_button")
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    # Tambahkan ikon dan styling dengan CSS (SVG paper plane + tombol hijau)
-    st.markdown("""
-        <style>
-        .stButton>button {
-            background-color: #25D366 !important; /* WhatsApp green */
-            color: white !important;
-            border: none;
-            padding: 0.6rem;
-            border-radius: 12px;
-            height: 60px;
-            width: 60px;
-        }
-        .stButton>button svg {
-            vertical-align: middle;
-        }
-        </style>
-    """, unsafe_allow_html=True)
+# Tombol kirim
+with st.container():
+    st.markdown('<div class="send-button-container">', unsafe_allow_html=True)
+    if st.button("➡", key="send_button", use_container_width=True):
+        handle_send()
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    # Tambahkan ikon SVG ke tombol
-    st.markdown("""
-        <style>
-        .stButton>button:after {
-            content: '';
-            display: inline-block;
-            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 24 24'><path d='M2.01 21 23 12 2.01 3 2 10l15 2-15 2z'/></svg>");
-            background-size: 24px 24px;
-            background-repeat: no-repeat;
-            width: 24px;
-            height: 24px;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-
-# Panggil fungsi saat tombol diklik
-if clicked:
-    handle_send()
-
-col_left, col_right = st.columns([1, 2])
+# Tutup wrapper
+st.markdown('</div>', unsafe_allow_html=True)
 
 with col_left:
     st.button("🔄 Delete Chat History", on_click=lambda: st.session_state.update(chat_history=[]))
