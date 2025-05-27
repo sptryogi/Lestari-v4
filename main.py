@@ -273,17 +273,6 @@ st.markdown(
 )
 
 # st.markdown("<span style='color:white'>Selamat datang! Silakan ajukan pertanyaan.</span>", unsafe_allow_html=True)
-# st.markdown("""
-# <span style='
-#     color: white;
-#     -webkit-text-stroke: 1px #00008B;  /* Outline biru tua */
-#     font-size: 24px;
-#     font-weight: bold;
-# '>
-#     Selamat datang! Silakan ajukan pertanyaan.
-# </span>
-# """, unsafe_allow_html=True)
-
 st.markdown("""
 <span style='
     color: white;
@@ -292,7 +281,7 @@ st.markdown("""
          1px -1px 0 #00008B,
         -1px  1px 0 #00008B,
          1px  1px 0 #00008B;
-    font-size: 24px;
+    font-size: 16px;
     font-weight: bold;
 '>
     Selamat datang! Silakan ajukan pertanyaan.
