@@ -441,48 +441,68 @@ st.markdown('<div class="stChatInputContainer">', unsafe_allow_html=True)
    
 # with col2:
 #     st.button("➡", on_click=handle_send, use_container_width=True)
-    
-# col_left, col_right = st.columns([1, 2])
-# Custom CSS untuk menggeser tombol ke kanan bawah
-st.markdown("""
+components.html(
+    """
     <style>
-    .chat-container {
-        display: flex;
-        flex-direction: row;
-        gap: 0.5rem;
-        align-items: flex-end;
+    .chat-wrapper {
+        position: relative;
+        width: 100%;
     }
-    .text-area-container {
-        flex: 1;
+    .chat-input {
+        width: 100%;
+        height: 100px;
+        padding: 12px 48px 12px 12px;
+        font-size: 16px;
+        resize: none;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
     }
-    .send-button-container {
-        align-self: flex-end;
-        margin-bottom: 4px;
+    .send-btn {
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+    .send-btn svg {
+        width: 24px;
+        height: 24px;
+        fill: #1f77b4;
     }
     </style>
-""", unsafe_allow_html=True)
 
-# HTML wrapper agar tombol sejajar di kanan bawah text_area
-st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+    <div class="chat-wrapper">
+        <textarea id="userInput" class="chat-input" placeholder="Tulis pesan..."></textarea>
+        <button class="send-btn" onclick="sendMessage()">
+            <svg viewBox="0 0 24 24">
+                <path d="M2 21l21-9L2 3v7l15 2-15 2v7z"></path>
+            </svg>
+        </button>
+    </div>
 
-# Text area
-with st.container():
-    st.markdown('<div class="text-area-container">', unsafe_allow_html=True)
-    user_input = st.text_area(
-        label="", height=80, key="user_input", placeholder="Tulis pesan...",
-        label_visibility="collapsed"
-    )
-    st.markdown('</div>', unsafe_allow_html=True)
+    <script>
+    function sendMessage() {
+        const input = document.getElementById("userInput").value;
+        const query = new URLSearchParams();
+        query.set("user_input", input);
+        window.location.href = window.location.pathname + "?" + query.toString();
+    }
+    </script>
+    """,
+    height=130,
+)
 
-# Tombol kirim
-with st.container():
-    st.markdown('<div class="send-button-container">', unsafe_allow_html=True)
-    if st.button("➡", key="send_button", use_container_width=True):
-        handle_send()
-    st.markdown('</div>', unsafe_allow_html=True)
+# Tangkap input dari query params (setelah tombol diklik)
+query_params = st.query_params
+if "user_input" in query_params and query_params["user_input"]:
+    st.session_state.user_input = query_params["user_input"]
+    handle_send()
 
-# Tutup wrapper
-st.markdown('</div>', unsafe_allow_html=True)
+    # Hapus param setelah dikirim agar tidak terkirim ulang saat refresh
+    st.experimental_set_query_params()    
+col_left, col_right = st.columns([1, 2])
 
 with col_left:
     st.button("🔄 Delete Chat History", on_click=lambda: st.session_state.update(chat_history=[]))
