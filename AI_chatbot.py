@@ -59,7 +59,8 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
         Gunakan huruf kapital pada awal kalimat dan setelah tanda titik serta setelah petik dua atau setelah paragraf.
         Gunakan huruf kapital pada awal nama orang dan nama tempat.
         Gunakan huruf kapital yang sama jika pada kalimat atau kata pada input user menggunakan huruf kapital.
-        Jika disuruh atau diperintahkan untuk menterjemahkan atau translate, tolong jaga agar format paragraf dan barisnya tetap sama persis seperti teks asli atau teks input user.
+        Jika diperintahkan untuk terjemahkan atau translate, jaga format paragrafnya. Tiap paragraf dalam teks asli harus menjadi paragraf yang terpisah dalam hasil terjemahan.
+        Jangan menggabungkan paragraf.
         Selalu akhiri dengan pertanyaan. 
         Pertanyaan dari pengguna: "{user_input}"
         """
@@ -69,6 +70,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
         Terjemahkan kalimat berikut ke dalam Bahasa Sunda LOMA secara alami seperti digunakan dalam kehidupan sehari-hari.
         Kenali format paragraf kalimat teks dari pengguna.
         Jaga agar format paragraf dan barisnya tetap sama persis seperti teks asli atau input user.
+        Jangan menggabungkan paragraf.
         Gunakan huruf kapital yang sama jika pada kalimat atau kata pada input user menggunakan huruf kapital.
         Jangan mengajak mengobrol seperti fitur chatbot. anda hanya menterjemahkan input dari user seperti google translater.
         Jangan menambahkan kata bahasa sunda yang memang bukan arti dari kalimat bahasa indonesia tersebut.
@@ -84,6 +86,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
         final_prompt = f"""Kamu adalah penerjemah yang ahli bahasa indonesia dan bahasa sunda.
         Terjemahkan kalimat berikut ke dalam Bahasa Indonesia yang baku dan mudah dimengerti.
         Jaga agar format paragraf dan barisnya tetap sama persis seperti teks asli atau input user.
+        Jangan menggabungkan paragraf.
         Gunakan huruf kapital yang sama jika pada kalimat atau kata pada input user menggunakan huruf kapital.
         Jangan mengajak mengobrol seperti fitur chatbot, anda hanya menterjemahkan input dari user seperti google translate.
         Jangan tambahkan penjelasan atau keterangan apa pun. Langsung tampilkan hasil terjemahannya.
