@@ -502,57 +502,80 @@ st.markdown('<div class="stChatInputContainer">', unsafe_allow_html=True)
 
 #     # Hapus param setelah dikirim agar tidak terkirim ulang saat refresh
 #     st.experimental_set_query_params()    
-st.markdown("""
-<style>
-.chat-form {
-    position: relative;
-    width: 100%;
-    margin-bottom: 1rem;
-}
-textarea[data-baseweb="textarea"] {
-    padding-right: 40px !important; /* ruang untuk tombol */
-}
-.send-button {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-.send-button svg {
-    width: 24px;
-    height: 24px;
-    fill: #1f77b4;
-}
-</style>
-""", unsafe_allow_html=True)
+components.html(
+    """
+    <style>
+    .chat-wrapper {
+        position: relative;
+        width: 100%;
+    }
+    .chat-input {
+        width: 100%;
+        height: 120px;
+        padding: 8px;
+        font-size: 16px;
+        resize: none;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+        font-family: inherit;
+    }
+    .send-btn {
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+    .send-btn svg {
+        width: 24px;
+        height: 24px;
+        fill: #1f77b4;
+    }
+    </style>
 
-# Form agar tombol bisa trigger fungsi Python
-with st.form(key="chat_form"):
-    st.markdown('<div class="chat-form">', unsafe_allow_html=True)
-
-    user_input = st.text_area(
-        label="", 
-        key="user_input",
-        placeholder="Tulis pesan...",
-        label_visibility="collapsed"
-    )
-
-    st.markdown('''
-        <button class="send-button" type="submit">
+    <div class="chat-wrapper">
+        <textarea id="userInput" class="chat-input" placeholder="Tulis pesan..."></textarea>
+        <button class="send-btn" onclick="parent.sendMessage()">
             <svg viewBox="0 0 24 24">
                 <path d="M2 21l21-9L2 3v7l15 2-15 2v7z"></path>
             </svg>
         </button>
-    ''', unsafe_allow_html=True)
+    </div>
 
-    st.markdown('</div>', unsafe_allow_html=True)
+    <script>
+    // Fungsi untuk menangani pengiriman pesan
+    function sendMessage() {
+        const input = document.getElementById("userInput").value;
+        if (input.trim() !== "") {
+            // Menggunakan Streamlit's parent window communication
+            parent.postMessage({
+                type: "streamlit:setComponentValue",
+                value: input
+            }, "*");
+        }
+    }
 
-    submitted = st.form_submit_button(label="", help="Kirim")
+    // Tambahkan event listener untuk tombol Enter
+    document.getElementById("userInput").addEventListener("keydown", function(e) {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+    </script>
+    """,
+    height=150,
+    key="chat_input"
+)
 
-if submitted and st.session_state.user_input.strip():
+# Tangkap input dari komponen
+if "chat_input" in st.session_state and st.session_state.chat_input:
+    st.session_state.user_input = st.session_state.chat_input
     handle_send()
+    # Reset nilai komponen setelah diproses
+    st.session_state.chat_input = None
 col_left, col_right = st.columns([1, 2])
 
 with col_left:
