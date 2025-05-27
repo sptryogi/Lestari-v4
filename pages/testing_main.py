@@ -3,7 +3,7 @@ import pandas as pd
 import re
 import pybase64
 from AI_chatbot import generate_text_deepseek, call_deepseek_api, kapitalisasi_awal_kalimat, bersihkan_superscript
-from constraint1_test import highlight_text, constraint_text, ubah_ke_lema, find_the_lema_pair, cari_arti_lema
+from constraint1_test import highlight_text, constraint_text, ubah_ke_lema, find_the_lema_pair, cari_arti_lema, ganti_kutipan
 import streamlit.components.v1 as components
 
 st.set_page_config(page_title="Lestari Bahasa", page_icon="🌐", layout="centered")  # atau "centered"
