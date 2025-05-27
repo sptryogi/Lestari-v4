@@ -440,7 +440,8 @@ with col1:
     )
    
 with col2:
-    st.button("➡", on_click=handle_send, use_container_width=True)
+    #st.button("➡", on_click=handle_send, use_container_width=True)
+    st.markdown('<button onclick="window.dispatchEvent(new Event(\'send_click\'))" style="background:none;border:none;"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="30"/></button>', unsafe_allow_html=True)
 
 col_left, col_right = st.columns([1, 2])
 
