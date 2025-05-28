@@ -22,6 +22,20 @@ def get_age_by_email(email):
     
     return age
 
+def get_age_by_id(user_id):
+    try:
+        # Ambil age dari tabel profiles berdasarkan id
+        response = supabase.table("profiles").select("age").eq("id", user_id).single().execute()
+
+        if response.data and "age" in response.data:
+            return response.data["age"]
+        else:
+            print("Data umur tidak ditemukan.")
+            return None
+    except Exception as e:
+        print(f"Terjadi kesalahan: {e}")
+        return None
+
 
 # Fungsi untuk memanggil Deepseek API
 def call_deepseek_api(history, prompt):
