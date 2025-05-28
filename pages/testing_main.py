@@ -5,8 +5,32 @@ import pybase64
 from AI_chatbot import generate_text_deepseek, call_deepseek_api, kapitalisasi_awal_kalimat, bersihkan_superscript
 from constraint1_test import highlight_text, constraint_text, ubah_ke_lema, find_the_lema_pair, cari_arti_lema, filter_ucapan_langsung
 import streamlit.components.v1 as components
+from supabase_helper import sign_in_with_email, get_user_session, sign_out, fetch_chat_history
 
 st.set_page_config(page_title="Lestari Bahasa", page_icon="🌐", layout="centered")  # atau "centered"
+if "user" not in st.session_state:
+    st.session_state.user = None
+
+# Jika belum login, tampilkan form login
+if not st.session_state.user:
+    st.subheader("Login")
+    email = st.text_input("Email")
+    password = st.text_input("Password", type="password")
+    if st.button("Login"):
+        result = sign_in_with_email(email, password)
+        if result and result.user:
+            st.session_state.user = result.user
+            st.success("Login berhasil!")
+            st.rerun()
+        else:
+            st.error("Login gagal.")
+else:
+    # Sudah login → tampilkan app
+    st.success(f"Selamat datang, {st.session_state.user.email}")
+    if st.button("Logout"):
+        sign_out()
+        st.session_state.user = None
+        st.rerun()
 
 # UI Styling
 st.markdown("""
@@ -432,15 +456,15 @@ st.markdown("</div>", unsafe_allow_html=True)  # ⬅️ END OF chat-container-ou
 # FIXED INPUT DI BAWAH
 st.markdown('<div class="stChatInputContainer">', unsafe_allow_html=True)
     
-# col1, col2 = st.columns([6, 1])
-# with col1:
-#     user_input = st.text_area(
-#         label="", height=80, key="user_input", placeholder="Tulis pesan...",
-#         label_visibility="collapsed"
-#     )
+col1, col2 = st.columns([6, 1])
+with col1:
+    user_input = st.text_area(
+        label="", height=80, key="user_input", placeholder="Tulis pesan...",
+        label_visibility="collapsed"
+    )
    
-# with col2:
-#     st.button("➡", on_click=handle_send, use_container_width=True)
+with col2:
+    st.button("➡", on_click=handle_send, use_container_width=True)
 # components.html(
 #     """
 #     <style>
@@ -502,94 +526,94 @@ st.markdown('<div class="stChatInputContainer">', unsafe_allow_html=True)
 
 #     # Hapus param setelah dikirim agar tidak terkirim ulang saat refresh
 #     st.experimental_set_query_params()    
-chat_input = components.html(
-    """
-    <style>
-    .chat-wrapper {
-        position: relative;
-        width: 100%;
-        margin-bottom: 1rem;
-    }
-    .chat-input {
-        width: 100%;
-        height: 120px;
-        padding: 12px 48px 12px 12px;
-        font-size: 16px;
-        resize: none;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-        box-sizing: border-box;
-        font-family: inherit;
-    }
-    .send-btn {
-        position: absolute;
-        bottom: 16px;
-        right: 12px;
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 8px;
-        border-radius: 50%;
-        transition: background 0.2s;
-    }
-    .send-btn:hover {
-        background: rgba(0,0,0,0.05);
-    }
-    .send-btn svg {
-        width: 24px;
-        height: 24px;
-        fill: #1f77b4;
-    }
-    </style>
+# chat_input = components.html(
+#     """
+#     <style>
+#     .chat-wrapper {
+#         position: relative;
+#         width: 100%;
+#         margin-bottom: 1rem;
+#     }
+#     .chat-input {
+#         width: 100%;
+#         height: 120px;
+#         padding: 12px 48px 12px 12px;
+#         font-size: 16px;
+#         resize: none;
+#         border-radius: 8px;
+#         border: 1px solid #ccc;
+#         box-sizing: border-box;
+#         font-family: inherit;
+#     }
+#     .send-btn {
+#         position: absolute;
+#         bottom: 16px;
+#         right: 12px;
+#         background: none;
+#         border: none;
+#         cursor: pointer;
+#         padding: 8px;
+#         border-radius: 50%;
+#         transition: background 0.2s;
+#     }
+#     .send-btn:hover {
+#         background: rgba(0,0,0,0.05);
+#     }
+#     .send-btn svg {
+#         width: 24px;
+#         height: 24px;
+#         fill: #1f77b4;
+#     }
+#     </style>
 
-    <div class="chat-wrapper">
-        <textarea id="userInput" class="chat-input" placeholder="Tulis pesan..." rows="4"></textarea>
-        <button class="send-btn" id="sendButton">
-            <svg viewBox="0 0 24 24">
-                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
-            </svg>
-        </button>
-    </div>
+#     <div class="chat-wrapper">
+#         <textarea id="userInput" class="chat-input" placeholder="Tulis pesan..." rows="4"></textarea>
+#         <button class="send-btn" id="sendButton">
+#             <svg viewBox="0 0 24 24">
+#                 <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+#             </svg>
+#         </button>
+#     </div>
 
-    <script>
-    const sendButton = document.getElementById('sendButton');
-    const userInput = document.getElementById('userInput');
+#     <script>
+#     const sendButton = document.getElementById('sendButton');
+#     const userInput = document.getElementById('userInput');
     
-    function sendMessage() {
-        const input = userInput.value.trim();
-        if (input) {
-            // Kirim ke Streamlit
-            window.parent.postMessage({
-                isStreamlitMessage: true,
-                type: "streamlit:setComponentValue",
-                api: "component_value",
-                value: input
-            }, "*");
+#     function sendMessage() {
+#         const input = userInput.value.trim();
+#         if (input) {
+#             // Kirim ke Streamlit
+#             window.parent.postMessage({
+#                 isStreamlitMessage: true,
+#                 type: "streamlit:setComponentValue",
+#                 api: "component_value",
+#                 value: input
+#             }, "*");
             
-            // Clear input (optional)
-            userInput.value = '';
-        }
-    }
+#             // Clear input (optional)
+#             userInput.value = '';
+#         }
+#     }
     
-    // Handle klik tombol
-    sendButton.addEventListener('click', sendMessage);
+#     // Handle klik tombol
+#     sendButton.addEventListener('click', sendMessage);
     
-    // Handle Enter key (tanpa Shift)
-    userInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-        }
-    });
-    </script>
-    """,
-    height=170
-)
+#     // Handle Enter key (tanpa Shift)
+#     userInput.addEventListener('keydown', function(e) {
+#         if (e.key === 'Enter' && !e.shiftKey) {
+#             e.preventDefault();
+#             sendMessage();
+#         }
+#     });
+#     </script>
+#     """,
+#     height=170
+# )
 
-# Tangkap input dan panggil handle_send
-if chat_input is not None and chat_input != "":
-    st.session_state.user_input = chat_input
-    handle_send()
+# # Tangkap input dan panggil handle_send
+# if chat_input is not None and chat_input != "":
+#     st.session_state.user_input = chat_input
+#     handle_send()
     
 col_left, col_right = st.columns([1, 2])
 
