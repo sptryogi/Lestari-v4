@@ -358,13 +358,17 @@ def handle_send(user_input):
 
 # CSS untuk mengatur transparansi input chat
 st.markdown("""
-    <style>
-    div[data-testid="stChatInput"] textarea {
-        background-color: transparent !important;
+<style>
+    .stChatInput input[aria-label="test color"] {
+        background-color: #0066cc;
+        color: #33ff33;
     }
-    </style>
+    .stChatInput input[aria-label="test color2"] {
+        background-color: #cc0066;
+        color: #ffff33;
+    }
+</style>
 """, unsafe_allow_html=True)
-
 user_input = st.chat_input("Tulis pesan...")
 
 
