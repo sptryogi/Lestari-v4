@@ -381,7 +381,7 @@ with col1:
     )
    
 with col2:
-    st.button("➡", on_click=handle_send, use_container_width=True)
+    st.button("➡", on_click=handle_send)
 col_left, col_right = st.columns([1, 2])
 
 with col_left:
