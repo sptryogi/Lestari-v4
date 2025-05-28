@@ -374,7 +374,25 @@ if(input){
 
 user_input = st.chat_input("Ketik sesuatu...")
 
+st.markdown("""
+<style>
+    /* Ganti background input box */
+    [data-testid="stBottom"] > div {
+        background-color: transparent !important; 
+    }
 
+    # /* Ganti background input box */
+    # [data-testid="stChatInput"] > div {
+    #     background-color: white !important; 
+    # }
+
+    /* Ganti warna text */
+    [data-testid="stChatInput"] input {
+        color: black !important;
+    }
+
+</style>
+""", unsafe_allow_html=True)
 
 # Menjalankan fungsi handle_send saat pesan dikirim
 if user_input:
