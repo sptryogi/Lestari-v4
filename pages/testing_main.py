@@ -106,16 +106,16 @@ st.markdown(
         flex-direction: column;
     }
 
-    .stChatInputContainer {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background-color: #1E1E2F;
-        padding: 10px 20px;
-        z-index: 999;
-        border-top: 1px solid #444;
-    }
+    # .stChatInputContainer {
+    #     position: fixed;
+    #     bottom: 0;
+    #     left: 0;
+    #     right: 0;
+    #     background-color: #1E1E2F;
+    #     padding: 10px 20px;
+    #     z-index: 999;
+    #     border-top: 1px solid #444;
+    # }
     
     textarea {
         text-align: justify !important;
@@ -356,19 +356,22 @@ def handle_send(user_input):
     st.session_state.chat_history.append((user_input, text_constraint, html_block))
     clear_input()
 
+    st.markdown("""
+    <style>
+        .stTextInput input[aria-label="test color"] {
+            background-color: #0066cc;
+            color: #33ff33;
+        }
+        .stTextInput input[aria-label="test color2"] {
+            background-color: #cc0066;
+            color: #ffff33;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    st.text_input("test color")
+    st.text_input("test color2")
 # CSS untuk mengatur transparansi input chat
-st.markdown("""
-<style>
-    .stChatInput input[aria-label="test color"] {
-        background-color: #0066cc;
-        color: #33ff33;
-    }
-    .stChatInput input[aria-label="test color2"] {
-        background-color: #cc0066;
-        color: #ffff33;
-    }
-</style>
-""", unsafe_allow_html=True)
 user_input = st.chat_input("Tulis pesan...")
 
 
@@ -393,9 +396,6 @@ for user_msg, bot_msg, html_block in st.session_state.chat_history:
             )
 
 st.markdown("</div>", unsafe_allow_html=True)  # ⬅️ END OF chat-container-outer
-
-# FIXED INPUT DI BAWAH
-st.markdown('<div class="stChatInputContainer">', unsafe_allow_html=True)
 
 col_left, col_right = st.columns([1, 2])
 
