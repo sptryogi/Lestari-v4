@@ -1,7 +1,6 @@
 import streamlit as st
 from supabase_helper import *
 import uuid
-from AI_chatbot import generate_text_deepseek, call_deepseek_api, kapitalisasi_awal_kalimat, bersihkan_superscript
 
 # Main
 st.set_page_config(page_title="Lestari Bahasa", layout="wide")
@@ -99,6 +98,21 @@ def render_topbar():
                 """, unsafe_allow_html=True
             )
 
+def get_ai_response(prompt, history):
+    client = OpenAI(
+        api_key=st.secrets["API_KEY"],  # Simpan API key DeepSeek di secrets Streamlit
+        base_url="https://api.deepseek.com"
+    )
+    messages = [{"role": "system", "content": "You are a helpful assistant."}]
+    response = client.chat.completions.create(
+            model="deepseek-chat",
+            messages=messages,
+            temperature=0.7,
+            stream=False
+        )
+        return response.choices[0].message.content
+    return f"AI menjawab berdasarkan konteks {len(history)} pesan: {prompt[::-1]}"
+    
 # Auth flow
 def auth_flow():
     if "register_mode" not in st.session_state:
