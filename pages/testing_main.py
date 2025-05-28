@@ -359,22 +359,13 @@ def handle_send(user_input):
 import streamlit as st
 
 # CSS untuk mengatur transparansi pada chat input
-st.markdown("""
-    <style>
-    /* Mencoba cari selector textarea dari chat_input */
-    textarea[data-testid="stChatInput"] {
-        background-color: rgba(255, 255, 255, 0.0) !important;  /* transparan */
-        color: white !important;  /* warna teks agar tetap terbaca */
-        border: 1px solid #ccc;
-    }
-
-    /* Opsional: menghilangkan shadow putih */
-    div[data-testid="stChatInput"] {
-        background-color: rgba(255, 255, 255, 0.0) !important;
-        box-shadow: none !important;
+m = st.markdown("""
+    <style> 
+    .stChatInputContainer > div {
+    background-color: #fff;
     }
     </style>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
 user_input = st.chat_input("Tulis pesan...")
 
