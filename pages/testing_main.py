@@ -356,20 +356,26 @@ def handle_send(user_input):
     st.session_state.chat_history.append((user_input, text_constraint, html_block))
     clear_input()
 
-# Tambahkan CSS kustom untuk memodifikasi background input
+import streamlit as st
+
+# CSS untuk mengatur transparansi pada chat input
 st.markdown("""
     <style>
-    .stChatInputContainer {
-        background-color: transparent !important;
+    /* Mencoba cari selector textarea dari chat_input */
+    textarea[data-testid="stChatInput"] {
+        background-color: rgba(255, 255, 255, 0.0) !important;  /* transparan */
+        color: white !important;  /* warna teks agar tetap terbaca */
+        border: 1px solid #ccc;
     }
-    .stChatInputContainer textarea {
-        background-color: transparent !important;
-        color: white;  /* Sesuaikan dengan warna teks yang kontras */
+
+    /* Opsional: menghilangkan shadow putih */
+    div[data-testid="stChatInput"] {
+        background-color: rgba(255, 255, 255, 0.0) !important;
+        box-shadow: none !important;
     }
     </style>
-    """, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
-# Tampilkan chat input
 user_input = st.chat_input("Tulis pesan...")
 
 # Menjalankan fungsi handle_send saat pesan dikirim
