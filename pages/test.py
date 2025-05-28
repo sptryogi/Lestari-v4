@@ -58,7 +58,7 @@ def auth_flow():
                 if user:
                     st.session_state.user = user
                     st.session_state.email = email
-                    st.experimental_rerun()
+                    st.rerun()
                 else:
                     st.error("Login gagal.")
             except Exception as e:
