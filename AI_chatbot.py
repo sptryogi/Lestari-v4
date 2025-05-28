@@ -4,6 +4,25 @@ import streamlit as st
 import re
 import string
 
+from supabase import create_client, Client
+
+SUPABASE_URL = st.secrets["SUPABASE_URL"]
+SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
+
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+def get_age_by_email(email):
+    # Dapatkan user berdasarkan email
+    user_data = supabase.auth.admin.get_user_by_email(email)
+    user_id = user_data.user.id
+    
+    # Ambil age dari tabel profiles berdasarkan id
+    profile_data = supabase.table("profiles").select("age").eq("id", user_id).single().execute()
+    age = profile_data.data["age"]
+    
+    return age
+
+
 # Fungsi untuk memanggil Deepseek API
 def call_deepseek_api(history, prompt):
     # Ganti ini dengan API key kamu
