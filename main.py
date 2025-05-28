@@ -32,6 +32,16 @@ st.markdown("""
 
     /* Hilangkan elemen Fork/GitHub khusus */
     a[href*="github.com"] {display: none !important;}
+
+    /* Sembunyikan logo SVG (dalam class _link_gzau3_10) */
+    ._container_gzau3_1 _viewerBadge_nim44_23 {
+        display: none !important;
+    }
+
+    /* Sembunyikan avatar profil pembuat aplikasi */
+    ._profilePreview_gzau3_63 {
+        display: none !important;
+    }
     
     /* Hilangkan elemen GitHub (termasuk avatar foto) */
     a[href*="github.com"], img[src*="githubusercontent"] {
