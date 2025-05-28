@@ -356,23 +356,6 @@ def handle_send(user_input):
     st.session_state.chat_history.append((user_input, text_constraint, html_block))
     clear_input()
 
-m = st.markdown("""
-    <style> 
-    .stChatInputContainer > div {
-    background-color: #006400;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-st.markdown("""
-    <style>
-        .stChatInputContainer > div {
-            background-color: #006400;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
-
 user_input = st.chat_input("Ketik sesuatu...")
 
 st.markdown("""
