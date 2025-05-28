@@ -99,7 +99,6 @@ def render_topbar():
                 """, unsafe_allow_html=True
             )
 
-user_input = st.session_state.get("user_input", "")
 # Auth flow
 def auth_flow():
     if "register_mode" not in st.session_state:
@@ -137,11 +136,7 @@ def auth_flow():
                 st.error(f"Login gagal: {e}")
         if st.button("Belum punya akun? Daftar"):
             st.session_state.register_mode = True
-
-# AI logic dummy (replace with your own model call)
-# def get_ai_response(prompt, history):
-#     return f"AI menjawab berdasarkan konteks {len(history)} pesan: {prompt[::-1]}"
-
+    
 # Chat UI
 def chat_ui():
     st.title("💬 Lestari Bahasa")
@@ -166,7 +161,7 @@ def chat_ui():
     # Input new message
     prompt = st.chat_input("Ketik pesan...")
     if prompt:
-        response = generate_text_deepseek(user_input, fitur=None, pasangan_cag=None, mode_bahasa=None, history)
+        response = call_deepseek_api(user_input=prompt, history)
         insert_chat_history(user_id, st.session_state.room, prompt, response)
         st.rerun()
 
