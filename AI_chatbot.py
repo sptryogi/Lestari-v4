@@ -11,6 +11,7 @@ SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+# GET AGE FROM EMAIL
 def get_age_by_email(email):
     # Dapatkan user berdasarkan email
     user_data = supabase.auth.admin.get_user_by_email(email)
@@ -22,6 +23,7 @@ def get_age_by_email(email):
     
     return age
 
+# GET AGE FROM ID
 def get_age_by_id(user_id):
     try:
         # Ambil age dari tabel profiles berdasarkan id
@@ -70,21 +72,32 @@ def call_deepseek_api(history, prompt):
         return "Maaf, terjadi kesalahan saat memproses permintaan Anda."
 
 def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda", history=None):
+    age = get_age_by_id("fd5a8287-e65e-466a-8ef2-b99ab5808d81")
+
+    klasifikasi_bahasa = "LOMA"
+    
+    if age >= 30:
+        klasifikasi_bahasa = "HALUS"
+    elif age < 30:
+        klasifikasi_bahasa = "LOMA"
+    
     # Instruksi berdasarkan fitur dan mode bahasa
     if fitur == "chatbot":
         if mode_bahasa == "Sunda":
-            instruksi_bahasa = "Jawablah hanya dalam Bahasa Sunda LOMA. Jawab pertanyaannya mau itu Bahasa Sunda, Bahasa Indonesia atau English tapi tetap jawab pakai Bahasa Sunda Loma. Gunakan tata bahasa sunda yang baik dan benar."
+            instruksi_bahasa = f"Jawablah hanya dalam Bahasa Sunda {klasifikasi_bahasa}. Jawab pertanyaannya mau itu Bahasa Sunda, Bahasa Indonesia atau English tapi tetap jawab pakai Bahasa Sunda Loma. Gunakan tata bahasa sunda yang baik dan benar."
         elif mode_bahasa == "Indonesia":
             instruksi_bahasa = "Jawablah hanya dalam Bahasa Indonesia. Jawab pertanyaannya mau itu Bahasa Indonesia, Bahasa Sunda atau English tapi tetap jawab pakai Bahasa Indonesia."
         elif mode_bahasa == "English":
             instruksi_bahasa = "Please respond only in British English. Answer the questions whether it is in Indonesian, Sundanese or English but always answer in English"
         else:
             instruksi_bahasa = ""
-        
+
         final_prompt = f"""
         {instruksi_bahasa}
         Anda adalah Lestari, chatbot yang interaktif membantu pengguna belajar bahasa Indonesia, English, dan Sunda serta menjawab pertanyaan secara ramah dan jelas informasinya.
         Anda berumur 30 tahun. Jika anda ditanya "Kumaha damang?" tolong jawab "Sae, anjeun kumaha?".
+        Lawan bicara anda berumur {age} tahun. tolong sesuaikan gaya bicara anda dengan umur lawan bicara anda.
+        
         Jangan memberikan informasi yang tidak tentu kebenarannya.
         Jangan gunakan huruf-huruf aneh seperti kanji korea, kanji jepang, atau kanji china.
         Kenali format paragraf kalimat teks dari user.
