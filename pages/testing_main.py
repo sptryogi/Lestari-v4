@@ -362,12 +362,12 @@ st.markdown("""
 <style>
     /* Ganti background input box */
     [data-testid="stBottom"] > div {
-        background-color: transparent !important; /* kuning */
+        background-color: transparent !important; 
     }
     
     /* Ganti background input box */
     [data-testid="stChatInput"] > div {
-        background-color: #ffeb3b !important; /* kuning */
+        background-color: black !important; 
     }
 
     /* Ganti warna text */
