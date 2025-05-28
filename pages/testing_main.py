@@ -381,6 +381,16 @@ st.markdown("""
         background-color: transparent !important; 
     }
 
+    /* Ganti background input box */
+    [data-testid="stChatInput"] > div {
+        background-color: white !important; 
+    }
+
+    /* Ganti warna text */
+    [data-testid="stChatInput"] input {
+        color: black !important;
+    }
+
 </style>
 """, unsafe_allow_html=True)
 
