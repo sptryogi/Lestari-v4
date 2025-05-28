@@ -361,7 +361,7 @@ user_input = st.chat_input("Ketik sesuatu...")
 st.markdown("""
 <style>
     /* Ganti background input box */
-    [data-testid="st-emotion-cache-6shykm en45cdb7"] > div {
+    [data-testid="stBottomBlockContainer"] > div {
         background-color: #ffeb3b !important; /* kuning */
     }
 
