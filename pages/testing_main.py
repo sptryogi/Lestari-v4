@@ -356,22 +356,6 @@ def handle_send(user_input):
     st.session_state.chat_history.append((user_input, text_constraint, html_block))
     clear_input()
 
-# Inject JavaScript untuk cegah Enter submit (tidak bikin newline)
-st.markdown("""
-<script>
-const input = window.parent.document.querySelector('[data-testid="stChatInput"] input');
-if(input){
-    input.addEventListener('keydown', function(event) {
-        if(event.key === 'Enter'){
-            event.preventDefault();
-            // Bisa tambahkan custom aksi di sini, misal fokus ke elemen lain
-            console.log("Enter ditekan tapi tidak submit");
-        }
-    });
-}
-</script>
-""", unsafe_allow_html=True)
-
 user_input = st.chat_input("Ketik sesuatu...")
 
 st.markdown("""
@@ -392,6 +376,22 @@ st.markdown("""
     }
 
 </style>
+""", unsafe_allow_html=True)
+
+# Inject JavaScript untuk cegah Enter submit (tidak bikin newline)
+st.markdown("""
+<script>
+const input = window.parent.document.querySelector('[data-testid="stChatInput"] input');
+if(input){
+    input.addEventListener('keydown', function(event) {
+        if(event.key === 'Enter'){
+            event.preventDefault();
+            // Bisa tambahkan custom aksi di sini, misal fokus ke elemen lain
+            console.log("Enter ditekan tapi tidak submit");
+        }
+    });
+}
+</script>
 """, unsafe_allow_html=True)
 
 # Menjalankan fungsi handle_send saat pesan dikirim
