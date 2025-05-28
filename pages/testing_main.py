@@ -373,16 +373,21 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# Simulasi chat input
-user_input = st.chat_input("....")
+user_input = st.chat_input("Ketik sesuatu...")
 
-m = st.markdown("""
-    <style> 
-    .stChatInputContainer > div {
-    background-color: #006400;
+st.markdown("""
+<style>
+    /* Ganti background input box */
+    [data-testid="stChatInput"] > div {
+        background-color: #ffeb3b !important; /* kuning */
     }
-    </style>
-    """, unsafe_allow_html=True)
+
+    /* Ganti warna text */
+    [data-testid="stChatInput"] input {
+        color: black !important;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 # Menjalankan fungsi handle_send saat pesan dikirim
 if user_input:
