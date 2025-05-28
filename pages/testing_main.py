@@ -384,7 +384,7 @@ with col1:
     
     # Menjalankan fungsi handle_send saat pesan dikirim
     if user_input:
-        handle_send(user_input)
+        handle_send()
 
    
 with col2:
