@@ -419,18 +419,14 @@ st.markdown('<div class="stChatInputContainer">', unsafe_allow_html=True)
     
 col1, col2 = st.columns([6, 1])
 with col1:
-    user_input = st.text_area(
-        label="", height=80, key="user_input", placeholder="Tulis pesan...",
-        label_visibility="collapsed"
-    )
+    user_input = st.chat_input(key="user_input", placeholder="Tulis pesan...", on_submit=handle_send)
    
 with col2:
-    st.button("➡", on_click=handle_send, )
-        
-col_left, col_right = st.columns([1, 2])
-
-with col_left:
     st.button("🔄 Delete Chat History", on_click=lambda: st.session_state.update(chat_history=[]))
+#col_left, col_right = st.columns([1, 2])
+
+# with col_left:
+#     st.button("🔄 Delete Chat History", on_click=lambda: st.session_state.update(chat_history=[]))
 
 #with col_right:
     # st.markdown(f"<div style='text-align:right; color: yellow; padding-top: 8px;'>🧠 Mode Aktif: <b>{option}</b>{' - ' + mode_bahasa if mode_bahasa else ''}</div>", unsafe_allow_html=True)
