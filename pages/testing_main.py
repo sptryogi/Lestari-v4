@@ -375,17 +375,15 @@ st.text_input("testa")
 # Custom CSS untuk styling text input
 st.markdown("""
 <style>
-    div[data-testid="stChatInput"] input {
-        background-color: #1e1e2f;
-        color: #33ff33;
-        border-radius: 10px;
-        border: 2px solid #33ff33;
+    .stChatInput input[aria-label="testi"] {
+        background-color: #cc0066;
+        color: #ffff33;
     }
 </style>
 """, unsafe_allow_html=True)
 
 # Simulasi chat input
-user_input = st.chat_input("Ketik pesanmu di sini...")
+user_input = st.chat_input("testi")
 
 
 # Menjalankan fungsi handle_send saat pesan dikirim
