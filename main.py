@@ -419,7 +419,7 @@ st.markdown('<div class="stChatInputContainer">', unsafe_allow_html=True)
     
 col1, col2 = st.columns([6, 1])
 with col1:
-    user_input = st.chat_input(placeholder="Tulis pesan...", on_submit=handle_send)
+    user_input = st.chat_input(placeholder="Tulis pesan...", key="user_input", on_submit=handle_send, )
    
 with col2:
     st.button("🔄 Delete Chat History", on_click=lambda: st.session_state.update(chat_history=[]))
