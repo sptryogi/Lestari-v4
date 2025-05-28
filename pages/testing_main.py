@@ -302,10 +302,10 @@ def clear_input():
     if "user_input" in st.session_state:
         st.session_state["user_input"] = ""
 
-def handle_send():
+def handle_send(user_input):
     pasangan_cag = {}
     history_for_prompt = st.session_state.chat_history[-50:]
-    user_input = st.session_state.user_input
+    # user_input = st.session_state.user_input
     
     # Ambil fitur dan mode_bahasa dari session_state
     option = st.session_state.get("fitur_selector", "Chatbot")
@@ -384,7 +384,7 @@ with col1:
     
     # Menjalankan fungsi handle_send saat pesan dikirim
     if user_input:
-        handle_send()
+        handle_send(user_input)
 
    
 with col2:
