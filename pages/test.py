@@ -3,6 +3,8 @@ from supabase_helper import *
 import uuid
 from AI_chatbot import generate_text_deepseek, call_deepseek_api, kapitalisasi_awal_kalimat, bersihkan_superscript
 
+st.set_page_config(page_title="Lestari Bahasa", page_icon="🌐", layout="centered")  # atau "centered"
+
 st.markdown("""
     <style>
     /* Hilangkan seluruh header (logo, GitHub, Share, Fork) */
