@@ -3,7 +3,7 @@ import pandas as pd
 import re
 import pybase64
 from AI_chatbot import generate_text_deepseek, call_deepseek_api, kapitalisasi_awal_kalimat, bersihkan_superscript
-from constraint1_test import highlight_text, constraint_text, ubah_ke_lema, find_the_lema_pair, cari_arti_lema, filter_ucapan_langsung
+from constraint1 import highlight_text, constraint_text, ubah_ke_lema, find_the_lema_pair, cari_arti_lema
 import streamlit.components.v1 as components
 
 st.set_page_config(page_title="Lestari Bahasa", page_icon="🌐", layout="centered")  # atau "centered"
@@ -38,23 +38,18 @@ st.markdown("""
         display: none !important;
     }
 
-    /* Ubah warna background tombol collapse sidebar ( > ) */
-    button[data-testid="collapsedControl"] {
-        background-color: #b0b0b0 !important;  /* abu-abu */
-        color: white !important;
-        border: none;
-        border-radius: 0 8px 8px 0;
-        padding: 8px 12px;
-        margin-top: 8px;
-        margin-left: -4px;
-        transition: all 0.3s ease;
-        box-shadow: 1px 1px 5px rgba(0,0,0,0.2);
+    /* Target tombol collapse/expand sidebar */
+    [data-testid="stSidebarCollapsedControl"] button {
+        color: green !important;  /* ganti warna ikon */
+        background-color: #e6ffe6 !important;  /* opsional: latar belakang tombol */
+        border-radius: 8px;
+        padding: 6px;
     }
 
-    /* Saat hover */
-    button[data-testid="collapsedControl"]:hover {
-        background-color: #ffc107 !important;
-        color: black !important;
+    /* Ganti warna saat hover juga */
+    [data-testid="stSidebarCollapsedControl"] button:hover {
+        background-color: #ccffcc !important;
+        color: darkgreen !important;
     }
 
     /* Tambahan agar ikon lebih besar */
@@ -62,17 +57,6 @@ st.markdown("""
         width: 1.2rem;
         height: 1.2rem;
     }
-    .stTextArea, .stButton {
-            margin-top: 0px;
-        }
-        div[data-testid="column"] {
-            display: flex;
-            align-items: center;
-        }
-        button[kind="primary"] {
-            background-color: #25D366;  /* WhatsApp green */
-            border-radius: 8px;
-        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -160,6 +144,7 @@ st.markdown(
         margin-left: auto;
         font-size: 20px;
         border: 2px solid black;
+        text-align: justify;
         line-height: 20px;
     }
 
@@ -175,6 +160,7 @@ st.markdown(
         font-size: 18px;
         font-family: Times New Roman;
         border: 2px solid black;
+        text-align: justify;
         line-height: 20px;
     }
 
@@ -315,43 +301,6 @@ if "user_input" not in st.session_state:
 def clear_input():
     if "user_input" in st.session_state:
         st.session_state["user_input"] = ""
-        
-# # Cetak hasil input sebelum dihapus
-# if st.session_state.user_input != "":
-#     st.write("Teks:", st.session_state.user_input)
-
-# ====================================
-
-# user_input_ekuivalen = ubah_ke_lema(user_input, df_kamus)
-
-# ========== Sidebar Controls ==========
-# with st.sidebar:
-#     st.header("⚙️ Pengaturan")
-
-#     option = st.selectbox(
-#         "Pilih Fitur",
-#         ["Chatbot", "Terjemah Indo → Sunda", "Terjemah Sunda → Indo"],
-#         key="fitur_selector"
-#     )
-
-#     fitur = "chatbot"
-#     if option == "Chatbot":
-#         fitur = "chatbot"
-#     elif option == "Terjemah Indo → Sunda":
-#         fitur = "terjemahindosunda"
-#     else:
-#         fitur = "terjemahsundaindo"
-
-#     if fitur == "chatbot":
-#         mode_bahasa = st.selectbox(
-#             "🌐 Mode Bahasa",
-#             ["Sunda", "Indonesia", "English"],
-#             key="mode_selector"
-#         )
-#     else:
-#         mode_bahasa = None
-
-#     status = st.toggle("🔍 Lihat Constraint")
 
 def handle_send():
     pasangan_cag = {}
@@ -392,7 +341,6 @@ def handle_send():
         bot_response_ekuivalen, pasangan_ganti_ekuivalen = ubah_ke_lema(bot_response2, df_kamus, df_idiom)
         text_constraint, kata_terdapat, kata_tidak_terdapat, pasangan_kata, pasangan_ekuivalen = highlight_text(bot_response_ekuivalen, df_kamus, df_idiom, fitur)
         text_constraint = kapitalisasi_awal_kalimat(text_constraint)
-        text_constraint = filter_ucapan_langsung(bot_response_ekuivalen, text_constraint)
 
     html_block = [
         "<p style='color: yellow;'>Kata Kata yang diganti dari Indo ke Sunda (Kamus) Setelah AI:</p>",
@@ -408,9 +356,6 @@ def handle_send():
     st.session_state.chat_history.append((user_input, text_constraint, html_block))
     clear_input()
     
-# CHAT HISTORY WRAPPER
-#st.markdown("<div class='chat-container-outer'>", unsafe_allow_html=True)
-
 for user_msg, bot_msg, html_block in st.session_state.chat_history:
     st.markdown(
         f"<div class='chat-container'><div class='chat-bubble-user'>{user_msg}</div></div>",
@@ -434,170 +379,20 @@ st.markdown('<div class="stChatInputContainer">', unsafe_allow_html=True)
     
 col1, col2 = st.columns([6, 1])
 with col1:
-    user_input = st.text_area(
-        label="", height=80, key="user_input", placeholder="Tulis pesan...",
-        label_visibility="collapsed"
-    )
+    # Chat input
+    user_input = st.chat_input("Tulis pesan...")
+    
+    # Menjalankan fungsi handle_send saat pesan dikirim
+    if user_input:
+        handle_send(user_input)
+
    
 with col2:
     st.button("➡", on_click=handle_send, use_container_width=True)
-# components.html(
-#     """
-#     <style>
-#     .chat-wrapper {
-#         position: relative;
-#         width: 100%;
-#     }
-#     .chat-input {
-#         width: 100%;
-#         height: 100px;
-#         padding: 12px 48px 12px 12px;
-#         font-size: 16px;
-#         resize: none;
-#         border-radius: 8px;
-#         border: 1px solid #ccc;
-#         box-sizing: border-box;
-#     }
-#     .send-btn {
-#         position: absolute;
-#         bottom: 12px;
-#         right: 12px;
-#         background: none;
-#         border: none;
-#         cursor: pointer;
-#     }
-#     .send-btn svg {
-#         width: 24px;
-#         height: 24px;
-#         fill: #1f77b4;
-#     }
-#     </style>
-
-#     <div class="chat-wrapper">
-#         <textarea id="userInput" class="chat-input" placeholder="Tulis pesan..."></textarea>
-#         <button class="send-btn" onclick="sendMessage()">
-#             <svg viewBox="0 0 24 24">
-#                 <path d="M2 21l21-9L2 3v7l15 2-15 2v7z"></path>
-#             </svg>
-#         </button>
-#     </div>
-
-#     <script>
-#     function sendMessage() {
-#         const input = document.getElementById("userInput").value;
-#         const query = new URLSearchParams();
-#         query.set("user_input", input);
-#         window.location.href = window.location.pathname + "?" + query.toString();
-#     }
-#     </script>
-#     """,
-#     height=130,
-# )
-
-# # Tangkap input dari query params (setelah tombol diklik)
-# query_params = st.query_params
-# if "user_input" in query_params and query_params["user_input"]:
-#     st.session_state.user_input = query_params["user_input"]
-#     handle_send()
-
-#     # Hapus param setelah dikirim agar tidak terkirim ulang saat refresh
-#     st.experimental_set_query_params()    
-# chat_input = components.html(
-#     """
-#     <style>
-#     .chat-wrapper {
-#         position: relative;
-#         width: 100%;
-#         margin-bottom: 1rem;
-#     }
-#     .chat-input {
-#         width: 100%;
-#         height: 120px;
-#         padding: 12px 48px 12px 12px;
-#         font-size: 16px;
-#         resize: none;
-#         border-radius: 8px;
-#         border: 1px solid #ccc;
-#         box-sizing: border-box;
-#         font-family: inherit;
-#     }
-#     .send-btn {
-#         position: absolute;
-#         bottom: 16px;
-#         right: 12px;
-#         background: none;
-#         border: none;
-#         cursor: pointer;
-#         padding: 8px;
-#         border-radius: 50%;
-#         transition: background 0.2s;
-#     }
-#     .send-btn:hover {
-#         background: rgba(0,0,0,0.05);
-#     }
-#     .send-btn svg {
-#         width: 24px;
-#         height: 24px;
-#         fill: #1f77b4;
-#     }
-#     </style>
-
-#     <div class="chat-wrapper">
-#         <textarea id="userInput" class="chat-input" placeholder="Tulis pesan..." rows="4"></textarea>
-#         <button class="send-btn" id="sendButton">
-#             <svg viewBox="0 0 24 24">
-#                 <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
-#             </svg>
-#         </button>
-#     </div>
-
-#     <script>
-#     const sendButton = document.getElementById('sendButton');
-#     const userInput = document.getElementById('userInput');
-    
-#     function sendMessage() {
-#         const input = userInput.value.trim();
-#         if (input) {
-#             // Kirim ke Streamlit
-#             window.parent.postMessage({
-#                 isStreamlitMessage: true,
-#                 type: "streamlit:setComponentValue",
-#                 api: "component_value",
-#                 value: input
-#             }, "*");
-            
-#             // Clear input (optional)
-#             userInput.value = '';
-#         }
-#     }
-    
-#     // Handle klik tombol
-#     sendButton.addEventListener('click', sendMessage);
-    
-#     // Handle Enter key (tanpa Shift)
-#     userInput.addEventListener('keydown', function(e) {
-#         if (e.key === 'Enter' && !e.shiftKey) {
-#             e.preventDefault();
-#             sendMessage();
-#         }
-#     });
-#     </script>
-#     """,
-#     height=170
-# )
-
-# # Tangkap input dan panggil handle_send
-# if chat_input is not None and chat_input != "":
-#     st.session_state.user_input = chat_input
-#     handle_send()
-    
 col_left, col_right = st.columns([1, 2])
 
 with col_left:
     st.button("🔄 Delete Chat History", on_click=lambda: st.session_state.update(chat_history=[]))
-
-#with col_right:
-    # st.markdown(f"<div style='text-align:right; color: yellow; padding-top: 8px;'>🧠 Mode Aktif: <b>{option}</b>{' - ' + mode_bahasa if mode_bahasa else ''}</div>", unsafe_allow_html=True)
 
 # Tambah anchor di akhir chat
 st.markdown('<a name="scroll-bottom"></a>', unsafe_allow_html=True)
