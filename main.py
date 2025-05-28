@@ -51,7 +51,7 @@ st.markdown("""
     /* Target tombol collapse/expand sidebar */
     [data-testid="stSidebarCollapsedControl"] button {
         color: green !important;  /* ganti warna ikon */
-        background-color: #e6ffe6 !important;  /* opsional: latar belakang tombol */
+        background-color: white !important;  /* opsional: latar belakang tombol */
         border-radius: 8px;
         padding: 6px;
     }
