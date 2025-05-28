@@ -362,7 +362,7 @@ import streamlit as st
 m = st.markdown("""
     <style> 
     .stChatInputContainer > div {
-    background-color: #ffffff00;
+    background-color: black;
     }
     </style>
     """, unsafe_allow_html=True)
