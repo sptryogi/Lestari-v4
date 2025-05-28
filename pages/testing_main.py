@@ -405,7 +405,7 @@ st.markdown("""
     <style>
     .scroll-down-btn {
         position: fixed;
-        bottom: 80px;
+        bottom: 200px;
         right: 20px;
         background-color: #4CAF50;
         color: white;
