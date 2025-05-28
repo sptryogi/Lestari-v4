@@ -301,43 +301,6 @@ if "user_input" not in st.session_state:
 def clear_input():
     if "user_input" in st.session_state:
         st.session_state["user_input"] = ""
-        
-# # Cetak hasil input sebelum dihapus
-# if st.session_state.user_input != "":
-#     st.write("Teks:", st.session_state.user_input)
-
-# ====================================
-
-# user_input_ekuivalen = ubah_ke_lema(user_input, df_kamus)
-
-# ========== Sidebar Controls ==========
-# with st.sidebar:
-#     st.header("⚙️ Pengaturan")
-
-#     option = st.selectbox(
-#         "Pilih Fitur",
-#         ["Chatbot", "Terjemah Indo → Sunda", "Terjemah Sunda → Indo"],
-#         key="fitur_selector"
-#     )
-
-#     fitur = "chatbot"
-#     if option == "Chatbot":
-#         fitur = "chatbot"
-#     elif option == "Terjemah Indo → Sunda":
-#         fitur = "terjemahindosunda"
-#     else:
-#         fitur = "terjemahsundaindo"
-
-#     if fitur == "chatbot":
-#         mode_bahasa = st.selectbox(
-#             "🌐 Mode Bahasa",
-#             ["Sunda", "Indonesia", "English"],
-#             key="mode_selector"
-#         )
-#     else:
-#         mode_bahasa = None
-
-#     status = st.toggle("🔍 Lihat Constraint")
 
 def handle_send():
     pasangan_cag = {}
@@ -393,9 +356,6 @@ def handle_send():
     st.session_state.chat_history.append((user_input, text_constraint, html_block))
     clear_input()
     
-# CHAT HISTORY WRAPPER
-#st.markdown("<div class='chat-container-outer'>", unsafe_allow_html=True)
-
 for user_msg, bot_msg, html_block in st.session_state.chat_history:
     st.markdown(
         f"<div class='chat-container'><div class='chat-bubble-user'>{user_msg}</div></div>",
@@ -419,17 +379,17 @@ st.markdown('<div class="stChatInputContainer">', unsafe_allow_html=True)
     
 col1, col2 = st.columns([6, 1])
 with col1:
-    user_input = st.chat_input(placeholder="Tulis pesan...", key="user_input", on_submit=handle_send, )
+    user_input = st.text_area(
+        label="", height=80, key="user_input", placeholder="Tulis pesan...",
+        label_visibility="collapsed"
+    )
    
 with col2:
+    st.button("➡", on_click=handle_send, use_container_width=True)
+col_left, col_right = st.columns([1, 2])
+
+with col_left:
     st.button("🔄 Delete Chat History", on_click=lambda: st.session_state.update(chat_history=[]))
-#col_left, col_right = st.columns([1, 2])
-
-# with col_left:
-#     st.button("🔄 Delete Chat History", on_click=lambda: st.session_state.update(chat_history=[]))
-
-#with col_right:
-    # st.markdown(f"<div style='text-align:right; color: yellow; padding-top: 8px;'>🧠 Mode Aktif: <b>{option}</b>{' - ' + mode_bahasa if mode_bahasa else ''}</div>", unsafe_allow_html=True)
 
 # Tambah anchor di akhir chat
 st.markdown('<a name="scroll-bottom"></a>', unsafe_allow_html=True)
