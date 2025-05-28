@@ -385,7 +385,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Simulasi chat input
-user_msg = st.text_input("Ketik pesanmu di sini...")
+user_input = st.text_input("Ketik pesanmu di sini...")
 
 
 # Menjalankan fungsi handle_send saat pesan dikirim
