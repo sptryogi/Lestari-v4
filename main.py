@@ -106,17 +106,6 @@ st.markdown(
         flex-direction: column;
     }
 
-    .stChatInputContainer {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background-color: #1E1E2F;
-        padding: 10px 20px;
-        z-index: 999;
-        border-top: 1px solid #444;
-    }
-    
     textarea {
         text-align: justify !important;
         resize: none !important;
@@ -373,9 +362,6 @@ for user_msg, bot_msg, html_block in st.session_state.chat_history:
             )
 
 st.markdown("</div>", unsafe_allow_html=True)  # ⬅️ END OF chat-container-outer
-
-# FIXED INPUT DI BAWAH
-st.markdown('<div class="stChatInputContainer">', unsafe_allow_html=True)
     
 col1, col2 = st.columns([6, 1])
 with col1:
