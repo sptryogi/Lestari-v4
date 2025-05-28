@@ -362,7 +362,7 @@ st.markdown("""
 <style>
     /* Ganti background input box */
     [data-testid="stBottom"] > div {
-        background-color: #ffeb3b !important; /* kuning */
+        background-color: transparent !important; /* kuning */
     }
     
     /* Ganti background input box */
