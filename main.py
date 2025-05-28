@@ -426,7 +426,7 @@ st.markdown('<div class="stChatInputContainer">', unsafe_allow_html=True)
    
 # with col2:
 #     st.button("➡", on_click=handle_send, )
-user_input = st.chat_input(height=80, key="user_input", placeholder="Ketik pesan...", label_visibility="collapsed")
+user_input = st.chat_input(key="user_input", placeholder="Ketik pesan...")
 if user_input:
     response = handle_send
         
