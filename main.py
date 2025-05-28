@@ -38,15 +38,18 @@ st.markdown("""
         display: none !important;
     }
 
-    /* Ganti warna ikon tombol sidebar */
-    [data-testid="collapsedControl"] svg {
-        fill: green !important;  /* warna ikon */
+    /* Target tombol collapse/expand sidebar */
+    [data-testid="stSidebarCollapsedControl"] button {
+        color: green !important;  /* ganti warna ikon */
+        background-color: #e6ffe6 !important;  /* opsional: latar belakang tombol */
+        border-radius: 8px;
+        padding: 6px;
     }
 
-    /* Ganti warna latar belakang tombol sidebar (opsional) */
-    [data-testid="collapsedControl"] {
-        background-color: #d4f4d4 !important;  /* latar belakang hijau muda */
-        border-radius: 8px;
+    /* Ganti warna saat hover juga */
+    [data-testid="stSidebarCollapsedControl"] button:hover {
+        background-color: #ccffcc !important;
+        color: darkgreen !important;
     }
 
     /* Tambahan agar ikon lebih besar */
