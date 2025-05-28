@@ -99,6 +99,7 @@ def render_topbar():
                 """, unsafe_allow_html=True
             )
 
+user_input = st.session_state.get("user_input", "")
 # Auth flow
 def auth_flow():
     if "register_mode" not in st.session_state:
