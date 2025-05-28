@@ -5,32 +5,44 @@ import pybase64
 from AI_chatbot import generate_text_deepseek, call_deepseek_api, kapitalisasi_awal_kalimat, bersihkan_superscript
 from constraint1_test import highlight_text, constraint_text, ubah_ke_lema, find_the_lema_pair, cari_arti_lema, filter_ucapan_langsung
 import streamlit.components.v1 as components
-from supabase_helper import sign_in_with_email, get_user_session, sign_out, fetch_chat_history
+from supabase_helper import sign_in_with_email, get_user_session, insert_chat_history, sign_out, fetch_chat_history
 
 st.set_page_config(page_title="Lestari Bahasa", page_icon="🌐", layout="centered")  # atau "centered"
+# Session State
 if "user" not in st.session_state:
     st.session_state.user = None
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
 
-# Jika belum login, tampilkan form login
-if not st.session_state.user:
-    st.subheader("Login")
-    email = st.text_input("Email")
-    password = st.text_input("Password", type="password")
-    if st.button("Login"):
-        result = sign_in_with_email(email, password)
-        if result and result.user:
-            st.session_state.user = result.user
-            st.success("Login berhasil!")
-            st.rerun()
-        else:
-            st.error("Login gagal.")
-else:
-    # Sudah login → tampilkan app
-    st.success(f"Selamat datang, {st.session_state.user.email}")
-    if st.button("Logout"):
-        sign_out()
-        st.session_state.user = None
-        st.rerun()
+# Floating Login/Logout Button UI
+login_placeholder = st.empty()
+
+with login_placeholder.container():
+    if st.session_state.user:
+        col1, col2 = st.columns([5, 1])
+        with col2:
+            if st.button("Logout"):
+                st.session_state.user = None
+                st.session_state.chat_history = []
+                st.rerun()
+        with col1:
+            st.markdown(f"<div style='text-align:right;font-weight:bold;'>{st.session_state.user['email']}</div>", unsafe_allow_html=True)
+    else:
+        with st.expander("Login", expanded=True):
+            st.markdown("### Login to Lestari Bahasa")
+            email = st.text_input("Email")
+            umur = st.text_input("Umur")  # Umur bisa digunakan nanti untuk kebutuhan personalisasi
+            password = st.text_input("Password", type="password")
+            if st.button("Login"):
+                auth_response = sign_in_with_email(email, umur, password)
+                if auth_response.user:
+                    st.session_state.user = {"email": email, "id": auth_response.user.id, "umur": umur}
+                    history = fetch_chat_history(auth_response.user.id)
+                    st.session_state.chat_history = history or []
+                    st.success("Login successful!")
+                    st.rerun()
+                else:
+                    st.error("Login failed. Please check your credentials.")
 
 # UI Styling
 st.markdown("""
