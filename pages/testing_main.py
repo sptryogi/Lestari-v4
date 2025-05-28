@@ -356,34 +356,10 @@ def handle_send(user_input):
     st.session_state.chat_history.append((user_input, text_constraint, html_block))
     clear_input()
 
-st.markdown("""
-<style>
-    .stTextInput input[aria-label="test color"] {
-        background-color: #0066cc;
-        color: #33ff33;
-    }
-    .stTextInput input[aria-label="test color2"] {
-        background-color: #cc0066;
-        color: #ffff33;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-st.text_input("test color")
-st.text_input("testa")
-
-# Custom CSS untuk styling text input
-st.markdown("""
-<style>
-    .stChatInput input[aria-label="testi"] {
-        background-color: #cc0066;
-        color: #ffff33;
-    }
-</style>
-""", unsafe_allow_html=True)
+m = st.markdown(""" <style> .stChatInputContainer > div { background-color:	#006400; } </style> """, unsafe_allow_html=True) 
 
 # Simulasi chat input
-user_input = st.chat_input("testi")
+user_input = st.chat_input("....")
 
 
 # Menjalankan fungsi handle_send saat pesan dikirim
