@@ -302,10 +302,10 @@ def clear_input():
     if "user_input" in st.session_state:
         st.session_state["user_input"] = ""
 
-def handle_send(user_input):
+def handle_send():
     pasangan_cag = {}
     history_for_prompt = st.session_state.chat_history[-50:]
-    # user_input = st.session_state.user_input
+    user_input = st.session_state.user_input
     
     # Ambil fitur dan mode_bahasa dari session_state
     option = st.session_state.get("fitur_selector", "Chatbot")
@@ -380,12 +380,7 @@ st.markdown('<div class="stChatInputContainer">', unsafe_allow_html=True)
 col1, col2 = st.columns([6, 1])
 with col1:
     # Chat input
-    user_input = st.chat_input("Tulis pesan...")
-    
-    # Menjalankan fungsi handle_send saat pesan dikirim
-    if user_input:
-        handle_send(user_input)
-
+    user_input = st.chat_input("Tulis pesan...")st.chat_input(placeholder="Tulis pesan...", accept_file=False, file_type=None, disabled=False, on_submit=handle_send)
    
 with col2:
     st.button("➡", on_click=handle_send, use_container_width=True)
