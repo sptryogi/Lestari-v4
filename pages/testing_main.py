@@ -365,16 +365,32 @@ st.markdown("""
         background-color: transparent !important; 
     }
     
-    /* Ganti background input box */
-    [data-testid="stChatInput"] > div {
-        background-color: black !important; 
-    }
+    # /* Ganti background input box */
+    # [data-testid="stChatInput"] > div {
+    #     background-color: black !important; 
+    # }
 
     /* Ganti warna text */
     [data-testid="stChatInput"] input {
         color: black !important;
     }
 </style>
+""", unsafe_allow_html=True)
+
+# Inject JavaScript untuk cegah Enter submit (tidak bikin newline)
+st.markdown("""
+<script>
+const input = window.parent.document.querySelector('[data-testid="stChatInput"] input');
+if(input){
+    input.addEventListener('keydown', function(event) {
+        if(event.key === 'Enter'){
+            event.preventDefault();
+            // Bisa tambahkan custom aksi di sini, misal fokus ke elemen lain
+            console.log("Enter ditekan tapi tidak submit");
+        }
+    });
+}
+</script>
 """, unsafe_allow_html=True)
 
 # Menjalankan fungsi handle_send saat pesan dikirim
