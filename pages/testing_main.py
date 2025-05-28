@@ -372,8 +372,20 @@ st.markdown("""
 st.text_input("test color")
 st.text_input("test color2")
 
-# CSS untuk mengatur transparansi input chat
-user_input = st.chat_input("Tulis pesan...")
+# Custom CSS untuk styling text input
+st.markdown("""
+<style>
+    div[data-testid="stTextInput"] input {
+        background-color: #1e1e2f;
+        color: #33ff33;
+        border-radius: 10px;
+        border: 2px solid #33ff33;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# Simulasi chat input
+user_msg = st.text_input("Ketik pesanmu di sini...")
 
 
 # Menjalankan fungsi handle_send saat pesan dikirim
