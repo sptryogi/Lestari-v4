@@ -3,7 +3,9 @@ from supabase_helper import *
 import uuid
 from AI_chatbot import generate_text_deepseek, call_deepseek_api, kapitalisasi_awal_kalimat, bersihkan_superscript
 
-st.set_page_config(page_title="Lestari Bahasa", page_icon="🌐", layout="centered")  # atau "centered"
+# Main
+st.set_page_config(page_title="Lestari Bahasa", layout="wide")
+render_topbar()
 
 st.markdown("""
     <style>
@@ -168,9 +170,6 @@ def chat_ui():
         insert_chat_history(user_id, st.session_state.room, prompt, response)
         st.rerun()
 
-# Main
-st.set_page_config(page_title="Lestari Bahasa", layout="wide")
-render_topbar()
 
 if "logout" in st.query_params:
     sign_out()
