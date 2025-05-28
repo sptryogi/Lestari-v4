@@ -162,7 +162,7 @@ def chat_ui():
     # Input new message
     prompt = st.chat_input("Ketik pesan...")
     if prompt:
-        response = generate_text_deepseek(user_input=prompt, fitur=None, pasangan_cag=None, mode_bahasa=None, history)
+        response = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, history)
         insert_chat_history(user_id, st.session_state.room, prompt, response)
         st.rerun()
 
