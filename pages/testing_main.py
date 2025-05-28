@@ -399,11 +399,6 @@ for user_msg, bot_msg, html_block in st.session_state.chat_history:
 
 st.markdown("</div>", unsafe_allow_html=True)  # ⬅️ END OF chat-container-outer
 
-col_left, col_right = st.columns([1, 2])
-
-with col_left:
-    st.button("🔄 Delete Chat History", on_click=lambda: st.session_state.update(chat_history=[]))
-
 # Tambah anchor di akhir chat
 st.markdown('<a name="scroll-bottom"></a>', unsafe_allow_html=True)
 st.markdown("""
