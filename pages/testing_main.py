@@ -384,6 +384,8 @@ st.markdown("</div>", unsafe_allow_html=True)  # ⬅️ END OF chat-container-ou
 # FIXED INPUT DI BAWAH
 st.markdown('<div class="stChatInputContainer">', unsafe_allow_html=True)
 
+col_left, col_right = st.columns([1, 2])
+
 with col_left:
     st.button("🔄 Delete Chat History", on_click=lambda: st.session_state.update(chat_history=[]))
 
