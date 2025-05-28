@@ -98,20 +98,39 @@ def render_topbar():
                 """, unsafe_allow_html=True
             )
 
+import requests
+
 def get_ai_response(prompt, history):
-    client = OpenAI(
-        api_key=st.secrets["API_KEY"],  # Simpan API key DeepSeek di secrets Streamlit
-        base_url="https://api.deepseek.com"
-    )
-    messages = [{"role": "system", "content": "You are a helpful assistant."}]
-    response = client.chat.completions.create(
-            model="deepseek-chat",
-            messages=messages,
-            temperature=0.7,
-            stream=False
-        )
-        return response.choices[0].message.content
-    return f"AI menjawab berdasarkan konteks {len(history)} pesan: {prompt[::-1]}"
+    api_key = st.secrets["API_KEY"]
+    url = "https://api.deepseek.com/v1/chat/completions"
+
+    # Format history menjadi messages
+    messages = [{"role": "system", "content": "Anda adalah asisten untuk pelajar Bahasa Sunda."}]
+    for chat in history:
+        messages.append({"role": "user", "content": chat["message"]})
+        messages.append({"role": "assistant", "content": chat["response"]})
+    messages.append({"role": "user", "content": prompt})
+
+    payload = {
+        "model": "deepseek-chat",  # atau deepseek-coder jika butuh reasoning lebih kuat
+        "messages": messages,
+        "temperature": 0.7,
+        "max_tokens": 1024
+    }
+
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+
+    response = requests.post(url, headers=headers, json=payload)
+
+    if response.status_code == 200:
+        return response.json()["choices"][0]["message"]["content"]
+    else:
+        st.error(f"Gagal mengambil respons dari DeepSeek: {response.text}")
+        return "⚠️ Error: Gagal menghubungi model."
+
     
 # Auth flow
 def auth_flow():
@@ -175,7 +194,7 @@ def chat_ui():
     # Input new message
     prompt = st.chat_input("Ketik pesan...")
     if prompt:
-        response = call_deepseek_api(history, prompt)
+        response = get_ai_response(prompt, history)
         insert_chat_history(user_id, st.session_state.room, prompt, response)
         st.rerun()
 
