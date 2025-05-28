@@ -356,27 +356,6 @@ def handle_send(user_input):
     st.session_state.chat_history.append((user_input, text_constraint, html_block))
     clear_input()
 
-user_input = st.chat_input("Ketik sesuatu...")
-
-st.markdown("""
-<style>
-    /* Ganti background input box */
-    [data-testid="stBottom"] > div {
-        background-color: transparent !important; 
-    }
-    
-    # /* Ganti background input box */
-    # [data-testid="stChatInput"] > div {
-    #     background-color: black !important; 
-    # }
-
-    /* Ganti warna text */
-    [data-testid="stChatInput"] input {
-        color: black !important;
-    }
-</style>
-""", unsafe_allow_html=True)
-
 # Inject JavaScript untuk cegah Enter submit (tidak bikin newline)
 st.markdown("""
 <script>
@@ -391,6 +370,22 @@ if(input){
     });
 }
 </script>
+""", unsafe_allow_html=True)
+
+user_input = st.chat_input("Ketik sesuatu...")
+
+st.markdown("""
+<style>
+    /* Ganti background input box */
+    [data-testid="stBottom"] > div {
+        background-color: transparent !important; 
+    }
+
+    /* Ganti warna text */
+    [data-testid="stChatInput"] input {
+        color: black !important;
+    }
+</style>
 """, unsafe_allow_html=True)
 
 # Menjalankan fungsi handle_send saat pesan dikirim
