@@ -384,7 +384,7 @@ col1, col2 = st.columns([6, 1])
 
 with col1:
     user_input = st.chat_input(
-        label="", height=80, key="user_input", placeholder="Tulis pesan...",
+        key="user_input", placeholder="Tulis pesan...",
         label_visibility="collapsed", on_submit=handle_send
     )
 
