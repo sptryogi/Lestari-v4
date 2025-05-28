@@ -356,21 +356,22 @@ def handle_send(user_input):
     st.session_state.chat_history.append((user_input, text_constraint, html_block))
     clear_input()
 
-    st.markdown("""
-    <style>
-        .stTextInput input[aria-label="test color"] {
-            background-color: #0066cc;
-            color: #33ff33;
-        }
-        .stTextInput input[aria-label="test color2"] {
-            background-color: #cc0066;
-            color: #ffff33;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    st.text_input("test color")
-    st.text_input("test color2")
+st.markdown("""
+<style>
+    .stTextInput input[aria-label="test color"] {
+        background-color: #0066cc;
+        color: #33ff33;
+    }
+    .stTextInput input[aria-label="test color2"] {
+        background-color: #cc0066;
+        color: #ffff33;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+st.text_input("test color")
+st.text_input("test color2")
+
 # CSS untuk mengatur transparansi input chat
 user_input = st.chat_input("Tulis pesan...")
 
