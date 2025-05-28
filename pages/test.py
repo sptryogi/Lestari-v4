@@ -1,6 +1,74 @@
 import streamlit as st
 from supabase_helper import *
 import uuid
+from AI_chatbot import generate_text_deepseek, call_deepseek_api, kapitalisasi_awal_kalimat, bersihkan_superscript
+
+st.markdown("""
+    <style>
+    /* Hilangkan seluruh header (logo, GitHub, Share, Fork) */
+    header {visibility: hidden !important;}
+    [data-testid="stHeader"] {display: none;}
+
+    /* Hilangkan menu titik tiga */
+    #MainMenu {visibility: hidden;}
+    [data-testid="collapsedControl"] {display: none;}
+
+    /* Hilangkan footer (Made with Streamlit) */
+    footer {visibility: hidden !important;}
+    .st-emotion-cache-1v0mbdj {display: none !important;}
+    .st-emotion-cache-164pbft {display: none !important;}
+    
+    /* Hilangkan semua footer */
+    footer, .st-emotion-cache-1v0mbdj, .st-emotion-cache-164pbft {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    /* Hilangkan elemen Fork/GitHub khusus */
+    a[href*="github.com"] {display: none !important;}
+    
+    /* Hilangkan elemen GitHub (termasuk avatar foto) */
+    a[href*="github.com"], img[src*="githubusercontent"] {
+        display: none !important;
+    }
+
+    /* Ubah warna background tombol collapse sidebar ( > ) */
+    button[data-testid="collapsedControl"] {
+        background-color: #b0b0b0 !important;  /* abu-abu */
+        color: white !important;
+        border: none;
+        border-radius: 0 8px 8px 0;
+        padding: 8px 12px;
+        margin-top: 8px;
+        margin-left: -4px;
+        transition: all 0.3s ease;
+        box-shadow: 1px 1px 5px rgba(0,0,0,0.2);
+    }
+
+    /* Saat hover */
+    button[data-testid="collapsedControl"]:hover {
+        background-color: #ffc107 !important;
+        color: black !important;
+    }
+
+    /* Tambahan agar ikon lebih besar */
+    button[data-testid="collapsedControl"] svg {
+        width: 1.2rem;
+        height: 1.2rem;
+    }
+    .stTextArea, .stButton {
+            margin-top: 0px;
+        }
+        div[data-testid="column"] {
+            display: flex;
+            align-items: center;
+        }
+        button[kind="primary"] {
+            background-color: #25D366;  /* WhatsApp green */
+            border-radius: 8px;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 # Layout tombol login/logout di kanan atas
 def render_topbar():
@@ -67,8 +135,8 @@ def auth_flow():
             st.session_state.register_mode = True
 
 # AI logic dummy (replace with your own model call)
-def get_ai_response(prompt, history):
-    return f"AI menjawab berdasarkan konteks {len(history)} pesan: {prompt[::-1]}"
+# def get_ai_response(prompt, history):
+#     return f"AI menjawab berdasarkan konteks {len(history)} pesan: {prompt[::-1]}"
 
 # Chat UI
 def chat_ui():
@@ -94,7 +162,7 @@ def chat_ui():
     # Input new message
     prompt = st.chat_input("Ketik pesan...")
     if prompt:
-        response = get_ai_response(prompt, history)
+        response = generate_text_deepseek(user_input=prompt, fitur=None, pasangan_cag=None, mode_bahasa=None, history)
         insert_chat_history(user_id, st.session_state.room, prompt, response)
         st.rerun()
 
