@@ -153,7 +153,7 @@ st.markdown(
         padding: 10px 15px;
         border-radius: 15px 15px 15px 0;
         margin: 5px 0;
-        max-width: 70%;
+        max-width: 90%;
         align-self: flex-start;
         margin-right: auto;
         font-size: 18px;
