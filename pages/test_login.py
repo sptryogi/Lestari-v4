@@ -176,26 +176,17 @@ def render_topbar():
             )
 
 import requests
-import streamlit as st
-from supabase import create_client
-
-# Inisialisasi Supabase
-supabase_url = st.secrets["SUPABASE_URL"]
-supabase_key = st.secrets["SUPABASE_KEY"]
-supabase = create_client(supabase_url, supabase_key)
 
 def get_age_by_id(user_id):
+    if not user_id:
+        return None  # atau return default age
+    
     try:
-        # Ambil age dari tabel profiles berdasarkan id
         response = supabase.table("profiles").select("age").eq("id", user_id).single().execute()
-
-        if response.data and "age" in response.data:
-            return response.data["age"]
-        else:
-            print("Data umur tidak ditemukan.")
-            return None
+        return response.data.get("age") if response.data else None
+        
     except Exception as e:
-        print(f"Terjadi kesalahan: {e}")
+        st.error(f"Error getting user age: {e}")
         return None
 
 def get_ai_response(prompt, history):
@@ -236,6 +227,10 @@ def call_deepseek_api(history, prompt):
     return get_ai_response(prompt, history)
 
 def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda", chat_mode="Ngobrol", history=None):
+    if "user" not in st.session_state:
+        raise ValueError("User not logged in")
+    
+    user_id = st.session_state.user.id
     # Mendapatkan usia pengguna dari database
     age = get_age_by_id(user_id)
     
