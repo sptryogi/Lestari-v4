@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import re
 import pybase64
-from AI_chatbot import generate_text_deepseek, call_deepseek_api, kapitalisasi_awal_kalimat, bersihkan_superscript
+from AI_chatbot import kapitalisasi_awal_kalimat, bersihkan_superscript
 from constraint1 import highlight_text, constraint_text, ubah_ke_lema, find_the_lema_pair, cari_arti_lema
 import streamlit.components.v1 as components
 from supabase_helper import *
@@ -175,6 +175,29 @@ def render_topbar():
                 """, unsafe_allow_html=True
             )
 
+import requests
+import streamlit as st
+from supabase import create_client
+
+# Inisialisasi Supabase
+supabase_url = st.secrets["SUPABASE_URL"]
+supabase_key = st.secrets["SUPABASE_KEY"]
+supabase = create_client(supabase_url, supabase_key)
+
+def get_age_by_id(user_id):
+    try:
+        # Ambil age dari tabel profiles berdasarkan id
+        response = supabase.table("profiles").select("age").eq("id", user_id).single().execute()
+
+        if response.data and "age" in response.data:
+            return response.data["age"]
+        else:
+            print("Data umur tidak ditemukan.")
+            return None
+    except Exception as e:
+        print(f"Terjadi kesalahan: {e}")
+        return None
+
 def get_ai_response(prompt, history):
     api_key = st.secrets["API_KEY"]
     url = "https://api.deepseek.com/v1/chat/completions"
@@ -207,6 +230,91 @@ def get_ai_response(prompt, history):
     except Exception as e:
         st.error(f"Terjadi kesalahan: {str(e)}")
         return "⚠️ Error: Terjadi kesalahan saat menghubungi API."
+
+def call_deepseek_api(history, prompt):
+    # Fungsi ini memanggil get_ai_response dengan parameter yang sesuai
+    return get_ai_response(prompt, history)
+
+def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda", chat_mode="Ngobrol", history=None):
+    # Mendapatkan usia pengguna dari database
+    age = get_age_by_id(user_id)
+    
+    # Jika tidak dapat mendapatkan usia, gunakan default 30
+    if age is None:
+        age = 30
+    
+    klasifikasi_bahasa = "LOMA"
+    
+    if age >= 30:
+        klasifikasi_bahasa = "HALUS"
+    elif age < 30:
+        klasifikasi_bahasa = "LOMA"
+    
+    # Instruksi berdasarkan fitur dan mode bahasa
+    if fitur == "chatbot":
+        if mode_bahasa == "Sunda":
+            instruksi_bahasa = f"Jawablah hanya dalam Bahasa Sunda {klasifikasi_bahasa}. Jawab pertanyaannya mau itu Bahasa Sunda, Bahasa Indonesia atau English tapi tetap jawab pakai Bahasa Sunda Loma. Gunakan tata bahasa sunda yang baik dan benar."
+        elif mode_bahasa == "Indonesia":
+            instruksi_bahasa = "Jawablah hanya dalam Bahasa Indonesia. Jawab pertanyaannya mau itu Bahasa Indonesia, Bahasa Sunda atau English tapi tetap jawab pakai Bahasa Indonesia."
+        elif mode_bahasa == "English":
+            instruksi_bahasa = "Please respond only in British English. Answer the questions whether it is in Indonesian, Sundanese or English but always answer in English"
+        else:
+            instruksi_bahasa = ""
+
+        final_prompt = f"""
+        {instruksi_bahasa}
+        Anda adalah Lestari, chatbot yang interaktif membantu pengguna belajar bahasa Indonesia, English, dan Sunda serta menjawab pertanyaan secara ramah dan jelas informasinya.
+        Anda berumur 30 tahun. Jika anda ditanya "Kumaha damang?" tolong jawab "Sae, anjeun kumaha?" tapi selain ditanya itu jangan jawab "Sae, anjeun kumaha?".
+        Lawan bicara anda berumur {age} tahun. tolong sesuaikan gaya bicara anda dengan umur lawan bicara anda.        
+        Jangan memberikan informasi yang tidak tentu kebenarannya.
+        Jangan gunakan huruf-huruf aneh seperti kanji korea, kanji jepang, atau kanji china.
+        Kenali format paragraf kalimat teks dari user.
+        Gunakan huruf kapital pada awal kalimat dan setelah tanda titik serta setelah petik dua atau setelah paragraf.
+        Gunakan huruf kapital pada awal nama orang dan nama tempat.
+        Gunakan huruf kapital yang sama jika pada kalimat atau kata pada input user menggunakan huruf kapital.
+        Jika diperintahkan untuk terjemahkan atau translate, jaga format paragrafnya. Tiap paragraf dalam teks asli harus menjadi paragraf yang terpisah dalam hasil terjemahan.
+        Jangan menggabungkan paragraf.
+        Selalu akhiri dengan pertanyaan. 
+        Pertanyaan dari pengguna: "{user_input}"
+        """
+
+    elif fitur == "terjemahindosunda":
+        final_prompt = f"""Kamu adalah penerjemah yang ahli bahasa sunda dan bahasa indonesia.
+        Terjemahkan kalimat berikut ke dalam Bahasa Sunda LOMA secara alami seperti digunakan dalam kehidupan sehari-hari.
+        Kenali format paragraf kalimat teks dari pengguna.
+        Jaga agar format paragraf dan barisnya tetap sama persis seperti teks asli atau input user.
+        Jangan menggabungkan paragraf.
+        Gunakan huruf kapital yang sama jika pada kalimat atau kata pada input user menggunakan huruf kapital.
+        Jangan mengajak mengobrol seperti fitur chatbot. anda hanya menterjemahkan input dari user seperti google translater.
+        Jangan menambahkan kata bahasa sunda yang memang bukan arti dari kalimat bahasa indonesia tersebut.
+        Sesuaikan gaya bahasanya agar cocok dengan konteks relasi antarpenutur dalam hal ini teman sebaya anak-anak umur 7 - 10 tahun.
+        Perintah anda hanya terjemahkan dari input user, bukan menjawab hal lain. Jangan menggunakan kata awalan atau sapaan sebagai tambahan jawaban.
+        Jangan beri penjelasan atau keterangan tambahan, langsung berikan hasil terjemahannya saja. 
+        Jangan jadikan semua huruf pada awal kata huruf kapital kecuali nama tempat dan nama orang.
+        Huruf pada awal kalimat dan setelah titik serta setelah petik dua atau setelah paragraf harus huruf kapital.
+        Nama orang dan nama tempat juga harus berawalan huruf kapital.
+        Kalimat: {user_input}"""
+        
+    elif fitur == "terjemahsundaindo":
+        final_prompt = f"""Kamu adalah penerjemah yang ahli bahasa indonesia dan bahasa sunda.
+        Terjemahkan kalimat berikut ke dalam Bahasa Indonesia yang baku dan mudah dimengerti.
+        Jaga agar format paragraf dan barisnya tetap sama persis seperti teks asli atau input user.
+        Jangan menggabungkan paragraf.
+        Gunakan huruf kapital yang sama jika pada kalimat atau kata pada input user menggunakan huruf kapital.
+        Jangan mengajak mengobrol seperti fitur chatbot, anda hanya menterjemahkan input dari user seperti google translate.
+        Jangan tambahkan penjelasan atau keterangan apa pun. Langsung tampilkan hasil terjemahannya.
+        Jangan jadikan semua huruf pada awal kata huruf kapital, kecuali nama orang dan nama tempat.
+        Huruf pada awal kalimat dan setelah titik serta setelah petik dua atau setelah paragraf harus huruf kapital.
+        Nama orang dan nama tempat juga harus berawalan huruf kapital.
+        Kalimat: {user_input}"""
+
+    else:
+        # fallback
+        final_prompt = f"Jawablah dengan sopan dan informatif: {user_input}"
+
+    # Panggil LLM Deepseek API
+    response = call_deepseek_api(history=history, prompt=final_prompt)
+    return response
 
 # Auth flow
 def auth_flow():
@@ -290,7 +398,7 @@ def chat_ui():
             bahasa_display.append(f"<span style='color: white;'>{bhs}</span>")
     
     st.markdown(
-        f"<div style='text-align:center; padding-top: 8px; font-size: 20px; margin-top:0px;'>"
+        f"<div style='text-align:left; padding-top: 8px; font-size: 20px; margin-top:0px;'>"
         f"{' '.join(bahasa_display)}"
         f"</div>", 
         unsafe_allow_html=True
@@ -320,7 +428,6 @@ def chat_ui():
             return
             
         pasangan_cag = {}
-        history_for_prompt = st.session_state.chat_history[-50:] if "chat_history" in st.session_state else []
         user_input = st.session_state.user_input
         
         option = st.session_state.get("fitur_selector", "Chatbot")
@@ -333,21 +440,21 @@ def chat_ui():
         
         try:
             if fitur == "chatbot" and mode_bahasa == "Sunda":
-                bot_response = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history=history_for_prompt)
+                bot_response = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history)
                 pasangan_ganti_ekuivalen = {}
                 text_constraint, _, _, pasangan_kata, pasangan_ekuivalen = highlight_text(bot_response, df_kamus, df_idiom, fitur)
                 text_constraint = kapitalisasi_awal_kalimat(text_constraint)
             elif fitur == "chatbot" and (mode_bahasa == "Indonesia" or mode_bahasa == "English"):
-                text_constraint = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history=history_for_prompt)
+                text_constraint = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history)
                 pasangan_ganti_ekuivalen = {}
                 pasangan_ekuivalen = {}
                 pasangan_kata = {}
             elif option == "Terjemah Sunda → Indo":
-                bot_response2 = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history=None)
+                bot_response2 = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history)
                 bot_response_ekuivalen, pasangan_ganti_ekuivalen = ubah_ke_lema(bot_response2, df_kamus, df_idiom)
                 text_constraint = bot_response_ekuivalen
             elif option == "Terjemah Indo → Sunda":
-                bot_response2 = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history=None)
+                bot_response2 = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history)
                 bot_response_ekuivalen, pasangan_ganti_ekuivalen = ubah_ke_lema(bot_response2, df_kamus, df_idiom)
                 text_constraint, _, _, pasangan_kata, pasangan_ekuivalen = highlight_text(bot_response_ekuivalen, df_kamus, df_idiom, fitur)
                 text_constraint = kapitalisasi_awal_kalimat(text_constraint)
@@ -392,7 +499,14 @@ def chat_ui():
         )
        
     with col2:
-        st.button("➡", on_click=handle_send, use_container_width=True)
+        if st.button("➡", on_click=handle_send, use_container_width=True):
+            supabase.table("chat_history").insert({
+                "id": str(uuid.uuid4()),
+                "user_id": user_id,
+                "room": st.session_state.room,
+                "message": prompt,
+                "response": response
+            }).execute()
 
     # Room management
     if "room" not in st.session_state:
