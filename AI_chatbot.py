@@ -72,7 +72,8 @@ def call_deepseek_api(history, prompt):
         return "Maaf, terjadi kesalahan saat memproses permintaan Anda."
 
 def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda", history=None):
-    age = get_age_by_id("fd5a8287-e65e-466a-8ef2-b99ab5808d81")
+    # age = get_age_by_id("fd5a8287-e65e-466a-8ef2-b99ab5808d81")
+    age = 30
 
     klasifikasi_bahasa = "LOMA"
     
