@@ -444,8 +444,22 @@ def chat_ui():
                 pasangan_ganti_ekuivalen = {}
                 text_constraint, _, _, pasangan_kata, pasangan_ekuivalen = highlight_text(bot_response, df_kamus, df_idiom, fitur)
                 text_constraint = kapitalisasi_awal_kalimat(text_constraint)
+                supabase.table("chat_history").insert({
+                    "id": str(uuid.uuid4()),
+                    "user_id": user_id,
+                    "room": st.session_state.room,
+                    "message": user_input,
+                    "response": text_constraint
+                }).execute()
             elif fitur == "chatbot" and (mode_bahasa == "Indonesia" or mode_bahasa == "English"):
                 text_constraint = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history)
+                supabase.table("chat_history").insert({
+                    "id": str(uuid.uuid4()),
+                    "user_id": user_id,
+                    "room": st.session_state.room,
+                    "message": user_input,
+                    "response": text_constraint
+                }).execute()
                 pasangan_ganti_ekuivalen = {}
                 pasangan_ekuivalen = {}
                 pasangan_kata = {}
@@ -453,11 +467,25 @@ def chat_ui():
                 bot_response2 = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history)
                 bot_response_ekuivalen, pasangan_ganti_ekuivalen = ubah_ke_lema(bot_response2, df_kamus, df_idiom)
                 text_constraint = bot_response_ekuivalen
+                supabase.table("chat_history").insert({
+                    "id": str(uuid.uuid4()),
+                    "user_id": user_id,
+                    "room": st.session_state.room,
+                    "message": user_input,
+                    "response": text_constraint
+                }).execute()
             elif option == "Terjemah Indo → Sunda":
                 bot_response2 = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history)
                 bot_response_ekuivalen, pasangan_ganti_ekuivalen = ubah_ke_lema(bot_response2, df_kamus, df_idiom)
                 text_constraint, _, _, pasangan_kata, pasangan_ekuivalen = highlight_text(bot_response_ekuivalen, df_kamus, df_idiom, fitur)
                 text_constraint = kapitalisasi_awal_kalimat(text_constraint)
+                supabase.table("chat_history").insert({
+                    "id": str(uuid.uuid4()),
+                    "user_id": user_id,
+                    "room": st.session_state.room,
+                    "message": user_input,
+                    "response": text_constraint
+                }).execute()
             
             html_block = [
                 f"<p style='color: yellow;'>Kata yang diganti ke Loma: {pasangan_kata}</p>",
@@ -499,14 +527,8 @@ def chat_ui():
         )
        
     with col2:
-        if st.button("➡", on_click=handle_send, use_container_width=True):
-            supabase.table("chat_history").insert({
-                "id": str(uuid.uuid4()),
-                "user_id": user_id,
-                "room": st.session_state.room,
-                "message": prompt,
-                "response": response
-            }).execute()
+        st.button("➡", on_click=handle_send, use_container_width=True):
+            
 
     # Room management
     if "room" not in st.session_state:
