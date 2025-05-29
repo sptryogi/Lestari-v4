@@ -287,8 +287,8 @@ def auth_flow():
             st.session_state.register_mode = True
 
 # ==== HEADER + TOMBOL LOGIN ====
-col_login = st.columns([8, 1])
-with col_login:
+col1, col2 = st.columns([8, 1])
+with col2:
     if "user" not in st.session_state:
         if st.button("Login", key="header_login_button"):
             st.session_state.show_auth = True
