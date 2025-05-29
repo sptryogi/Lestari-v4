@@ -9,7 +9,32 @@ from login import *
 
 st.set_page_config(page_title="Lestari Bahasa", page_icon="🌐", layout="centered")  # atau "centered"
 
-# Tombol Login di kanan atas
+# # Tombol Login di kanan atas
+# st.markdown("""
+# <style>
+# .header-login {
+#     position: fixed;
+#     top: 10px;
+#     right: 20px;
+#     z-index: 9999;
+# }
+# .header-login button {
+#     background-color: #4CAF50;
+#     border: none;
+#     color: white;
+#     padding: 8px 16px;
+#     font-size: 14px;
+#     border-radius: 6px;
+#     cursor: pointer;
+# }
+# </style>
+
+# <div class="header-login">
+#     <form action="?login" method="get">
+#         <button type="submit">Login</button>
+#     </form>
+# </div>
+# """, unsafe_allow_html=True)
 st.markdown("""
 <style>
 .header-login {
@@ -30,11 +55,15 @@ st.markdown("""
 </style>
 
 <div class="header-login">
-    <form action="?login" method="get">
-        <button type="submit">Login</button>
-    </form>
+    <a href="/?page=login"><button>Login</button></a>
 </div>
 """, unsafe_allow_html=True)
+
+query_params = st.query_params
+
+# Cek apakah ada parameter `page=login`
+if query_params.get("page") == "login":
+    st.switch_page("pages/login.py")
     
 # UI Styling
 st.markdown("""
