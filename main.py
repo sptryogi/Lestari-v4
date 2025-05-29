@@ -11,28 +11,29 @@ st.set_page_config(page_title="Lestari Bahasa", page_icon="🌐", layout="center
 
 # Tombol Login di kanan atas
 st.markdown("""
-    <style>
-        .top-right-button {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-            z-index: 9999;
-        }
-        .top-right-button button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 8px 16px;
-            font-size: 14px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-    </style>
-    <div class="top-right-button">
-        <a href="/?page=login" target="_self">
-            <button>Login</button>
-        </a>
-    </div>
+<style>
+.header-login {
+    position: fixed;
+    top: 10px;
+    right: 20px;
+    z-index: 9999;
+}
+.header-login button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+</style>
+
+<div class="header-login">
+    <form action="?login" method="get">
+        <button type="submit">Login</button>
+    </form>
+</div>
 """, unsafe_allow_html=True)
     
 # UI Styling
