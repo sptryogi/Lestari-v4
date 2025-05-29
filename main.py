@@ -248,10 +248,6 @@ df_kamus = pd.read_excel("dataset/data_kamus_full_14-5-25.xlsx")
 df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']] = df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']].apply(lambda col: col.str.lower())
 df_idiom = pd.read_excel("dataset/data_idiom (3).xlsx")
 
-query_params = st.query_params()
-if "login" in query_params:
-    auth_flow()
-    
 # ========== Sidebar Controls ==========
 with st.sidebar:
     st.header("⚙️ Pengaturan")
