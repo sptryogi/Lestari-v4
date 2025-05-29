@@ -5,6 +5,7 @@ import pybase64
 from AI_chatbot import generate_text_deepseek, call_deepseek_api, kapitalisasi_awal_kalimat, bersihkan_superscript
 from constraint1 import highlight_text, constraint_text, ubah_ke_lema, find_the_lema_pair, cari_arti_lema
 import streamlit.components.v1 as components
+from login import *
 
 st.set_page_config(page_title="Lestari Bahasa", page_icon="🌐", layout="centered")  # atau "centered"
 
@@ -35,6 +36,10 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+query_params = st.experimental_get_query_params()
+if "login" in query_params:
+    auth_flow()
+    
 # UI Styling
 st.markdown("""
     <style>
