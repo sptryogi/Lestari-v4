@@ -222,7 +222,30 @@ df_kamus = pd.read_excel("dataset/data_kamus_full_14-5-25.xlsx")
 df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']] = df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']].apply(lambda col: col.str.lower())
 df_idiom = pd.read_excel("dataset/data_idiom (3).xlsx")
 
-import streamlit as st
+def render_topbar():
+    col1, col2 = st.columns([8, 1])
+    with col2:
+        if st.session_state.get("user"):
+            st.markdown(
+                f"""
+                <div style='position: fixed; top: 10px; right: 20px; z-index:9999;'>
+                    👤 {st.session_state["email"]}<br>
+                    <form action="?logout" method="get">
+                        <button style="background:#ff4b4b;color:white;border:none;padding:4px 10px;border-radius:5px;">Logout</button>
+                    </form>
+                </div>
+                """, unsafe_allow_html=True
+            )
+        else:
+            st.markdown(
+                f"""
+                <div style='position: fixed; top: 10px; right: 20px; z-index:9999;'>
+                    <form action="?login" method="get">
+                        <button style="background:#4bafff;color:white;border:none;padding:6px 10px;border-radius:5px;">Login</button>
+                    </form>
+                </div>
+                """, unsafe_allow_html=True
+            )
 
 # Fungsi auth_flow() tetap seperti yang kamu tulis
 def auth_flow():
@@ -247,7 +270,7 @@ def auth_flow():
         st.subheader("Login")
         email = st.text_input("Email")
         password = st.text_input("Password", type="password")
-        if st.button("Login"):
+        if st.button("Login", key="auth_login_button"):
             try:
                 result = sign_in_with_email(email, password)
                 user = result.user
@@ -264,12 +287,10 @@ def auth_flow():
             st.session_state.register_mode = True
 
 # ==== HEADER + TOMBOL LOGIN ====
-col1, col2 = st.columns([6, 1])
-with col1:
-    st.title("Nama Aplikasi Kamu")
-with col2:
+col_login = st.columns([8, 1])
+with col_login:
     if "user" not in st.session_state:
-        if st.button("Login"):
+        if st.button("Login", key="header_login_button"):
             st.session_state.show_auth = True
     else:
         st.markdown(f"👤 {st.session_state.email}")
