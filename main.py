@@ -238,6 +238,12 @@ with st.sidebar:
     else:
         fitur = "terjemahsundaindo"
 
+    fokus_sesi = st.selectbox(
+        "Pilih Fitur",
+        ["Ngobrol", "Belajar"],
+        key="fokus_sesi"
+    )
+
     if fitur == "chatbot":
         mode_bahasa = st.selectbox(
             "🌐 Mode Bahasa",
