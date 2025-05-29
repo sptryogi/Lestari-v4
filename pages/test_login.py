@@ -527,7 +527,7 @@ def chat_ui():
         )
        
     with col2:
-        st.button("➡", on_click=handle_send, use_container_width=True):
+        st.button("➡", on_click=handle_send, use_container_width=True)
             
 
     # Room management
