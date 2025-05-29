@@ -8,6 +8,37 @@ import streamlit.components.v1 as components
 
 st.set_page_config(page_title="Lestari Bahasa", page_icon="🌐", layout="centered")  # atau "centered"
 
+# Tombol Register dan Login di kanan atas
+st.markdown("""
+<style>
+.header-buttons {
+    position: fixed;
+    top: 10px;
+    right: 20px;
+    z-index: 9999;
+}
+.header-buttons button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    margin-left: 8px;
+    font-size: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+</style>
+
+<div class="header-buttons">
+    <form action="?register" method="get" style="display:inline;">
+        <button type="submit">Register</button>
+    </form>
+    <form action="?login" method="get" style="display:inline;">
+        <button type="submit">Login</button>
+    </form>
+</div>
+""", unsafe_allow_html=True)
+
 # UI Styling
 st.markdown("""
     <style>
