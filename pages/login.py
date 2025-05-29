@@ -225,8 +225,8 @@ def chat_ui():
             with col2:
                 new_text = st.text_input("Edit pesan", value=chat["message"], key=f"edit-{chat['id']}")
                 if st.button("Simpan", key=f"save-edit-{chat['id']}"):
-                edit_message_by_id(chat["id"], new_text)
-                st.rerun()
+                    edit_message_by_id(chat["id"], new_text)
+                    st.rerun()
 
         with st.chat_message("assistant"):
             st.markdown(chat["response"])
@@ -237,11 +237,11 @@ def chat_ui():
         response = get_ai_response(prompt, history)
         # insert_chat_history(user_id, st.session_state.room, prompt, response)
         supabase.table("chat_history").insert({
-        "id": str(uuid.uuid4()),
-        "user_id": user_id,
-        "room": st.session_state.room,
-        "message": prompt,
-        "response": response
+            "id": str(uuid.uuid4()),
+            "user_id": user_id,
+            "room": st.session_state.room,
+            "message": prompt,
+            "response": response
         }).execute()
         st.rerun()
 
