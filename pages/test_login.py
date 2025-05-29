@@ -23,14 +23,6 @@ def set_background_from_file(file_path):
 
         st.markdown(f"""
             <style>
-            /* Hilangkan seluruh header (logo, GitHub, Share, Fork) */
-            header {visibility: hidden !important;}
-            [data-testid="stHeader"] {display: none;}
-
-            /* Hilangkan menu titik tiga */
-            #MainMenu {visibility: hidden;}
-            [data-testid="collapsedControl"] {display: none;}
-            
             .stApp {{
                 background-image: url("data:image/jpg;base64,{b64}");
                 background-attachment: fixed;
@@ -45,6 +37,68 @@ def set_background_from_file(file_path):
         """, unsafe_allow_html=True)
     except Exception as e:
         st.error(f"Gagal memuat background: {str(e)}")
+
+st.markdown("""
+    <style>
+    /* Hilangkan seluruh header (logo, GitHub, Share, Fork) */
+    header {visibility: hidden !important;}
+    [data-testid="stHeader"] {display: none;}
+
+    /* Hilangkan menu titik tiga */
+    #MainMenu {visibility: hidden;}
+    [data-testid="collapsedControl"] {display: none;}
+
+    /* Hilangkan footer (Made with Streamlit) */
+    footer {visibility: hidden !important;}
+    .st-emotion-cache-1v0mbdj {display: none !important;}
+    .st-emotion-cache-164pbft {display: none !important;}
+    
+    /* Hilangkan semua footer */
+    footer, .st-emotion-cache-1v0mbdj, .st-emotion-cache-164pbft {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    /* Hilangkan elemen Fork/GitHub khusus */
+    a[href*="github.com"] {display: none !important;}
+
+    /* Sembunyikan logo SVG (dalam class _link_gzau3_10) */
+    ._container_gzau3_1 _viewerBadge_nim44_23 {
+        display: none !important;
+    }
+
+    /* Sembunyikan avatar profil pembuat aplikasi */
+    ._profilePreview_gzau3_63 {
+        display: none !important;
+    }
+    
+    /* Hilangkan elemen GitHub (termasuk avatar foto) */
+    a[href*="github.com"], img[src*="githubusercontent"] {
+        display: none !important;
+    }
+
+    /* Target tombol collapse/expand sidebar */
+    [data-testid="stSidebarCollapsedControl"] button {
+        color: green !important;  /* ganti warna ikon */
+        background-color: white !important;  /* opsional: latar belakang tombol */
+        border-radius: 8px;
+        padding: 6px;
+    }
+
+    /* Ganti warna saat hover juga */
+    [data-testid="stSidebarCollapsedControl"] button:hover {
+        background-color: #ccffcc !important;
+        color: darkgreen !important;
+    }
+
+    /* Tambahan agar ikon lebih besar */
+    button[data-testid="collapsedControl"] svg {
+        width: 1.2rem;
+        height: 1.2rem;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 
 @st.cache_data
 def load_data():
