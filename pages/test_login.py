@@ -23,6 +23,14 @@ def set_background_from_file(file_path):
 
         st.markdown(f"""
             <style>
+            /* Hilangkan seluruh header (logo, GitHub, Share, Fork) */
+            header {visibility: hidden !important;}
+            [data-testid="stHeader"] {display: none;}
+
+            /* Hilangkan menu titik tiga */
+            #MainMenu {visibility: hidden;}
+            [data-testid="collapsedControl"] {display: none;}
+            
             .stApp {{
                 background-image: url("data:image/jpg;base64,{b64}");
                 background-attachment: fixed;
