@@ -351,13 +351,13 @@ def handle_send():
 
     # Proses hasil seperti yang kamu punya
     if fitur == "chatbot" and mode_bahasa == "Sunda":
-        bot_response = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, history=history_for_prompt)
+        bot_response = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history=history_for_prompt)
         # bot_response_ekuivalen, pasangan_ganti_ekuivalen = ubah_ke_lema(bot_response, df_kamus, df_idiom)
         pasangan_ganti_ekuivalen = {}
         text_constraint, kata_terdapat, kata_tidak_terdapat, pasangan_kata, pasangan_ekuivalen = highlight_text(bot_response, df_kamus, df_idiom, fitur)
         text_constraint = kapitalisasi_awal_kalimat(text_constraint)
     elif fitur == "chatbot" and (mode_bahasa == "Indonesia" or mode_bahasa == "English"):
-        bot_response = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, history=history_for_prompt)
+        bot_response = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history=history_for_prompt)
         text_constraint = bot_response
         pasangan_ganti_ekuivalen = {}
         pasangan_ekuivalen = {}
@@ -365,13 +365,13 @@ def handle_send():
 
     elif option == "Terjemah Sunda → Indo":
         fitur = "terjemahsundaindo"
-        bot_response2 = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, history=None)
+        bot_response2 = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history=None)
         bot_response_ekuivalen, pasangan_ganti_ekuivalen = ubah_ke_lema(bot_response2, df_kamus, df_idiom)
         #bot_response_ekuivalen = ubah_ke_lema(bot_response2, df_kamus)
         #text_constraint, kata_terdapat, kata_tidak_terdapat, pasangan_kata, pasangan_ekuivalen = highlight_text(bot_response_ekuivalen, df_kamus, df_idiom, fitur)
     elif option == "Terjemah Indo → Sunda":
         fitur = "terjemahindosunda"
-        bot_response2 = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, history=None)
+        bot_response2 = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history=None)
         bot_response_ekuivalen, pasangan_ganti_ekuivalen = ubah_ke_lema(bot_response2, df_kamus, df_idiom)
         text_constraint, kata_terdapat, kata_tidak_terdapat, pasangan_kata, pasangan_ekuivalen = highlight_text(bot_response_ekuivalen, df_kamus, df_idiom, fitur)
         text_constraint = kapitalisasi_awal_kalimat(text_constraint)
