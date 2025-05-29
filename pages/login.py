@@ -198,6 +198,9 @@ def chat_ui():
             current_room = "default"
 
         selected_room = st.selectbox("Room Chat", room_options, index=room_options.index(current_room))
+        if selected_room != st.session_state.get("room"):
+            st.session_state["room"] = selected_room
+            st.rerun()
 
         # Kalau new chat room → beri input buat nama baru
         if selected_room == "new chat room":
