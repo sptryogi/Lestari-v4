@@ -29,7 +29,7 @@ st.markdown("""
         }
     </style>
     <div class="top-right-button">
-        <a href="/?pages=login" target="_self">
+        <a href="/?page=login" target="_self">
             <button>Login</button>
         </a>
     </div>
