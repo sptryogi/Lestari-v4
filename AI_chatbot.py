@@ -44,7 +44,7 @@ def call_deepseek_api(history, prompt):
     # Ganti ini dengan API key kamu
     client = OpenAI(
         api_key=st.secrets["API_KEY"],  # Simpan API key DeepSeek di secrets Streamlit
-        base_url="https://api.deepseek.com/v1/chat/completions"
+        base_url="https://api.deepseek.com"
     )
 
     # Menyusun format pesan sesuai dengan DeepSeek
