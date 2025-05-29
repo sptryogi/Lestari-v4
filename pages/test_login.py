@@ -441,7 +441,6 @@ def chat_ui():
         try:
             # Dalam fungsi handle_send(), perbaiki pemanggilan generate_text_deepseek
             if fitur == "chatbot" and mode_bahasa == "Sunda":
-                # Konversi chat_history ke format yang diharapkan oleh API
                 api_history = []
                 for user_msg, bot_msg, _ in st.session_state.chat_history:
                     api_history.append({"message": user_msg, "response": bot_msg})
@@ -459,8 +458,8 @@ def chat_ui():
                 }).execute()
             elif fitur == "chatbot" and (mode_bahasa == "Indonesia" or mode_bahasa == "English"):
                 api_history = []
-                    for user_msg, bot_msg, _ in st.session_state.chat_history:
-                        api_history.append({"message": user_msg, "response": bot_msg})
+                for user_msg, bot_msg, _ in st.session_state.chat_history:
+                    api_history.append({"message": user_msg, "response": bot_msg})
                 text_constraint = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, api_history)
                 supabase.table("chat_history").insert({
                     "id": str(uuid.uuid4()),
@@ -474,8 +473,8 @@ def chat_ui():
                 pasangan_kata = {}
             elif option == "Terjemah Sunda → Indo":
                 api_history = []
-                    for user_msg, bot_msg, _ in st.session_state.chat_history:
-                        api_history.append({"message": user_msg, "response": bot_msg})
+                for user_msg, bot_msg, _ in st.session_state.chat_history:
+                    api_history.append({"message": user_msg, "response": bot_msg})
                 bot_response2 = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, api_history)
                 bot_response_ekuivalen, pasangan_ganti_ekuivalen = ubah_ke_lema(bot_response2, df_kamus, df_idiom)
                 text_constraint = bot_response_ekuivalen
@@ -488,8 +487,8 @@ def chat_ui():
                 }).execute()
             elif option == "Terjemah Indo → Sunda":
                 api_history = []
-                    for user_msg, bot_msg, _ in st.session_state.chat_history:
-                        api_history.append({"message": user_msg, "response": bot_msg})
+                for user_msg, bot_msg, _ in st.session_state.chat_history:
+                    api_history.append({"message": user_msg, "response": bot_msg})
                 bot_response2 = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, api_history)
                 bot_response_ekuivalen, pasangan_ganti_ekuivalen = ubah_ke_lema(bot_response2, df_kamus, df_idiom)
                 text_constraint, _, _, pasangan_kata, pasangan_ekuivalen = highlight_text(bot_response_ekuivalen, df_kamus, df_idiom, fitur)
