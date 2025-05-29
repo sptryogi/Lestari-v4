@@ -184,34 +184,34 @@ def chat_ui():
     # st.session_state.room = room_option
 
     with st.sidebar:
-    st.markdown("### 💬 Pilih Room Chat")
-    user_id = st.session_state.user.id
-    available_rooms = get_user_chat_rooms(user_id)
+        st.markdown("### 💬 Pilih Room Chat")
+        user_id = st.session_state.user.id
+        available_rooms = get_user_chat_rooms(user_id)
 
-    # Awal: default + new room
-    base_options = ["default", "new chat room"]
-    room_options = base_options + [r for r in available_rooms if r not in base_options]
+        # Awal: default + new room
+        base_options = ["default", "new chat room"]
+        room_options = base_options + [r for r in available_rooms if r not in base_options]
 
-    selected_room = st.selectbox("Room Chat", room_options, index=room_options.index(st.session_state.get("room", "default")))
+        selected_room = st.selectbox("Room Chat", room_options, index=room_options.index(st.session_state.get("room", "default")))
 
-    # Kalau new chat room → beri input buat nama baru
-    if selected_room == "new chat room":
-        new_room_name = st.text_input("Nama Chat Room Baru", key="new_room_input")
-        if st.button("Buat Room"):
-            if new_room_name and new_room_name not in room_options:
-                st.session_state.room = create_chat_room(user_id, new_room_name)
+        # Kalau new chat room → beri input buat nama baru
+        if selected_room == "new chat room":
+            new_room_name = st.text_input("Nama Chat Room Baru", key="new_room_input")
+            if st.button("Buat Room"):
+                if new_room_name and new_room_name not in room_options:
+                    st.session_state.room = create_chat_room(user_id, new_room_name)
+                    st.rerun()
+
+        # Tombol hapus room (kecuali default)
+        elif selected_room not in ["default", "new chat room"]:
+            if st.button(f"Hapus Room '{selected_room}'", key="delete_room"):
+                delete_chat_room(user_id, selected_room)
+                st.session_state.room = "default"
                 st.rerun()
 
-    # Tombol hapus room (kecuali default)
-    elif selected_room not in ["default", "new chat room"]:
-        if st.button(f"Hapus Room '{selected_room}'", key="delete_room"):
-            delete_chat_room(user_id, selected_room)
-            st.session_state.room = "default"
-            st.rerun()
-
-    # Simpan ke state
-    if selected_room not in ["new chat room"]:
-        st.session_state.room = selected_room
+        # Simpan ke state
+        if selected_room not in ["new chat room"]:
+            st.session_state.room = selected_room
 
     history = fetch_chat_history(user_id, st.session_state.room)
     for chat in history:
