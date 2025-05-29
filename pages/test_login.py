@@ -279,7 +279,7 @@ def chat_ui():
     
         status = st.toggle("🔍 Lihat Constraint")
         
-    st.markdown("<h1 style='text-align: center; color: white;'>Lestari Bahasa</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: left; color: white;'>Lestari Bahasa</h1>", unsafe_allow_html=True)
     
     bahasa_list = ["Sunda", "Indonesia", "English"]
     bahasa_display = []
@@ -299,7 +299,7 @@ def chat_ui():
     st.markdown("""
     <p style='
         color: white;
-        text-align: center;
+        text-align: left;
         font-size: 14px;
     '>
         Selamat datang! Silakan ajukan pertanyaan.
