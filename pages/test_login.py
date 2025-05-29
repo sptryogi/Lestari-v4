@@ -354,6 +354,19 @@ def chat_ui():
     user = st.session_state.user
     user_id = user.id
     
+    # Inisialisasi chat history dari database
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = []
+        
+        # Ambil history dari database
+        db_history = fetch_chat_history(user_id, st.session_state.room)
+        
+        # Konversi format history dari database ke format yang digunakan aplikasi
+        for item in db_history:
+            st.session_state.chat_history.append(
+                (item['message'], item['response'], [])
+            )
+    
     with st.sidebar:
         st.header("⚙️ Pengaturan")
     
@@ -409,8 +422,6 @@ def chat_ui():
     </p>
     """, unsafe_allow_html=True)
     
-    if "chat_history" not in st.session_state:
-        st.session_state.chat_history = []
     
     if "user_input" not in st.session_state:
         st.session_state.user_input = ""
