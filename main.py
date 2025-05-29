@@ -8,7 +8,7 @@ import streamlit.components.v1 as components
 
 st.set_page_config(page_title="Lestari Bahasa", page_icon="🌐", layout="centered")  # atau "centered"
 
-# Tombol Register dan Login di kanan atas
+# Tombol Login di kanan atas
 st.markdown("""
 <style>
 .header-buttons {
@@ -28,11 +28,7 @@ st.markdown("""
     cursor: pointer;
 }
 </style>
-
 <div class="header-buttons">
-    <form action="?register" method="get" style="display:inline;">
-        <button type="submit">Register</button>
-    </form>
     <form action="?login" method="get" style="display:inline;">
         <button type="submit">Login</button>
     </form>
