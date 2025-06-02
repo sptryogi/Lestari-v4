@@ -259,8 +259,13 @@ if "logout" in st.query_params:
     sign_out()
     st.session_state.clear()
     st.rerun()
+    
+if "user" in st.session_state and "logout" not in st.query_params:
+    st.switch_page("main.py")
 
 if st.session_state.get("user"):
-    st.switch_page("main.py")  # Redirect ke main jika sudah login
+    with st.spinner("Mengarahkan ke halaman utama..."):
+        st.switch_page("main.py")  # Redirect ke main jika sudah login
+
 else:
     auth_flow() 
