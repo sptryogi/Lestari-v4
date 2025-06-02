@@ -21,51 +21,50 @@ def sign_out():
 def get_user_session():
     return supabase.auth.get_session()
 
-def create_chat_room(user_id, room_name):
-    # Tidak perlu insert ke tabel baru, cukup gunakan nama di chat_history
-    return room_name
+# Add these functions to your supabase_helper.py first:
+def create_chat_history_table():
+    """Create chat_history table if not exists"""
+    supabase.rpc("""
+    CREATE TABLE IF NOT EXISTS chat_history (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        user_id UUID REFERENCES auth.users(id),
+        message TEXT NOT NULL,
+        response TEXT NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        room TEXT NOT NULL DEFAULT 'default'
+    );
+    """).execute()
 
-def get_user_chat_rooms(user_id):
-    result = supabase.table("chat_history") \
-        .select("room") \
-        .eq("user_id", user_id) \
-        .execute()
-    if result.data:
-        rooms = list(set([r["room"] for r in result.data]))
-        return sorted(rooms)
-    return []
-
-def delete_chat_room(user_id, room_name):
-    supabase.table("chat_history") \
-        .delete() \
-        .eq("user_id", user_id) \
-        .eq("room", room_name) \
-        .execute()
-
-def delete_message_by_id(message_id):
-    supabase.table("chat_history") \
-        .delete() \
-        .eq("id", message_id) \
-        .execute()
-
-def edit_message_by_id(message_id, new_message):
-    supabase.table("chat_history") \
-        .update({"message": new_message}) \
-        .eq("id", message_id) \
-        .execute()
-def insert_chat_history(user_id, room, message, response):
-    supabase.table("chat_history").insert({
+def insert_chat_message(user_id: str, message: str, response: str, room: str = "default"):
+    """Insert a new chat message into the database"""
+    return supabase.table("chat_history").insert({
+        "id": str(uuid.uuid4()),
         "user_id": user_id,
-        "room": room,
         "message": message,
-        "response": response
+        "response": response,
+        "room": room
     }).execute()
 
-def fetch_chat_history(user_id, room):
-    result = supabase.table("chat_history") \
+def get_chat_history(user_id: str, room: str = "default", limit: int = 50):
+    """Retrieve chat history for a user in a specific room"""
+    return supabase.table("chat_history") \
         .select("*") \
         .eq("user_id", user_id) \
         .eq("room", room) \
         .order("created_at", desc=False) \
+        .limit(limit) \
         .execute()
-    return result.data if result else []
+
+def delete_chat_message(message_id: str):
+    """Delete a chat message by ID"""
+    return supabase.table("chat_history") \
+        .delete() \
+        .eq("id", message_id) \
+        .execute()
+
+def update_chat_message(message_id: str, new_message: str):
+    """Update a chat message"""
+    return supabase.table("chat_history") \
+        .update({"message": new_message}) \
+        .eq("id", message_id) \
+        .execute()
