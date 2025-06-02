@@ -3,40 +3,34 @@ import os
 import streamlit as st
 import re
 import string
-
-from supabase import create_client, Client
-
-SUPABASE_URL = st.secrets["SUPABASE_URL"]
-SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
-
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+from supabase_helper import *
 
 # GET AGE FROM EMAIL
-def get_age_by_email(email):
-    # Dapatkan user berdasarkan email
-    user_data = supabase.auth.admin.get_user_by_email(email)
-    user_id = user_data.user.id
+# def get_age_by_email(email):
+#     # Dapatkan user berdasarkan email
+#     user_data = supabase.auth.admin.get_user_by_email(email)
+#     user_id = user_data.user.id
     
-    # Ambil age dari tabel profiles berdasarkan id
-    profile_data = supabase.table("profiles").select("age").eq("id", user_id).single().execute()
-    age = profile_data.data["age"]
+#     # Ambil age dari tabel profiles berdasarkan id
+#     profile_data = supabase.table("profiles").select("age").eq("id", user_id).single().execute()
+#     age = profile_data.data["age"]
     
-    return age
+#     return age
 
-# GET AGE FROM ID
-def get_age_by_id(user_id):
-    try:
-        # Ambil age dari tabel profiles berdasarkan id
-        response = supabase.table("profiles").select("age").eq("id", user_id).single().execute()
+# # GET AGE FROM ID
+# def get_age_by_id(user_id):
+#     try:
+#         # Ambil age dari tabel profiles berdasarkan id
+#         response = supabase.table("profiles").select("age").eq("id", user_id).single().execute()
 
-        if response.data and "age" in response.data:
-            return response.data["age"]
-        else:
-            print("Data umur tidak ditemukan.")
-            return None
-    except Exception as e:
-        print(f"Terjadi kesalahan: {e}")
-        return None
+#         if response.data and "age" in response.data:
+#             return response.data["age"]
+#         else:
+#             print("Data umur tidak ditemukan.")
+#             return None
+#     except Exception as e:
+#         print(f"Terjadi kesalahan: {e}")
+#         return None
 
 
 # Fungsi untuk memanggil Deepseek API
