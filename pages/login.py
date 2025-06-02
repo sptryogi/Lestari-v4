@@ -158,15 +158,14 @@ def auth_flow():
         if st.button("Login"):
             try:
                 result = sign_in_with_email(email, password)
-                user = result.user
-                if user:
-                    st.session_state.user = user
+                if result.user:
+                    st.session_state.user = result.user
                     st.session_state.email = email
-                    st.switch_page("main.py")  # Ini yang diubah
+                    st.switch_page("main.py")  # Redirect ke main.py setelah login
                 else:
                     st.error("Login gagal.")
             except Exception as e:
-                st.error(f"Login gagal: {e}")
+                st.error(f"Login gagal: {str(e)}")
         if st.button("Belum punya akun? Daftar"):
             st.session_state.register_mode = True
     
@@ -253,7 +252,6 @@ def chat_ui():
         }).execute()
         st.rerun()
 
-render_topbar()
 
 if "logout" in st.query_params:
     sign_out()
