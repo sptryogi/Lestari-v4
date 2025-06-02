@@ -2,42 +2,21 @@ import streamlit as st
 import pandas as pd
 import re
 import pybase64
-from AI_chatbot import kapitalisasi_awal_kalimat, bersihkan_superscript
+from AI_chatbot import generate_text_deepseek, call_deepseek_api, kapitalisasi_awal_kalimat, bersihkan_superscript
 from constraint1 import highlight_text, constraint_text, ubah_ke_lema, find_the_lema_pair, cari_arti_lema
 import streamlit.components.v1 as components
-from supabase_helper import *  # Pastikan modul ini berisi semua fungsi yang diperlukan
-import uuid
-import requests
+from supabase import create_client, Client
+#from supabase_helper import *
+#import uuid
 
-# Inisialisasi Supabase (pastikan ini ada di supabase_helper.py)
-# supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+st.set_page_config(page_title="Lestari Bahasa", page_icon="🌐", layout="centered")  # atau "centered"
 
-st.set_page_config(page_title="Lestari Bahasa", page_icon="🌐", layout="centered")
+SUPABASE_URL = st.secrets["SUPABASE_URL"]
+SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
 
-# ========== FUNGSI BANTU ==========
-def set_background_from_file(file_path):
-    """Set background dari file lokal"""
-    try:
-        with open(file_path, "rb") as img_file:
-            b64 = pybase64.b64encode(img_file.read()).decode()
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-        st.markdown(f"""
-            <style>
-            .stApp {{
-                background-image: url("data:image/jpg;base64,{b64}");
-                background-attachment: fixed;
-                background-size: cover;
-                background-repeat: no-repeat;
-                background-position: center;
-                background-color: white;
-                color: black;
-                font-family: Arial, sans-serif;
-            }}
-            </style>
-        """, unsafe_allow_html=True)
-    except Exception as e:
-        st.error(f"Gagal memuat background: {str(e)}")
-
+# UI Styling
 st.markdown("""
     <style>
     /* Hilangkan seluruh header (logo, GitHub, Share, Fork) */
@@ -99,435 +78,408 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+def set_background_from_file(file_path):
+    with open(file_path, "rb") as img_file:
+        b64 = pybase64.b64encode(img_file.read()).decode()
 
-@st.cache_data
-def load_data():
-    """Load data kamus dengan caching"""
-    try:
-        df_kamus = pd.read_excel("dataset/data_kamus_full_14-5-25.xlsx")
-        df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']] = df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']].apply(lambda col: col.str.lower())
-        df_idiom = pd.read_excel("dataset/data_idiom (3).xlsx")
-        return df_kamus, df_idiom
-    except Exception as e:
-        st.error(f"Gagal memuat data: {str(e)}")
-        return pd.DataFrame(), pd.DataFrame()  # Return empty DataFrames sebagai fallback
+    st.markdown(f"""
+        <style>
+        .stApp {{
+            background-image: url("data:image/jpg;base64,{b64}");
+            background-attachment: fixed;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: white;
+            color: black;
+            font-family: Arial, sans-serif;
+        }}
+        </style>
+    """, unsafe_allow_html=True)
 
-def get_age_by_id(user_id):
-    """Mendapatkan usia pengguna dari database"""
-    if not user_id:
-        return None
-    
-    try:
-        response = supabase.table("profiles").select("age").eq("id", user_id).single().execute()
-        return response.data.get("age") if response.data else None
-    except Exception as e:
-        st.error(f"Error getting user age: {e}")
-        return None
+set_background_from_file("dataset/bg biru.jpg")
 
-def get_ai_response(prompt, history):
-    """Mendapatkan respons dari API DeepSeek"""
-    try:
-        api_key = st.secrets.get("API_KEY")
-        if not api_key:
-            raise ValueError("API_KEY tidak ditemukan di st.secrets")
-        
-        url = "https://api.deepseek.com/v1/chat/completions"
-        
-        messages = [{"role": "system", "content": "Anda adalah asisten untuk pelajar Bahasa Sunda."}]
-        for chat in history:
-            messages.append({"role": "user", "content": chat["message"]})
-            messages.append({"role": "assistant", "content": chat["response"]})
-        messages.append({"role": "user", "content": prompt})
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-color: white;
+        background-attachment: fixed;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        color: black;
+        font-family: Arial, sans-serif;
+    }
+    .chat-scroll {
+        max-height: 500px;
+        overflow-y: auto;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+    }
 
-        payload = {
-            "model": "deepseek-chat",
-            "messages": messages,
-            "temperature": 0.7,
-            "max_tokens": 1024
-        }
+    .chat-container {
+        display: flex;
+        flex-direction: column;
+    }
 
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json"
-        }
+    textarea {
+        text-align: justify !important;
+        resize: none !important;
+    }
+    .chat-container-outer {
+        height: calc(100vh - 180px); /* beri ruang untuk input tetap tampil */
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        padding: 10px 20px;
+        border: 1px solid #444;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        background-color: #121212;
+    }
 
-        response = requests.post(url, headers=headers, json=payload, timeout=30)
-        response.raise_for_status()  # Akan memunculkan exception untuk status code 4xx/5xx
-        
-        return response.json()["choices"][0]["message"]["content"]
-    except requests.exceptions.RequestException as e:
-        st.error(f"Gagal menghubungi API DeepSeek: {str(e)}")
-        return "⚠️ Error: Gagal menghubungi model."
-    except Exception as e:
-        st.error(f"Terjadi kesalahan: {str(e)}")
-        return "⚠️ Error: Terjadi kesalahan saat memproses respons."
+    .chat-bubble-user {
+        background-color: white;
+        color: black;
+        padding: 10px 15px;
+        border-radius: 15px 15px 0 15px;
+        margin: 5px 0;
+        max-width: 70%;
+        align-self: flex-end;
+        margin-left: auto;
+        font-size: 20px;
+        border: 2px solid black;
+        text-align: justify;
+        line-height: 20px;
+    }
 
-# ========== FUNGSI UTAMA ==========
-def auth_flow():
-    """Menangani alur autentikasi pengguna"""
-    if "register_mode" not in st.session_state:
-        st.session_state.register_mode = False
+    .chat-bubble-bot {
+        background-color: white;
+        color: black;
+        padding: 10px 15px;
+        border-radius: 15px 15px 15px 0;
+        margin: 5px 0;
+        max-width: 90%;
+        align-self: flex-start;
+        margin-right: auto;
+        font-size: 18px;
+        font-family: Times New Roman;
+        border: 2px solid black;
+        text-align: justify;
+        line-height: 20px;
+    }
 
-    if st.session_state.register_mode:
-        # Tampilan registrasi
-        with st.form("register_form"):
-            st.subheader("Register")
-            email = st.text_input("Email")
-            age = st.number_input("Umur", min_value=5, max_value=100, step=1)
-            password = st.text_input("Password", type="password")
-            
-            if st.form_submit_button("Buat Akun"):
-                try:
-                    result = sign_up_with_email(email, password, age)
-                    if result:
-                        st.success("Akun berhasil dibuat. Silakan login.")
-                        st.session_state.register_mode = False
-                        st.rerun()
-                except Exception as e:
-                    st.error(f"Gagal membuat akun: {e}")
-        
-        if st.button("Sudah punya akun? Login"):
-            st.session_state.register_mode = False
-            st.rerun()
+    .fixed-input {
+        position: sticky;
+        bottom: 0;
+        background-color: #1E1E2F;
+        padding-top: 10px;
+        border-top: 1px solid #444;
+    }
+
+    .stTextInput>div>div>input {
+        background-color: white;
+        color: black;
+        border-radius: 10px;
+        border: 2px solid black;
+    }
+
+    .stButton>button {
+        background-color: #4CAF50;
+        color: white;
+        border-radius: 8px;
+        padding: 5px 20px;
+        font-weight: bold;
+    }
+
+    .yellow-note {
+        color: #ffd700;
+        font-size: 0.9em;
+    }
+
+    .scroll-to-bottom {
+        position: fixed;
+        bottom: 80px; /* Di atas input tetap */
+        right: 30px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        padding: 10px 14px;
+        font-size: 20px;
+        cursor: pointer;
+        z-index: 1000;
+        box-shadow: 0px 0px 8px rgba(0,0,0,0.3);
+        display: none;
+    }
+
+    .scroll-to-bottom.show {
+        display: block;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# Load kamus
+df_kamus = pd.read_excel("dataset/data_kamus_full_14-5-25.xlsx")
+df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']] = df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']].apply(lambda col: col.str.lower())
+df_idiom = pd.read_excel("dataset/data_idiom (3).xlsx")
+
+
+# ========== Sidebar Controls ==========
+with st.sidebar:
+    st.header("⚙️ Pengaturan")
+
+    option = st.selectbox(
+        "Pilih Fitur",
+        ["Chatbot", "Terjemah Indo → Sunda", "Terjemah Sunda → Indo"],
+        key="fitur_selector"
+    )
+
+    fitur = "chatbot"
+    if option == "Chatbot":
+        fitur = "chatbot"
+    elif option == "Terjemah Indo → Sunda":
+        fitur = "terjemahindosunda"
     else:
-        # Tampilan login
-        with st.form("login_form"):
-            st.subheader("Login")
-            email = st.text_input("Email")
-            password = st.text_input("Password", type="password")
-            
-            if st.form_submit_button("Login"):
-                try:
-                    result = sign_in_with_email(email, password)
-                    if result and hasattr(result, 'user'):
-                        st.session_state.user = result.user
-                        st.session_state.email = email
-                        st.rerun()
-                    else:
-                        st.error("Login gagal.")
-                except Exception as e:
-                    st.error(f"Login gagal: {e}")
-        
-        if st.button("Belum punya akun? Daftar"):
-            st.session_state.register_mode = True
-            st.rerun()
+        fitur = "terjemahsundaindo"
 
-def chat_ui():
-    """Tampilan utama chat"""
-    user = st.session_state.get("user")
-    if not user:
-        st.error("Pengguna tidak terautentikasi")
-        return
-    
-    user_id = user.id
-    
-    # Inisialisasi chat history
-    if "chat_history" not in st.session_state:
-        st.session_state.chat_history = []
-        
-        # Ambil history dari database
-        try:
-            db_history = fetch_chat_history(user_id, st.session_state.get("room", "default"))
-            for item in db_history:
-                st.session_state.chat_history.append(
-                    (item['message'], item['response'], [])
-                )
-        except Exception as e:
-            st.error(f"Gagal memuat riwayat chat: {str(e)}")
-    
-    # Sidebar untuk pengaturan
-    with st.sidebar:
-        st.header("⚙️ Pengaturan")
-        
-        # Pilihan fitur
-        option = st.selectbox(
-            "Pilih Fitur",
-            ["Chatbot", "Terjemah Indo → Sunda", "Terjemah Sunda → Indo"],
-            key="fitur_selector"
+    chat_mode = st.selectbox(
+        "Pilih Mode Chat",
+        ["Ngobrol", "Belajar"],
+        key="chat_mode"
+    )
+
+    if fitur == "chatbot":
+        mode_bahasa = st.selectbox(
+            "🌐 Mode Bahasa",
+            ["Sunda", "Indonesia", "English"],
+            key="mode_selector"
         )
-        
-        fitur = {
-            "Chatbot": "chatbot",
-            "Terjemah Indo → Sunda": "terjemahindosunda", 
-            "Terjemah Sunda → Indo": "terjemahsundaindo"
-        }.get(option, "chatbot")
-        
-        # Mode chat
-        chat_mode = st.selectbox(
-            "Pilih Mode Chat",
-            ["Ngobrol", "Belajar"],
-            key="chat_mode"
-        )
-        
-        # Mode bahasa (hanya untuk fitur chatbot)
-        if fitur == "chatbot":
-            mode_bahasa = st.selectbox(
-                "🌐 Mode Bahasa",
-                ["Sunda", "Indonesia", "English"],
-                key="mode_selector"
-            )
-        else:
-            mode_bahasa = None
-        
-        # Toggle untuk constraint
-        status = st.toggle("🔍 Lihat Constraint")
-        
-        # Manajemen room chat
-        st.markdown("### 💬 Pilih Room Chat")
-        try:
-            available_rooms = get_user_chat_rooms(user_id)
-        except Exception as e:
-            st.error(f"Gagal memuat room chat: {str(e)}")
-            available_rooms = ["default"]
-            
-        room_options = ["default", "new chat room"] + [r for r in available_rooms if r not in ["default", "new chat room"]]
-        
-        current_room = st.session_state.get("room", "default")
-        if current_room not in room_options:
-            current_room = "default"
+    else:
+        mode_bahasa = None
 
-        selected_room = st.selectbox("Room Chat", room_options, index=room_options.index(current_room))
+    status = st.toggle("🔍 Lihat Constraint")
+    
+st.markdown("<h1 style='color:white'>Lestari Bahasa</h1>", unsafe_allow_html=True)
+bahasa_list = ["Sunda", "Indonesia", "English"]
+
+bahasa_display = []
+for bhs in bahasa_list:
+    if bhs == mode_bahasa:
+        bahasa_display.append(f"<span style='color:#FFD700;'><b>{bhs}</b></span>")    # italic untuk bahasa aktif
+    else:
+        bahasa_display.append(f"<span style='color: white;'>{bhs}</span>")
+
+bahasa_str = " ".join(bahasa_display)
+
+st.markdown(
+    f"<div style='text-align:left; padding-top: 8px; font-size: 20px; margin-top:0px;'>"
+    f"{bahasa_str}"
+    f"</div>", 
+    unsafe_allow_html=True
+)
+
+# st.markdown("<span style='color:white'>Selamat datang! Silakan ajukan pertanyaan.</span>", unsafe_allow_html=True)
+st.markdown("""
+<span style='
+    color: white;
+    text-shadow: 
+        -1px -1px 0 #00008B,
+         1px -1px 0 #00008B,
+        -1px  1px 0 #00008B,
+         1px  1px 0 #00008B;
+    font-size: 12px;
+'>
+    Selamat datang! Silakan ajukan pertanyaan.
+</span>
+""", unsafe_allow_html=True)
+
+# --- Session State untuk Login ---
+if 'user' not in st.session_state:
+    st.session_state.user = None
+
+col1, col2 = st.columns([8, 1])
+with col2:
+    if st.session_state.user:
+        st.write(st.session_state.user['email'])
+        if st.button("Logout"):
+            st.session_state.user = None
+    else:
+        if st.button("Login"):
+            st.session_state.show_login = True
+
+# --- Login Modal ---
+if st.session_state.get("show_login"):
+    with st.modal("Login"):
+        mode = st.radio("Pilih", ["Login", "Daftar"])
+
+        email = st.text_input("Email")
+        password = st.text_input("Password", type="password")
         
-        if selected_room != st.session_state.get("room"):
-            st.session_state.room = selected_room
-            st.rerun()
+        if mode == "Daftar":
+            age = st.number_input("Umur", min_value=1, max_value=120, step=1)
 
-        if selected_room == "new chat room":
-            new_room_name = st.text_input("Nama Chat Room Baru", key="new_room_input")
-            if st.button("Buat Room") and new_room_name:
-                if new_room_name not in room_options:
-                    try:
-                        st.session_state.room = create_chat_room(user_id, new_room_name)
-                        st.rerun()
-                    except Exception as e:
-                        st.error(f"Gagal membuat room: {str(e)}")
-
-        elif selected_room not in ["default", "new chat room"]:
-            if st.button(f"Hapus Room '{selected_room}'", key="delete_room"):
+        if st.button("Submit"):
+            if mode == "Login":
                 try:
-                    delete_chat_room(user_id, selected_room)
-                    st.session_state.room = "default"
-                    st.rerun()
+                    user = supabase.auth.sign_in_with_password({"email": email, "password": password})
+                    st.session_state.user = user.user
+                    st.success("Login berhasil")
+                    st.session_state.show_login = False
                 except Exception as e:
-                    st.error(f"Gagal menghapus room: {str(e)}")
+                    st.error("Login gagal: " + str(e))
+
+            elif mode == "Daftar":
+                try:
+                    signup = supabase.auth.sign_up({"email": email, "password": password})
+                    user_id = signup.user.id
+
+                    # Simpan data tambahan ke tabel profiles
+                    supabase.table("profiles").insert({"id": user_id, "age": age}).execute()
+
+                    st.success("Registrasi berhasil! Silakan login.")
+                except Exception as e:
+                    st.error("Registrasi gagal: " + str(e))
+
+        if st.button("Tutup"):
+            st.session_state.show_login = False
+
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+
+# st.markdown(f"**Hasil ekuivalen:** {user_input_ekuivalen}")
+
+# ====================================
+# # Input tanpa label karena sudah ditampilkan sebelumnya
+# user_input = st.text_input(label="", key="user_input")
+
+# Inisialisasi session state jika belum ada
+if "user_input" not in st.session_state:
+    st.session_state.user_input = ""
+
+# Fungsi untuk mengosongkan input
+def clear_input():
+    if "user_input" in st.session_state:
+        st.session_state["user_input"] = ""
+
+def handle_send():
+    pasangan_cag = {}
+    history_for_prompt = st.session_state.chat_history[-50:]
+    user_input = st.session_state.user_input
     
-    # Tampilan utama chat
-    st.markdown("<h1 style='text-align: left; color: white;'>Lestari Bahasa</h1>", unsafe_allow_html=True)
+    # Ambil fitur dan mode_bahasa dari session_state
+    option = st.session_state.get("fitur_selector", "Chatbot")
+    fitur = (
+        "chatbot" if option == "Chatbot" else
+        "terjemahindosunda" if option == "Terjemah Indo → Sunda" else
+        "terjemahsundaindo"
+    )
+    mode_bahasa = st.session_state.get("mode_selector", "Sunda") if fitur == "chatbot" else None
+
+    # Proses hasil seperti yang kamu punya
+    if fitur == "chatbot" and mode_bahasa == "Sunda":
+        bot_response = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history=history_for_prompt)
+        # bot_response_ekuivalen, pasangan_ganti_ekuivalen = ubah_ke_lema(bot_response, df_kamus, df_idiom)
+        pasangan_ganti_ekuivalen = {}
+        text_constraint, kata_terdapat, kata_tidak_terdapat, pasangan_kata, pasangan_ekuivalen = highlight_text(bot_response, df_kamus, df_idiom, fitur)
+        text_constraint = kapitalisasi_awal_kalimat(text_constraint)
+    elif fitur == "chatbot" and (mode_bahasa == "Indonesia" or mode_bahasa == "English"):
+        bot_response = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history=history_for_prompt)
+        text_constraint = bot_response
+        pasangan_ganti_ekuivalen = {}
+        pasangan_ekuivalen = {}
+        pasangan_kata = {}
+
+    elif option == "Terjemah Sunda → Indo":
+        fitur = "terjemahsundaindo"
+        bot_response2 = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history=None)
+        bot_response_ekuivalen, pasangan_ganti_ekuivalen = ubah_ke_lema(bot_response2, df_kamus, df_idiom)
+        #bot_response_ekuivalen = ubah_ke_lema(bot_response2, df_kamus)
+        #text_constraint, kata_terdapat, kata_tidak_terdapat, pasangan_kata, pasangan_ekuivalen = highlight_text(bot_response_ekuivalen, df_kamus, df_idiom, fitur)
+    elif option == "Terjemah Indo → Sunda":
+        fitur = "terjemahindosunda"
+        bot_response2 = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history=None)
+        bot_response_ekuivalen, pasangan_ganti_ekuivalen = ubah_ke_lema(bot_response2, df_kamus, df_idiom)
+        text_constraint, kata_terdapat, kata_tidak_terdapat, pasangan_kata, pasangan_ekuivalen = highlight_text(bot_response_ekuivalen, df_kamus, df_idiom, fitur)
+        text_constraint = kapitalisasi_awal_kalimat(text_constraint)
+
+    html_block = [
+        # "<p style='color: yellow;'>Kata Kata yang diganti dari Indo ke Sunda (Kamus) Setelah AI:</p>",
+        # f"<p style='color: yellow;'>{pasangan_ganti_ekuivalen}</p>",
+        "<p style='color: yellow;'>Kata Kata yang ada di kamus tapi tidak ada Sinonim LOMA:</p>",
+        f"<p style='color: yellow;'>{pasangan_ekuivalen}</p>",
+        "<p style='color: yellow;'>Kata Kata yang diganti ke Loma:</p>",
+        f"<p style='color: yellow;'>{pasangan_kata}</p>",
+        "<p style='color: yellow;'>CAG:</p>",
+        f"<p style='color: yellow;'>{pasangan_cag}</p>",
+    ]
+
+    st.session_state.chat_history.append((user_input, text_constraint, html_block))
+    clear_input()
     
-    # Tampilkan mode bahasa yang aktif
-    bahasa_list = ["Sunda", "Indonesia", "English"]
-    bahasa_display = []
-    for bhs in bahasa_list:
-        if bhs == mode_bahasa if mode_bahasa else "Sunda":
-            bahasa_display.append(f"<span style='color:#FFD700;'><b>{bhs}</b></span>")
-        else:
-            bahasa_display.append(f"<span style='color: white;'>{bhs}</span>")
-    
+for user_msg, bot_msg, html_block in st.session_state.chat_history:
     st.markdown(
-        f"<div style='text-align:left; padding-top: 8px; font-size: 20px; margin-top:0px;'>"
-        f"{' '.join(bahasa_display)}"
-        f"</div>", 
+        f"<div class='chat-container'><div class='chat-bubble-user'>{user_msg}</div></div>",
         unsafe_allow_html=True
     )
+    st.markdown(
+        f"<div class='chat-container'><div class='chat-bubble-bot'>{bot_msg}</div></div>",
+        unsafe_allow_html=True
+    )
+    if status:
+        for html in html_block:
+            st.markdown(
+                f"<div class='chat-container'><div class='chat-bubble-bot'>{html}</div></div>",
+                unsafe_allow_html=True
+            )
+
+st.markdown("</div>", unsafe_allow_html=True)  # ⬅️ END OF chat-container-outer
     
-    # Pesan selamat datang
-    st.markdown("""
-    <p style='
+col1, col2 = st.columns([6, 1])
+with col1:
+    user_input = st.text_area(
+        label="", height=80, key="user_input", placeholder="Tulis pesan...",
+        label_visibility="collapsed"
+    )
+   
+with col2:
+    st.button("➡", on_click=handle_send)
+col_left, col_right = st.columns([1, 2])
+
+with col_left:
+    st.button("🔄 Delete Chat History", on_click=lambda: st.session_state.update(chat_history=[]))
+
+# Tambah anchor di akhir chat
+st.markdown('<a name="scroll-bottom"></a>', unsafe_allow_html=True)
+st.markdown("""
+    <style>
+    .scroll-down-btn {
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        background-color: #4CAF50;
         color: white;
-        text-align: left;
-        font-size: 14px;
-    '>
-        Selamat datang! Silakan ajukan pertanyaan.
-    </p>
-    """, unsafe_allow_html=True)
-    
-    # Input area
-    def clear_input():
-        st.session_state.user_input = ""
-    
-    def handle_send():
-        if not st.session_state.get("user_input", "").strip():
-            return
-            
-        pasangan_cag = {}
-        user_input = st.session_state.user_input
-        
-        try:
-            # Tentukan fitur dan mode bahasa
-            option = st.session_state.get("fitur_selector", "Chatbot")
-            fitur = {
-                "Chatbot": "chatbot",
-                "Terjemah Indo → Sunda": "terjemahindosunda", 
-                "Terjemah Sunda → Indo": "terjemahsundaindo"
-            }.get(option, "chatbot")
-            
-            mode_bahasa = st.session_state.get("mode_selector", "Sunda") if fitur == "chatbot" else None
-            
-            # Siapkan history untuk API
-            api_history = []
-            for user_msg, bot_msg, _ in st.session_state.chat_history:
-                api_history.append({"message": user_msg, "response": bot_msg})
-            
-            # Proses berdasarkan fitur
-            if fitur == "chatbot":
-                bot_response = generate_text_deepseek(
-                    user_input, 
-                    fitur, 
-                    pasangan_cag, 
-                    mode_bahasa, 
-                    chat_mode, 
-                    api_history
-                )
-                
-                if mode_bahasa == "Sunda":
-                    text_constraint, _, _, pasangan_kata, pasangan_ekuivalen = highlight_text(
-                        bot_response, 
-                        df_kamus, 
-                        df_idiom, 
-                        fitur
-                    )
-                    text_constraint = kapitalisasi_awal_kalimat(text_constraint)
-                else:
-                    text_constraint = bot_response
-                    pasangan_kata = {}
-                    pasangan_ekuivalen = {}
-                    
-            elif fitur == "terjemahsundaindo":
-                bot_response2 = generate_text_deepseek(
-                    user_input, 
-                    fitur, 
-                    pasangan_cag, 
-                    mode_bahasa, 
-                    chat_mode, 
-                    api_history
-                )
-                bot_response_ekuivalen, pasangan_ganti_ekuivalen = ubah_ke_lema(bot_response2, df_kamus, df_idiom)
-                text_constraint = bot_response_ekuivalen
-                
-            elif fitur == "terjemahindosunda":
-                bot_response2 = generate_text_deepseek(
-                    user_input, 
-                    fitur, 
-                    pasangan_cag, 
-                    mode_bahasa, 
-                    chat_mode, 
-                    api_history
-                )
-                bot_response_ekuivalen, pasangan_ganti_ekuivalen = ubah_ke_lema(bot_response2, df_kamus, df_idiom)
-                text_constraint, _, _, pasangan_kata, pasangan_ekuivalen = highlight_text(
-                    bot_response_ekuivalen, 
-                    df_kamus, 
-                    df_idiom, 
-                    fitur
-                )
-                text_constraint = kapitalisasi_awal_kalimat(text_constraint)
-            
-            # Simpan ke database
-            try:
-                supabase.table("chat_history").insert({
-                    "id": str(uuid.uuid4()),
-                    "user_id": user_id,
-                    "room": st.session_state.get("room", "default"),
-                    "message": user_input,
-                    "response": text_constraint
-                }).execute()
-            except Exception as e:
-                st.error(f"Gagal menyimpan riwayat chat: {str(e)}")
-            
-            # Update chat history
-            html_block = [
-                f"<p style='color: yellow;'>Kata yang diganti ke Loma: {pasangan_kata}</p>",
-                f"<p style='color: yellow;'>Kata yang ada di kamus: {pasangan_ekuivalen}</p>",
-            ] if status else []
-            
-            st.session_state.chat_history.append((user_input, text_constraint, html_block))
-            clear_input()
-            st.rerun()
-            
-        except Exception as e:
-            st.error(f"Terjadi kesalahan: {str(e)}")
-    
-    # Tampilkan chat history
-    for user_msg, bot_msg, html_block in st.session_state.get("chat_history", []):
-        st.markdown(
-            f"<div class='chat-container'><div class='chat-bubble-user'>{user_msg}</div></div>",
-            unsafe_allow_html=True
-        )
-        st.markdown(
-            f"<div class='chat-container'><div class='chat-bubble-bot'>{bot_msg}</div></div>",
-            unsafe_allow_html=True
-        )
-        
-        if status and html_block:
-            for html in html_block:
-                st.markdown(
-                    f"<div class='chat-container'><div class='chat-bubble-bot'>{html}</div></div>",
-                    unsafe_allow_html=True
-                )
-    
-    # Input area
-    col1, col2 = st.columns([6, 1])
-    with col1:
-        user_input = st.text_area(
-            label="", 
-            height=80, 
-            key="user_input", 
-            placeholder="Tulis pesan...",
-            label_visibility="collapsed"
-        )
-       
-    with col2:
-        st.button("➡", on_click=handle_send, use_container_width=True)
+        border: none;
+        border-radius: 20px;
+        padding: 10px 16px;
+        font-size: 16px;
+        cursor: pointer;
+        z-index: 1000;
+        box-shadow: 0px 2px 5px rgba(0,0,0,0.3);
+    }
+    </style>
+    <a href="#scroll-bottom"><button class="scroll-down-btn">⬇️</button></a>
+""", unsafe_allow_html=True)
 
-# ========== MAIN APP ==========
-# Load data dan set background
-try:
-    df_kamus, df_idiom = load_data()
-    set_background_from_file("dataset/bg biru.jpg")
-except Exception as e:
-    st.error(f"Gagal memulai aplikasi: {str(e)}")
-
-# Render top bar
-def render_topbar():
-    col1, col2 = st.columns([8, 1])
-    with col2:
-        if st.session_state.get("user"):
-            st.markdown(
-                f"""
-                <div style='position: fixed; top: 10px; right: 20px; z-index:9999;'>
-                    👤 {st.session_state.get("email", "User")}<br>
-                    <form action="?logout" method="get">
-                        <button style="background:#ff4b4b;color:white;border:none;padding:4px 10px;border-radius:5px;">Logout</button>
-                    </form>
-                </div>
-                """, unsafe_allow_html=True
-            )
-        else:
-            st.markdown(
-                f"""
-                <div style='position: fixed; top: 10px; right: 20px; z-index:9999;'>
-                    <form action="?login" method="get">
-                        <button style="background:#4bafff;color:white;border:none;padding:6px 10px;border-radius:5px;">Login</button>
-                    </form>
-                </div>
-                """, unsafe_allow_html=True
-            )
-
-# Handle query parameters
-if "logout" in st.query_params:
-    try:
-        sign_out()
-        st.session_state.clear()
-        st.rerun()
-    except Exception as e:
-        st.error(f"Gagal logout: {str(e)}")
-
-# Main flow
-render_topbar()
-
-if "login" in st.query_params:
-    auth_flow()
-elif st.session_state.get("user"):
-    chat_ui()
-else:
-    auth_flow()
+components.html("""
+    <script>
+        setInterval(function() {
+            fetch(window.location.href);
+        }, 1000 * 60 * 1);  // ping setiap 1 menit
+    </script>
+""", height=0)
+st.markdown("</div>", unsafe_allow_html=True)
