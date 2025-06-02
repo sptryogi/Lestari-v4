@@ -5,17 +5,11 @@ import pybase64
 from AI_chatbot import generate_text_deepseek, call_deepseek_api, kapitalisasi_awal_kalimat, bersihkan_superscript
 from constraint1 import highlight_text, constraint_text, ubah_ke_lema, find_the_lema_pair, cari_arti_lema
 import streamlit.components.v1 as components
-from supabase import create_client, Client
-#from supabase_helper import *
-#import uuid
+from supabase_helper import *
+import uuid
 
 st.set_page_config(page_title="Lestari Bahasa", page_icon="🌐", layout="centered")  # atau "centered"
-
-SUPABASE_URL = st.secrets["SUPABASE_URL"]
-SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
-
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-
+    
 # UI Styling
 st.markdown("""
     <style>
@@ -96,6 +90,34 @@ def set_background_from_file(file_path):
         }}
         </style>
     """, unsafe_allow_html=True)
+
+# Tombol Login di pojok kanan atas
+st.markdown("""
+    <style>
+        .login-container {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 999;
+        }
+        .login-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .login-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+    <div class="login-container">
+        <button class="login-btn">Login</button>
+    </div>
+""", unsafe_allow_html=True)
 
 set_background_from_file("dataset/bg biru.jpg")
 
@@ -228,86 +250,6 @@ df_kamus = pd.read_excel("dataset/data_kamus_full_14-5-25.xlsx")
 df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']] = df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']].apply(lambda col: col.str.lower())
 df_idiom = pd.read_excel("dataset/data_idiom (3).xlsx")
 
-# --- Session Init ---
-if 'user' not in st.session_state:
-    st.session_state.user = None
-if 'show_login' not in st.session_state:
-    st.session_state.show_login = False
-if 'login_mode' not in st.session_state:
-    st.session_state.login_mode = 'Login'
-
-# --- HEADER (Tombol Login/Logout di kanan atas) ---
-col1, col2 = st.columns([8, 1])
-with col2:
-    if st.session_state.user:
-        st.markdown(f"👤 {st.session_state.user['email']}")
-        if st.button("Logout"):
-            st.session_state.user = None
-    else:
-        if st.button("Login"):
-            st.session_state.show_login = True
-
-# --- Popup Login Simulasi Modal ---
-if st.session_state.show_login:
-    st.markdown(
-        """
-        <style>
-        .modal-container {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.4);
-            z-index: 999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-box {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            width: 400px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
-        }
-        </style>
-        <div class="modal-container">
-          <div class="modal-box">
-        """,
-        unsafe_allow_html=True
-    )
-
-    mode = st.radio("Pilih Mode", ["Login", "Daftar"], horizontal=True)
-    email = st.text_input("Email", key="email_modal")
-    password = st.text_input("Password", type="password", key="password_modal")
-    if mode == "Daftar":
-        age = st.number_input("Umur", min_value=1, max_value=120, step=1, key="age_modal")
-
-    colA, colB = st.columns([1, 1])
-    with colA:
-        if st.button("Submit", key="submit_modal"):
-            if mode == "Login":
-                try:
-                    user = supabase.auth.sign_in_with_password({"email": email, "password": password})
-                    st.session_state.user = user.user
-                    st.success("Login berhasil!")
-                    st.session_state.show_login = False
-                except Exception as e:
-                    st.error(f"Login gagal: {str(e)}")
-            else:
-                try:
-                    user_data = supabase.auth.sign_up({"email": email, "password": password})
-                    user_id = user_data.user.id
-                    supabase.table("profiles").insert({"id": user_id, "age": age}).execute()
-                    st.success("Registrasi berhasil! Silakan login.")
-                    st.session_state.login_mode = "Login"
-                except Exception as e:
-                    st.error(f"Registrasi gagal: {str(e)}")
-
-    with colB:
-        if st.button("Batal", key="cancel_modal"):
-            st.session_state.show_login = False
-
-    st.markdown("</div></div>", unsafe_allow_html=True)
 
 # ========== Sidebar Controls ==========
 with st.sidebar:
