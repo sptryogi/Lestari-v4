@@ -161,7 +161,7 @@ def auth_flow():
                 if result.user:
                     st.session_state.user = result.user
                     st.session_state.email = email
-                    st.switch_page("main.py")  # Redirect ke main.py setelah login
+                    st.switch_page("../main.py")  # Redirect ke main.py setelah login
                 else:
                     st.error("Login gagal.")
             except Exception as e:
@@ -259,11 +259,11 @@ if "logout" in st.query_params:
     st.rerun()
     
 if "user" in st.session_state and "logout" not in st.query_params:
-    st.switch_page("main.py")
+    st.switch_page("../main.py")
 
 if st.session_state.get("user"):
     with st.spinner("Mengarahkan ke halaman utama..."):
-        st.switch_page("main.py")  # Redirect ke main jika sudah login
+        st.switch_page("../main.py")  # Redirect ke main jika sudah login
 
 else:
     auth_flow() 
