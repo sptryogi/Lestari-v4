@@ -294,7 +294,7 @@ def render_topbar():
         )
 
 # Pengecekan session
-if "user" not in st.session_state:
+if "user" not in st.session_state and not st.query_params.get("logout"):
     st.switch_page("pages/login.py")
 
 # Panggil topbar
@@ -305,11 +305,10 @@ df_kamus = pd.read_excel("dataset/data_kamus_full_14-5-25.xlsx")
 df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']] = df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']].apply(lambda col: col.str.lower())
 df_idiom = pd.read_excel("dataset/data_idiom (3).xlsx")
 
-if "user" not in st.session_state:
-    st.switch_page("pages/login.py")
+# if "user" not in st.session_state:
+#     st.switch_page("pages/login.py")
     
-if "user" not in st.session_state and not st.query_params.get("logout"):
-    st.switch_page("pages/login.py")
+
     
 # ========== Sidebar Controls ==========
 with st.sidebar:
