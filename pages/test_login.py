@@ -228,6 +228,73 @@ df_kamus = pd.read_excel("dataset/data_kamus_full_14-5-25.xlsx")
 df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']] = df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']].apply(lambda col: col.str.lower())
 df_idiom = pd.read_excel("dataset/data_idiom (3).xlsx")
 
+# --- Session Init ---
+if 'user' not in st.session_state:
+    st.session_state.user = None
+if 'show_login' not in st.session_state:
+    st.session_state.show_login = False
+if 'login_mode' not in st.session_state:
+    st.session_state.login_mode = 'Login'
+
+# --- HEADER (Tombol Login/Logout di kanan atas) ---
+col1, col2 = st.columns([8, 1])
+with col2:
+    if st.session_state.user:
+        st.markdown(f"👤 {st.session_state.user['email']}")
+        if st.button("Logout"):
+            st.session_state.user = None
+    else:
+        if st.button("Login"):
+            st.session_state.show_login = True
+
+# --- FORM LOGIN / DAFTAR ---
+if st.session_state.show_login:
+    st.markdown("### 🔐 Autentikasi Pengguna")
+
+    mode = st.radio("Pilih Mode", ["Login", "Daftar"], horizontal=True)
+    st.session_state.login_mode = mode
+
+    email = st.text_input("Email")
+    password = st.text_input("Password", type="password")
+
+    if mode == "Daftar":
+        age = st.number_input("Umur", min_value=1, max_value=120, step=1)
+
+    submit_btn = st.button("Submit")
+    cancel_btn = st.button("Batal")
+
+    if cancel_btn:
+        st.session_state.show_login = False
+
+    if submit_btn:
+        if mode == "Login":
+            try:
+                user = supabase.auth.sign_in_with_password({"email": email, "password": password})
+                st.session_state.user = user.user
+                st.success("Login berhasil!")
+                st.session_state.show_login = False
+            except Exception as e:
+                st.error(f"Login gagal: {str(e)}")
+
+        elif mode == "Daftar":
+            try:
+                user_data = supabase.auth.sign_up({"email": email, "password": password})
+                user_id = user_data.user.id
+
+                # Masukkan ke tabel profiles
+                supabase.table("profiles").insert({"id": user_id, "age": age}).execute()
+
+                st.success("Registrasi berhasil! Silakan login.")
+                st.session_state.login_mode = "Login"
+            except Exception as e:
+                st.error(f"Registrasi gagal: {str(e)}")
+
+# --- Aplikasi Utama (jika user sudah login) ---
+if st.session_state.user:
+    st.write("🎉 Selamat datang di aplikasi chatbot!")
+    # Di sini bisa lanjutkan dengan input chatbot dsb
+else:
+    st.info("Silakan login terlebih dahulu untuk menggunakan chatbot.")
 
 # ========== Sidebar Controls ==========
 with st.sidebar:
@@ -297,56 +364,6 @@ st.markdown("""
     Selamat datang! Silakan ajukan pertanyaan.
 </span>
 """, unsafe_allow_html=True)
-
-# --- Session State untuk Login ---
-if 'user' not in st.session_state:
-    st.session_state.user = None
-
-col1, col2 = st.columns([8, 1])
-with col2:
-    if st.session_state.user:
-        st.write(st.session_state.user['email'])
-        if st.button("Logout"):
-            st.session_state.user = None
-    else:
-        if st.button("Login"):
-            st.session_state.show_login = True
-
-# --- Login Modal ---
-if st.session_state.get("show_login"):
-    with st.modal("Login"):
-        mode = st.radio("Pilih", ["Login", "Daftar"])
-
-        email = st.text_input("Email")
-        password = st.text_input("Password", type="password")
-        
-        if mode == "Daftar":
-            age = st.number_input("Umur", min_value=1, max_value=120, step=1)
-
-        if st.button("Submit"):
-            if mode == "Login":
-                try:
-                    user = supabase.auth.sign_in_with_password({"email": email, "password": password})
-                    st.session_state.user = user.user
-                    st.success("Login berhasil")
-                    st.session_state.show_login = False
-                except Exception as e:
-                    st.error("Login gagal: " + str(e))
-
-            elif mode == "Daftar":
-                try:
-                    signup = supabase.auth.sign_up({"email": email, "password": password})
-                    user_id = signup.user.id
-
-                    # Simpan data tambahan ke tabel profiles
-                    supabase.table("profiles").insert({"id": user_id, "age": age}).execute()
-
-                    st.success("Registrasi berhasil! Silakan login.")
-                except Exception as e:
-                    st.error("Registrasi gagal: " + str(e))
-
-        if st.button("Tutup"):
-            st.session_state.show_login = False
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
