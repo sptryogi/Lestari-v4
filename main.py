@@ -247,6 +247,34 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+def render_topbar():
+    if st.session_state.get("user"):
+        st.markdown(
+            f"""
+            <div style='position: fixed; top: 10px; right: 20px; z-index:9999;'>
+                👤 {st.session_state["email"]}
+                <a href="/login?logout=true" target="_self">
+                    <button style="background:#ff4b4b;color:white;border:none;padding:4px 10px;border-radius:5px;margin-left:8px;">Logout</button>
+                </a>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
+    else:
+        st.markdown(
+            """
+            <div style='position: fixed; top: 10px; right: 20px; z-index:9999;'>
+                <a href="/login" target="_self">
+                    <button style="background:#4bafff;color:white;border:none;padding:6px 10px;border-radius:5px;">Login</button>
+                </a>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+# Panggil fungsi di main.py
+render_topbar()
+
 # Load kamus
 df_kamus = pd.read_excel("dataset/data_kamus_full_14-5-25.xlsx")
 df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']] = df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']].apply(lambda col: col.str.lower())
