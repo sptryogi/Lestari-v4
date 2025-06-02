@@ -253,7 +253,7 @@ def render_topbar():
         # Tampilan setelah login (email + tombol logout)
         st.markdown(
             f"""
-            <div style='position: fixed; top: 10px; right: 20px; z-index:9999; display: flex; align-items: center; gap: 8px;'>
+            <div style='position: fixed; top: 10px; right: 20px; z-index:9999; display: flex; align-items: center; color: white; gap: 8px;'>
                 <span style='background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px;'>
                     👤 {st.session_state["email"]}
                 </span>
