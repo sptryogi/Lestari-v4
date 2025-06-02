@@ -247,54 +247,67 @@ with col2:
         if st.button("Login"):
             st.session_state.show_login = True
 
-# --- FORM LOGIN / DAFTAR ---
+# --- Popup Login Simulasi Modal ---
 if st.session_state.show_login:
-    st.markdown("### 🔐 Autentikasi Pengguna")
+    st.markdown(
+        """
+        <style>
+        .modal-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-box {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 400px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+        </style>
+        <div class="modal-container">
+          <div class="modal-box">
+        """,
+        unsafe_allow_html=True
+    )
 
     mode = st.radio("Pilih Mode", ["Login", "Daftar"], horizontal=True)
-    st.session_state.login_mode = mode
-
-    email = st.text_input("Email")
-    password = st.text_input("Password", type="password")
-
+    email = st.text_input("Email", key="email_modal")
+    password = st.text_input("Password", type="password", key="password_modal")
     if mode == "Daftar":
-        age = st.number_input("Umur", min_value=1, max_value=120, step=1)
+        age = st.number_input("Umur", min_value=1, max_value=120, step=1, key="age_modal")
 
-    submit_btn = st.button("Submit")
-    cancel_btn = st.button("Batal")
+    colA, colB = st.columns([1, 1])
+    with colA:
+        if st.button("Submit", key="submit_modal"):
+            if mode == "Login":
+                try:
+                    user = supabase.auth.sign_in_with_password({"email": email, "password": password})
+                    st.session_state.user = user.user
+                    st.success("Login berhasil!")
+                    st.session_state.show_login = False
+                except Exception as e:
+                    st.error(f"Login gagal: {str(e)}")
+            else:
+                try:
+                    user_data = supabase.auth.sign_up({"email": email, "password": password})
+                    user_id = user_data.user.id
+                    supabase.table("profiles").insert({"id": user_id, "age": age}).execute()
+                    st.success("Registrasi berhasil! Silakan login.")
+                    st.session_state.login_mode = "Login"
+                except Exception as e:
+                    st.error(f"Registrasi gagal: {str(e)}")
 
-    if cancel_btn:
-        st.session_state.show_login = False
+    with colB:
+        if st.button("Batal", key="cancel_modal"):
+            st.session_state.show_login = False
 
-    if submit_btn:
-        if mode == "Login":
-            try:
-                user = supabase.auth.sign_in_with_password({"email": email, "password": password})
-                st.session_state.user = user.user
-                st.success("Login berhasil!")
-                st.session_state.show_login = False
-            except Exception as e:
-                st.error(f"Login gagal: {str(e)}")
-
-        elif mode == "Daftar":
-            try:
-                user_data = supabase.auth.sign_up({"email": email, "password": password})
-                user_id = user_data.user.id
-
-                # Masukkan ke tabel profiles
-                supabase.table("profiles").insert({"id": user_id, "age": age}).execute()
-
-                st.success("Registrasi berhasil! Silakan login.")
-                st.session_state.login_mode = "Login"
-            except Exception as e:
-                st.error(f"Registrasi gagal: {str(e)}")
-
-# --- Aplikasi Utama (jika user sudah login) ---
-if st.session_state.user:
-    st.write("🎉 Selamat datang di aplikasi chatbot!")
-    # Di sini bisa lanjutkan dengan input chatbot dsb
-else:
-    st.info("Silakan login terlebih dahulu untuk menggunakan chatbot.")
+    st.markdown("</div></div>", unsafe_allow_html=True)
 
 # ========== Sidebar Controls ==========
 with st.sidebar:
