@@ -247,32 +247,57 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# Fungsi render topbar yang akan menampilkan login/logout
 def render_topbar():
     if st.session_state.get("user"):
+        # Tampilan setelah login (email + tombol logout)
         st.markdown(
             f"""
-            <div style='position: fixed; top: 10px; right: 20px; z-index:9999;'>
-                👤 {st.session_state["email"]}
+            <div style='position: fixed; top: 10px; right: 20px; z-index:9999; display: flex; align-items: center; gap: 8px;'>
+                <span style='background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px;'>
+                    👤 {st.session_state["email"]}
+                </span>
                 <a href="/login?logout=true" target="_self">
-                    <button style="background:#ff4b4b;color:white;border:none;padding:4px 10px;border-radius:5px;margin-left:8px;">Logout</button>
+                    <button style='
+                        background: #ff4b4b;
+                        color: white;
+                        border: none;
+                        padding: 6px 12px;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        font-weight: 500;
+                    '>Logout</button>
                 </a>
             </div>
             """, 
             unsafe_allow_html=True
         )
     else:
+        # Tampilan sebelum login (tombol login)
         st.markdown(
             """
             <div style='position: fixed; top: 10px; right: 20px; z-index:9999;'>
                 <a href="/login" target="_self">
-                    <button style="background:#4bafff;color:white;border:none;padding:6px 10px;border-radius:5px;">Login</button>
+                    <button style='
+                        background: #4CAF50;
+                        color: white;
+                        border: none;
+                        padding: 8px 16px;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        font-weight: 500;
+                    '>Login</button>
                 </a>
             </div>
             """,
             unsafe_allow_html=True
         )
 
-# Panggil fungsi di main.py
+# Pengecekan session
+if "user" not in st.session_state:
+    st.switch_page("pages/login.py")
+
+# Panggil topbar
 render_topbar()
 
 # Load kamus
