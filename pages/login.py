@@ -162,7 +162,7 @@ def auth_flow():
                 if user:
                     st.session_state.user = user
                     st.session_state.email = email
-                    st.rerun()
+                    st.switch_page("main.py")  # Ini yang diubah
                 else:
                     st.error("Login gagal.")
             except Exception as e:
