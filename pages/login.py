@@ -252,8 +252,6 @@ def chat_ui():
         }).execute()
         st.rerun()
 
-st.cache_data.clear()
-st.cache_resource.clear()
 
 # if "logout" in st.query_params:
 #     print("Memulai proses logout...")  # Lihat di terminal
@@ -263,13 +261,13 @@ st.cache_resource.clear()
 #     print(f"Logout selesai dalam {time.time()-start_time:.2f} detik")
 #     st.rerun()
     
-if "user" in st.session_state and "logout" not in st.query_params:
-    with st.spinner("Mengarahkan ke halaman utama..."):
-        st.switch_page("main.py")
-
-# if st.session_state.get("user"):
+# if "user" in st.session_state and "logout" not in st.query_params:
 #     with st.spinner("Mengarahkan ke halaman utama..."):
-#         st.switch_page("main.py")  # Redirect ke main jika sudah login
+#         st.switch_page("main.py")
+
+if st.session_state.get("user"):
+    with st.spinner("Mengarahkan ke halaman utama..."):
+        st.switch_page("main.py")  # Redirect ke main jika sudah login
 
 else:
     auth_flow() 
