@@ -255,6 +255,9 @@ df_idiom = pd.read_excel("dataset/data_idiom (3).xlsx")
 if "user" not in st.session_state:
     st.switch_page("pages/login.py")
     
+if "user" not in st.session_state and not st.query_params.get("logout"):
+    st.switch_page("pages/login.py")
+    
 # ========== Sidebar Controls ==========
 with st.sidebar:
     st.header("⚙️ Pengaturan")
