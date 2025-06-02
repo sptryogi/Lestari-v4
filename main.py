@@ -257,7 +257,7 @@ def render_topbar():
                 <span style='background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px;'>
                     👤 {st.session_state["email"]}
                 </span>
-                <a href="pages/login?logout=true" target="_self">
+                <a href="/login?logout=true" target="_self">
                     <button style='
                         background: #ff4b4b;
                         color: white;
@@ -294,6 +294,9 @@ def render_topbar():
         )
 
 # Pengecekan session
+if "user" not in st.session_state:
+    st.switch_page("pages/login.py")
+    
 if "user" not in st.session_state and not st.query_params.get("logout"):
     st.switch_page("pages/login.py")
 
