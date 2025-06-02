@@ -77,16 +77,16 @@ def render_topbar():
     col1, col2 = st.columns([8, 1])
     with col2:
         if st.session_state.get("user"):
-            st.markdown(
-                f"""
-                <div style='position: fixed; top: 10px; right: 20px; z-index:9999;'>
-                    👤 {st.session_state["email"]}<br>
-                    <form action="?logout" method="get">
-                        <button style="background:#ff4b4b;color:white;border:none;padding:4px 10px;border-radius:5px;">Logout</button>
-                    </form>
-                </div>
-                """, unsafe_allow_html=True
-            )
+        st.markdown(
+            f"""
+            <div style='position: fixed; top: 10px; right: 20px; z-index:9999;'>
+                👤 {st.session_state["email"]}<br>
+                <a href="/login?logout=true" target="_self">
+                    <button style="background:#ff4b4b;color:white;border:none;padding:4px 10px;border-radius:5px;">Logout</button>
+                </a>
+            </div>
+            """, unsafe_allow_html=True
+        )
         else:
             st.markdown(
                 f"""
