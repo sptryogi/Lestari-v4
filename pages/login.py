@@ -77,7 +77,7 @@ def render_topbar():
     col1, col2 = st.columns([8, 1])
     with col2:
         if st.session_state.get("user"):
-        st.markdown(
+            st.markdown(
             f"""
             <div style='position: fixed; top: 10px; right: 20px; z-index:9999;'>
                 👤 {st.session_state["email"]}<br>
@@ -86,7 +86,7 @@ def render_topbar():
                 </a>
             </div>
             """, unsafe_allow_html=True
-        )
+            )
         else:
             st.markdown(
                 f"""
