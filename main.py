@@ -6,7 +6,7 @@ from AI_chatbot import generate_text_deepseek, call_deepseek_api, kapitalisasi_a
 from constraint1 import highlight_text, constraint_text, ubah_ke_lema, find_the_lema_pair, cari_arti_lema
 import streamlit.components.v1 as components
 from supabase_helper import *
-import uuid
+import uuid, time
 
 st.set_page_config(page_title="Lestari Bahasa", page_icon="🌐", layout="centered")  # atau "centered"
     
@@ -257,7 +257,7 @@ def render_topbar():
                 <span style='background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px;'>
                     👤 {st.session_state["email"]}
                 </span>
-                <a href="/login?logout=true" target="_self">
+                <a href="/login?logout=true&t={int(time.time())}" target="_self">
                     <button style='
                         background: #ff4b4b;
                         color: white;
