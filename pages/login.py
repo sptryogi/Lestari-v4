@@ -252,10 +252,13 @@ def chat_ui():
         }).execute()
         st.rerun()
 
+st.cache_data.clear()
+st.cache_resource.clear()
 
 if "logout" in st.query_params:
     sign_out()
     st.session_state.clear()
+    st.cache_data.clear()
     st.rerun()
     
 # if "user" in st.session_state and "logout" not in st.query_params:
