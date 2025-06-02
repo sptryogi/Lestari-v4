@@ -402,6 +402,10 @@ def clear_input():
     if "user_input" in st.session_state:
         st.session_state["user_input"] = ""
 
+if "db_initialized" not in st.session_state:
+    create_chat_history_table()
+    st.session_state.db_initialized = True
+    
 def handle_send():
     pasangan_cag = {}
     history_for_prompt = st.session_state.chat_history[-50:]
