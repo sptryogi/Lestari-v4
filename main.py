@@ -92,34 +92,34 @@ def set_background_from_file(file_path):
     """, unsafe_allow_html=True)
 
 # Tombol Login di pojok kanan atas
-st.markdown("""
-    <style>
-        .login-container {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            z-index: 999;
-        }
-        .login-btn {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 8px 16px;
-            font-size: 14px;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        .login-btn:hover {
-            background-color: #45a049;
-        }
-    </style>
-    <div class="login-container">
-        <a href="/login" target="_self">
-            <button class="login-btn">Login</button>
-        </a>
-    </div>
-""", unsafe_allow_html=True)
+# st.markdown("""
+#     <style>
+#         .login-container {
+#             position: fixed;
+#             top: 10px;
+#             right: 10px;
+#             z-index: 999;
+#         }
+#         .login-btn {
+#             background-color: #4CAF50;
+#             color: white;
+#             border: none;
+#             border-radius: 5px;
+#             padding: 8px 16px;
+#             font-size: 14px;
+#             cursor: pointer;
+#             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+#         }
+#         .login-btn:hover {
+#             background-color: #45a049;
+#         }
+#     </style>
+#     <div class="login-container">
+#         <a href="/login" target="_self">
+#             <button class="login-btn">Login</button>
+#         </a>
+#     </div>
+# """, unsafe_allow_html=True)
 
 set_background_from_file("dataset/bg biru.jpg")
 
