@@ -260,9 +260,7 @@ if "logout" in st.query_params:
     st.session_state.clear()
     st.rerun()
 
-if "login" in st.query_params:
-    auth_flow()
-elif st.session_state.get("user"):
-    chat_ui()
+if st.session_state.get("user"):
+    st.switch_page("main.py")  # Redirect ke main jika sudah login
 else:
-    auth_flow()
+    auth_flow() 
