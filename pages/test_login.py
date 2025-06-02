@@ -92,6 +92,7 @@ def set_background_from_file(file_path):
     """, unsafe_allow_html=True)
 
 # Tombol Login di pojok kanan atas
+# Tombol Login di pojok kanan atas
 st.markdown("""
     <style>
         .login-container {
@@ -115,7 +116,9 @@ st.markdown("""
         }
     </style>
     <div class="login-container">
-        <button class="login-btn">Login</button>
+        <a href="/login" target="_self">
+            <button class="login-btn">Login</button>
+        </a>
     </div>
 """, unsafe_allow_html=True)
 
