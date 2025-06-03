@@ -480,12 +480,14 @@ if "user" in st.session_state:
     )
     
     for chat in chat_history:
+        user_msg = chat[0]
+        bot_msg = chat[1]
         st.markdown(
-            f"<div class='chat-container'><div class='chat-bubble-user'>{chat['message']}</div></div>",
+            f"<div class='chat-container'><div class='chat-bubble-user'>{user_msg}</div></div>",
             unsafe_allow_html=True
         )
         st.markdown(
-            f"<div class='chat-container'><div class='chat-bubble-bot'>{chat['response']}</div></div>",
+            f"<div class='chat-container'><div class='chat-bubble-bot'>{bot_msg}</div></div>",
             unsafe_allow_html=True
         )
         if status:
