@@ -4,6 +4,8 @@ import streamlit as st
 import re
 import string
 from supabase_helper import *
+import request
+import json
 
 # GET AGE FROM EMAIL
 # def get_age_by_email(email):
@@ -34,47 +36,50 @@ from supabase_helper import *
 
 
 # Fungsi untuk memanggil Deepseek API
-def call_deepseek_api(history, prompt):
-    # Ganti ini dengan API key kamu
-    client = OpenAI(
-        api_key=st.secrets["API_KEY"],  # Simpan API key DeepSeek di secrets Streamlit
-        base_url="https://api.deepseek.com"
-    )
+def call_deepseek_api(prompt, history=None):
+    api_key = st.secret["API_KEY"]
+    url = "https://api.deepseek.com/v1/chat/completions"
 
-    # Menyusun format pesan sesuai dengan DeepSeek
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+
     messages = [{"role": "system", "content": "You are a helpful assistant."}]
-    
     if history:
-        for user_msg, bot_msg, _ in history:
-            messages.append({"role": "user", "content": user_msg})
-            messages.append({"role": "assistant", "content": bot_msg})
+        for h in history:
+            messages.append({"role": "user", "content": h["message"]})
+            messages.append({"role": "assistant", "content": h["response"]})
 
-    # Tambahkan prompt terbaru dari user
     messages.append({"role": "user", "content": prompt})
 
-    try:
-        response = client.chat.completions.create(
-            model="deepseek-chat",
-            messages=messages,
-            temperature=0.7,
-            stream=False
-        )
-        return response.choices[0].message.content
+    payload = {
+        "model": "deepseek-chat",
+        "messages": messages,
+        "temperature": 0.7,
+        "stream": False
+    }
 
+    try:
+        response = requests.post(url, headers=headers, data=json.dumps(payload))
+        response.raise_for_status()  # trigger exception if HTTP error
+        data = response.json()
+        return data["choices"][0]["message"]["content"]
     except Exception as e:
-        print(f"Error saat memanggil DeepSeek API: {e}")
+        st.error(f"Error DeepSeek: {e}")
         return "Maaf, terjadi kesalahan saat memproses permintaan Anda."
 
 def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda", chat_mode = "Ngobrol", history=None):
-    # age = get_age_by_id("fd5a8287-e65e-466a-8ef2-b99ab5808d81")
-    age = 30
+    user_age = 30  # Default
+    if "user" in st.session_state:
+        try:
+            profile = supabase.table("profiles").select("age").eq("id", st.session_state.user.id).execute()
+            if profile.data:
+                user_age = profile.data[0]["age"]
+        except:
+            pass
 
-    klasifikasi_bahasa = "LOMA"
-    
-    if age >= 30:
-        klasifikasi_bahasa = "HALUS"
-    elif age < 30:
-        klasifikasi_bahasa = "LOMA"
+    klasifikasi_bahasa = "LOMA" if user_age < 30 else "HALUS"
     
     # Instruksi berdasarkan fitur dan mode bahasa
     if fitur == "chatbot":
@@ -141,8 +146,11 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
         # fallback
         final_prompt = f"Jawablah dengan sopan dan informatif: {user_input}"
 
-    # === Panggil LLM Deepseek API di sini ===
-    response = call_deepseek_api(history=history, prompt=final_prompt)  # Fungsi ini kamu sesuaikan dengan API Groq kamu
+    formatted_history = None
+    if history:
+        formatted_history = [{"message": h["message"], "response": h["response"]} for h in history]
+    
+    response = call_deepseek_api(prompt=final_prompt, history=formatted_history)
     return response
 
 def bersihkan_superscript(teks):
