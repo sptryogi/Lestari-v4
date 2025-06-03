@@ -37,7 +37,7 @@ import json
 
 # Fungsi untuk memanggil Deepseek API
 def call_deepseek_api(prompt, history=None):
-    api_key = st.secret["API_KEY"]
+    api_key = st.secrets["API_KEY"]
     url = "https://api.deepseek.com/v1/chat/completions"
 
     headers = {
