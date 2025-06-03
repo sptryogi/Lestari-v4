@@ -136,6 +136,7 @@ def auth_flow():
                 st.error(f"Login gagal: {str(e)}")
         if st.button("Belum punya akun? Daftar"):
             st.session_state.register_mode = True
+            st.rerun()
     
 
 # if "logout" in st.query_params:
