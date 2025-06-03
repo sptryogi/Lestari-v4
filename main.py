@@ -487,14 +487,14 @@ if "user" in st.session_state:
     )
     
     for chat in chat_history:
-        st.markdown(
-            f"<div class='chat-container'><div class='chat-bubble-user'>{chat['message']}</div></div>",
-            unsafe_allow_html=True
-        )
-        st.markdown(
-            f"<div class='chat-container'><div class='chat-bubble-bot'>{chat['response']}</div></div>",
-            unsafe_allow_html=True
-        )
+        if isinstance(chat, dict):
+            user_msg = chat.get("message", "")
+            bot_msg = chat.get("response", "")
+        else:
+            user_msg, bot_msg = chat[0], chat[1]
+
+        st.markdown(f"<div class='chat-container'><div class='chat-bubble-user'>{user_msg}</div></div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='chat-container'><div class='chat-bubble-bot'>{bot_msg}</div></div>", unsafe_allow_html=True)
 
 st.markdown("</div>", unsafe_allow_html=True)  # ⬅️ END OF chat-container-outer
 
