@@ -450,6 +450,9 @@ def handle_send():
         fitur = "terjemahsundaindo"
         bot_response2 = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history=None)
         text_constraint, _ = ubah_ke_lema(bot_response2, df_kamus, df_idiom)
+        pasangan_kata = {}
+        pasangan_ekuivalen = {}
+        pasangan_kata = {}
     elif option == "Terjemah Indo → Sunda":
         fitur = "terjemahindosunda"
         bot_response2 = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history=None)
