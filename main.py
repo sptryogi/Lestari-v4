@@ -349,6 +349,20 @@ with st.sidebar:
         mode_bahasa = None
 
     status = st.toggle("🔍 Lihat Constraint")
+
+    # Room chat tetap (room-1 sampai room-5)
+    room_options = [f"room-{i}" for i in range(1, 6)]
+    current_room = st.session_state.get("room", "room-1")
+
+    selected_room = st.selectbox(
+        "Pilih Room Chat (Tetap)",
+        room_options,
+        index=room_options.index(current_room)
+    )
+
+    if selected_room != current_room:
+        st.session_state.room = selected_room
+        st.rerun()
     
 st.markdown("<h1 style='color:white'>Lestari Bahasa</h1>", unsafe_allow_html=True)
 bahasa_list = ["Sunda", "Indonesia", "English"]
@@ -387,12 +401,6 @@ st.markdown("""
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-# st.markdown(f"**Hasil ekuivalen:** {user_input_ekuivalen}")
-
-# ====================================
-# # Input tanpa label karena sudah ditampilkan sebelumnya
-# user_input = st.text_input(label="", key="user_input")
-
 # Inisialisasi session state jika belum ada
 if "user_input" not in st.session_state:
     st.session_state.user_input = ""
@@ -403,39 +411,38 @@ def clear_input():
         st.session_state["user_input"] = ""
     
 def handle_send():
-    pasangan_cag = {}
-    history_for_prompt = st.session_state.chat_history[-50:]
-    user_input = st.session_state.user_input
+    if "user" not in st.session_state:
+        st.error("Silakan login terlebih dahulu")
+        return
     
-    # Ambil fitur dan mode_bahasa dari session_state
+    pasangan_cag = {}
+    user_input = st.session_state.user_input
+    current_room = st.session_state.get("room", "default")
+    
+    # Ambil history dari database
+    history = get_chat_history(st.session_state.user.id, current_room)
+    history_for_prompt = [{"message": msg["message"], "response": msg["response"]} for msg in history]
+    
+    # Proses AI response (sama seperti sebelumnya)
     option = st.session_state.get("fitur_selector", "Chatbot")
-    fitur = (
-        "chatbot" if option == "Chatbot" else
-        "terjemahindosunda" if option == "Terjemah Indo → Sunda" else
-        "terjemahsundaindo"
-    )
+    fitur = "chatbot" if option == "Chatbot" else "terjemahindosunda" if option == "Terjemah Indo → Sunda" else "terjemahsundaindo"
     mode_bahasa = st.session_state.get("mode_selector", "Sunda") if fitur == "chatbot" else None
 
-    # Proses hasil seperti yang kamu punya
     if fitur == "chatbot" and mode_bahasa == "Sunda":
         bot_response = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history=history_for_prompt)
-        # bot_response_ekuivalen, pasangan_ganti_ekuivalen = ubah_ke_lema(bot_response, df_kamus, df_idiom)
         pasangan_ganti_ekuivalen = {}
         text_constraint, kata_terdapat, kata_tidak_terdapat, pasangan_kata, pasangan_ekuivalen = highlight_text(bot_response, df_kamus, df_idiom, fitur)
         text_constraint = kapitalisasi_awal_kalimat(text_constraint)
     elif fitur == "chatbot" and (mode_bahasa == "Indonesia" or mode_bahasa == "English"):
         bot_response = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history=history_for_prompt)
         text_constraint = bot_response
-        pasangan_ganti_ekuivalen = {}
+        pasangan_kata = {}
         pasangan_ekuivalen = {}
         pasangan_kata = {}
-
     elif option == "Terjemah Sunda → Indo":
         fitur = "terjemahsundaindo"
         bot_response2 = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history=None)
-        bot_response_ekuivalen, pasangan_ganti_ekuivalen = ubah_ke_lema(bot_response2, df_kamus, df_idiom)
-        #bot_response_ekuivalen = ubah_ke_lema(bot_response2, df_kamus)
-        #text_constraint, kata_terdapat, kata_tidak_terdapat, pasangan_kata, pasangan_ekuivalen = highlight_text(bot_response_ekuivalen, df_kamus, df_idiom, fitur)
+        text_constraint, _ = ubah_ke_lema(bot_response2, df_kamus, df_idiom)
     elif option == "Terjemah Indo → Sunda":
         fitur = "terjemahindosunda"
         bot_response2 = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history=None)
@@ -454,19 +461,34 @@ def handle_send():
         f"<p style='color: yellow;'>{pasangan_cag}</p>",
     ]
 
-    st.session_state.chat_history.append((user_input, text_constraint, html_block))
+    # Simpan ke database
+    save_chat_message(
+        user_id=st.session_state.user.id,
+        message=user_input,
+        response=text_constraint,
+        room=st.session_state.get("room", "room-1")
+    )
+    
     clear_input()
     
-for user_msg, bot_msg, html_block in st.session_state.chat_history:
-    st.markdown(
-        f"<div class='chat-container'><div class='chat-bubble-user'>{user_msg}</div></div>",
-        unsafe_allow_html=True
+# Modifikasi bagian tampilan chat history
+if "user" in st.session_state:
+    current_room = st.session_state.get("room", "room-1")
+    chat_history = get_chat_history(
+        user_id=st.session_state.user.id,
+        room=st.session_state.get("room", "room-1")
     )
-    st.markdown(
-        f"<div class='chat-container'><div class='chat-bubble-bot'>{bot_msg}</div></div>",
-        unsafe_allow_html=True
-    )
-    if status:
+    
+    for chat in chat_history:
+        st.markdown(
+            f"<div class='chat-container'><div class='chat-bubble-user'>{chat['message']}</div></div>",
+            unsafe_allow_html=True
+        )
+        st.markdown(
+            f"<div class='chat-container'><div class='chat-bubble-bot'>{chat['response']}</div></div>",
+            unsafe_allow_html=True
+        )
+        if status:
         for html in html_block:
             st.markdown(
                 f"<div class='chat-container'><div class='chat-bubble-bot'>{html}</div></div>",
@@ -487,7 +509,13 @@ with col2:
 col_left, col_right = st.columns([1, 2])
 
 with col_left:
-    st.button("🔄 Delete Chat History", on_click=lambda: st.session_state.update(chat_history=[]))
+    if st.button("🔄 Delete Chat History"):
+        supabase.table("chat_history") \
+            .delete() \
+            .eq("user_id", st.session_state.user.id) \
+            .eq("room", st.session_state.get("room", "room-1")) \
+            .execute()
+        st.rerun()
 
 # Tambah anchor di akhir chat
 st.markdown('<a name="scroll-bottom"></a>', unsafe_allow_html=True)
