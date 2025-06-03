@@ -4,7 +4,7 @@ import streamlit as st
 import re
 import string
 from supabase_helper import *
-import request
+import requests
 import json
 
 # GET AGE FROM EMAIL
