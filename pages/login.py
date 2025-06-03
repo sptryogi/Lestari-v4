@@ -119,6 +119,11 @@ def auth_flow():
                 st.error(f"Gagal membuat akun: {e}")
         if st.button("Sudah punya akun? Login"):
             st.session_state.register_mode = False
+            st.rerun()
+        st.markdown(
+            "<small style='color:gray'>*Jika belum muncul, klik tombol sekali lagi.</small>",
+            unsafe_allow_html=True
+        )   
     else:
         st.subheader("Login")
         email = st.text_input("Email").strip()
@@ -137,6 +142,10 @@ def auth_flow():
         if st.button("Belum punya akun? Daftar"):
             st.session_state.register_mode = True
             st.rerun()
+        st.markdown(
+            "<small style='color:gray'>*Jika belum muncul, klik tombol sekali lagi.</small>",
+            unsafe_allow_html=True
+        )
     
 
 # if "logout" in st.query_params:
