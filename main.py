@@ -401,6 +401,12 @@ st.markdown("""
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
+# st.markdown(f"**Hasil ekuivalen:** {user_input_ekuivalen}")
+
+# ====================================
+# # Input tanpa label karena sudah ditampilkan sebelumnya
+# user_input = st.text_input(label="", key="user_input")
+
 # Inisialisasi session state jika belum ada
 if "user_input" not in st.session_state:
     st.session_state.user_input = ""
@@ -409,7 +415,8 @@ if "user_input" not in st.session_state:
 def clear_input():
     if "user_input" in st.session_state:
         st.session_state["user_input"] = ""
-    
+
+# Modifikasi handle_send()
 def handle_send():
     if "user" not in st.session_state:
         st.error("Silakan login terlebih dahulu")
@@ -488,15 +495,9 @@ if "user" in st.session_state:
             f"<div class='chat-container'><div class='chat-bubble-bot'>{chat['response']}</div></div>",
             unsafe_allow_html=True
         )
-        if status:
-            for html in html_block:
-                st.markdown(
-                    f"<div class='chat-container'><div class='chat-bubble-bot'>{html}</div></div>",
-                    unsafe_allow_html=True
-                )
 
 st.markdown("</div>", unsafe_allow_html=True)  # ⬅️ END OF chat-container-outer
-    
+
 col1, col2 = st.columns([6, 1])
 with col1:
     user_input = st.text_area(
@@ -506,8 +507,8 @@ with col1:
    
 with col2:
     st.button("➡", on_click=handle_send)
-col_left, col_right = st.columns([1, 2])
 
+col_left, col_right = st.columns([1, 2])
 with col_left:
     if st.button("🔄 Delete Chat History"):
         supabase.table("chat_history") \
