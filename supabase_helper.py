@@ -21,36 +21,56 @@ def sign_out():
 def get_user_session():
     return supabase.auth.get_session()
 
-def insert_chat_message(user_id: str, message: str, response: str, room: str = "default"):
-    """Insert a new chat message into the database"""
-    return supabase.table("chat_history").insert({
-        "id": str(uuid.uuid4()),
+def get_user_chat_rooms(user_id):
+    result = supabase.table("chat_history") \
+        .select("room") \
+        .eq("user_id", user_id) \
+        .execute()
+    if result.data:
+        rooms = list(set([r["room"] for r in result.data]))
+        return sorted(rooms)
+    return []
+
+def delete_chat_room(user_id, room_name):
+    supabase.table("chat_history") \
+        .delete() \
+        .eq("user_id", user_id) \
+        .eq("room", room_name) \
+        .execute()
+
+def insert_chat_history(user_id, room, message, response):
+    supabase.table("chat_history").insert({
+        "user_id": user_id,
+        "room": room,
+        "message": message,
+        "response": response
+    }).execute()
+
+def fetch_chat_history(user_id, room):
+    result = supabase.table("chat_history") \
+        .select("*") \
+        .eq("user_id", user_id) \
+        .eq("room", room) \
+        .order("created_at", desc=False) \
+        .execute()
+    return result.data if result else []
+
+# Fungsi untuk menyimpan chat history
+def save_chat_message(user_id, message, response, room="default"):
+    supabase.table("chat_history").insert({
         "user_id": user_id,
         "message": message,
         "response": response,
         "room": room
     }).execute()
 
-def get_chat_history(user_id: str, room: str = "default", limit: int = 50):
-    """Retrieve chat history for a user in a specific room"""
-    return supabase.table("chat_history") \
+# Fungsi untuk mengambil chat history
+def get_chat_history(user_id, room="default", limit=50):
+    result = supabase.table("chat_history") \
         .select("*") \
         .eq("user_id", user_id) \
         .eq("room", room) \
         .order("created_at", desc=False) \
         .limit(limit) \
         .execute()
-
-def delete_chat_message(message_id: str):
-    """Delete a chat message by ID"""
-    return supabase.table("chat_history") \
-        .delete() \
-        .eq("id", message_id) \
-        .execute()
-
-def update_chat_message(message_id: str, new_message: str):
-    """Update a chat message"""
-    return supabase.table("chat_history") \
-        .update({"message": new_message}) \
-        .eq("id", message_id) \
-        .execute()
+    return result.data if result else []
