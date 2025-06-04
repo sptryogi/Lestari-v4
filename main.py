@@ -91,36 +91,6 @@ def set_background_from_file(file_path):
         </style>
     """, unsafe_allow_html=True)
 
-# Tombol Login di pojok kanan atas
-# st.markdown("""
-#     <style>
-#         .login-container {
-#             position: fixed;
-#             top: 10px;
-#             right: 10px;
-#             z-index: 999;
-#         }
-#         .login-btn {
-#             background-color: #4CAF50;
-#             color: white;
-#             border: none;
-#             border-radius: 5px;
-#             padding: 8px 16px;
-#             font-size: 14px;
-#             cursor: pointer;
-#             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-#         }
-#         .login-btn:hover {
-#             background-color: #45a049;
-#         }
-#     </style>
-#     <div class="login-container">
-#         <a href="/login" target="_self">
-#             <button class="login-btn">Login</button>
-#         </a>
-#     </div>
-# """, unsafe_allow_html=True)
-
 set_background_from_file("dataset/bg biru.jpg")
 
 st.markdown(
@@ -431,12 +401,12 @@ def handle_send():
     #max_history = 10
     #recent_history = history[-max_history:]
     # history_for_prompt = [{"message": msg["message"], "response": msg["response"]} for msg in recent_history]
-    history_for_ai = []
+    history_for_prompt = []
     if history:
         # Pastikan kita hanya mengambil yang memiliki message dan response
-        history_for_ai = [
+        history_for_prompt = [
             {"message": msg["message"], "response": msg["response"]} 
-            for msg in history_data[-5:] 
+            for msg in history[-5:] 
             if "message" in msg and "response" in msg
         ]
         
