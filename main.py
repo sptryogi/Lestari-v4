@@ -275,7 +275,7 @@ render_topbar()
 
 # Load kamus
 # df_kamus = pd.read_excel("dataset/data_kamus_full_14-5-25.xlsx")
-df_kamus = pd.read_excel("dataset_lengkap.xlsx")
+df_kamus = pd.read_excel("kamus_gabungan_tanpa_duplikat.xlsx")
 df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']] = df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']].apply(lambda col: col.str.lower())
 df_idiom = pd.read_excel("dataset/data_idiom (3).xlsx")
 
