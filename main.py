@@ -398,17 +398,9 @@ def handle_send():
     
     # Ambil history dari database
     history = get_chat_history(st.session_state.user.id, current_room)
-    #max_history = 10
-    #recent_history = history[-max_history:]
-    # history_for_prompt = [{"message": msg["message"], "response": msg["response"]} for msg in recent_history]
-    history_for_prompt = []
-    if history:
-        # Pastikan kita hanya mengambil yang memiliki message dan response
-        history_for_prompt = [
-            {"message": msg["message"], "response": msg["response"]} 
-            for msg in history[-5:] 
-            if "message" in msg and "response" in msg
-        ]
+    max_history = 10
+    recent_history = history[-max_history:]
+    history_for_prompt = [{"message": msg["message"], "response": msg["response"]} for msg in recent_history]
         
     # Proses AI response (sama seperti sebelumnya)
     option = st.session_state.get("fitur_selector", "Chatbot")
