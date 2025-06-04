@@ -325,7 +325,7 @@ with st.sidebar:
     current_room = st.session_state.get("room", "room-1")
 
     selected_room = st.selectbox(
-        "Pilih Room Chat (Tetap)",
+        "Pilih Chat-Room",
         room_options,
         index=room_options.index(current_room)
     )
