@@ -398,8 +398,8 @@ st.markdown("""
 </span>
 """, unsafe_allow_html=True)
 
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
+# if "chat_history" not in st.session_state:
+#     st.session_state.chat_history = []
 
 # st.markdown(f"**Hasil ekuivalen:** {user_input_ekuivalen}")
 
