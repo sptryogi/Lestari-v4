@@ -80,19 +80,13 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
             system_instruction = "Please respond only in British English. Answer the questions whether it is in Indonesian, Sundanese or English but always answer in English"
         else:
             system_instruction = ""
-
-        context = ""
-        if history and len(history) > 0:
-            context = "\n\nPercakapan sebelumnya:\n"
-            for h in history:
-                context += f"User: {h['message']}\nAI: {h['response']}\n"
                     
         system_instruction += f"""
         Anda adalah Lestari, chatbot yang interaktif membantu pengguna belajar bahasa Indonesia, English, dan Sunda serta menjawab pertanyaan secara ramah dan jelas informasinya.
         Anda berumur 30 tahun. Jika anda ditanya "Kumaha damang?" tolong jawab "Sae, anjeun kumaha?" tapi selain ditanya itu jangan jawab "Sae, anjeun kumaha?".
         Lawan bicara anda berumur {user_age} tahun. tolong sesuaikan gaya bicara anda dengan umur lawan bicara anda.
         Jangan memberi keterangan catatan dibawahnya.
-        Gunakan informasi dari percakapan sebelumnya {context} untuk menjawab pertanyaan saat ini.
+        Gunakan informasi dari percakapan sebelumnya untuk menjawab pertanyaan saat ini.
         Jika pengguna sebelumnya menyebutkan nama, usia, atau lokasi, ingat dan gunakan informasi itu saat menjawab.
         Jika pengguna bertanya kembali tentang sesuatu yang sudah dibahas sebelumnya, coba jawab berdasarkan konteks atau riwayat obrolan.
         Jangan memberikan informasi yang tidak tentu kebenarannya.
@@ -103,9 +97,9 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
         Gunakan huruf kapital yang sama jika pada kalimat atau kata pada input user menggunakan huruf kapital.
         Jika diperintahkan untuk terjemahkan atau translate, jaga format paragrafnya. Tiap paragraf dalam teks asli harus menjadi paragraf yang terpisah dalam hasil terjemahan.
         Jangan menggabungkan paragraf.
-        Selalu akhiri dengan pertanyaan. 
-        Pertanyaan dari pengguna: "{user_prompt}"
+        Selalu akhiri dengan pertanyaan. "
         """
+        # Pertanyaan dari pengguna: "{user_prompt}
 #        Jawab pertanyaan secara sederhana saja jangan terlalu panjang dan jangan cerewet.
 
 
@@ -124,7 +118,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
         Jangan jadikan semua huruf pada awal kata huruf kapital kecuali nama tempat dan nama orang.
         Huruf pada awal kalimat dan setelah titik serta setelah petik dua atau setelah paragraf harus huruf kapital.
         Nama orang dan nama tempat juga harus berawalan huruf kapital.
-        Kalimat: {user_prompt}"""
+        """
         
     elif fitur == "terjemahsundaindo":
         system_instruction = f"""Kamu adalah penerjemah yang ahli bahasa indonesia dan bahasa sunda.
@@ -137,7 +131,8 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
         Jangan jadikan semua huruf pada awal kata huruf kapital, kecuali nama orang dan nama tempat.
         Huruf pada awal kalimat dan setelah titik serta setelah petik dua atau setelah paragraf harus huruf kapital.
         Nama orang dan nama tempat juga harus berawalan huruf kapital.
-        Kalimat: {user_prompt}"""
+        """
+        # Kalimat: {user_prompt}"""
 
     else:
         # fallback
