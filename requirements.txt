@@ -1,0 +1,9 @@
+streamlit==1.43.2
+openai
+pandas
+openpyxl
+regex
+numpy
+scikit-learn
+pybase64
+supabase
