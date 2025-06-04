@@ -428,7 +428,10 @@ def handle_send():
     
     # Ambil history dari database
     history = get_chat_history(st.session_state.user.id, current_room)
-    history_for_prompt = [{"message": msg["message"], "response": msg["response"]} for msg in history]
+    
+    # Ambil hanya 10–20 terakhir
+    recent_history = history[-10:] if len(history) > 10 else history
+    history_for_prompt = [{"message": msg["message"], "response": msg["response"]} for msg in recent_history]
     
     # Proses AI response (sama seperti sebelumnya)
     option = st.session_state.get("fitur_selector", "Chatbot")
