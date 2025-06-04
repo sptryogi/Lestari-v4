@@ -82,10 +82,10 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
             system_instruction = ""
 
         context = ""
-            if history and len(history) > 0:
-                context = "\n\nPercakapan sebelumnya:\n"
-                for h in history:
-                    context += f"User: {h['message']}\nAI: {h['response']}\n"
+        if history and len(history) > 0:
+            context = "\n\nPercakapan sebelumnya:\n"
+            for h in history:
+                context += f"User: {h['message']}\nAI: {h['response']}\n"
                     
         system_instruction += f"""
         Anda adalah Lestari, chatbot yang interaktif membantu pengguna belajar bahasa Indonesia, English, dan Sunda serta menjawab pertanyaan secara ramah dan jelas informasinya.
