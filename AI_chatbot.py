@@ -7,36 +7,8 @@ from supabase_helper import *
 import requests
 import json
 
-# GET AGE FROM EMAIL
-# def get_age_by_email(email):
-#     # Dapatkan user berdasarkan email
-#     user_data = supabase.auth.admin.get_user_by_email(email)
-#     user_id = user_data.user.id
-    
-#     # Ambil age dari tabel profiles berdasarkan id
-#     profile_data = supabase.table("profiles").select("age").eq("id", user_id).single().execute()
-#     age = profile_data.data["age"]
-    
-#     return age
-
-# # GET AGE FROM ID
-# def get_age_by_id(user_id):
-#     try:
-#         # Ambil age dari tabel profiles berdasarkan id
-#         response = supabase.table("profiles").select("age").eq("id", user_id).single().execute()
-
-#         if response.data and "age" in response.data:
-#             return response.data["age"]
-#         else:
-#             print("Data umur tidak ditemukan.")
-#             return None
-#     except Exception as e:
-#         print(f"Terjadi kesalahan: {e}")
-#         return None
-
-
 # Fungsi untuk memanggil Deepseek API
-def call_deepseek_api(prompt, history=None):
+def call_deepseek_api(prompt, history=None,  system_instruction=None):
     api_key = st.secrets["API_KEY"]
     url = "https://api.deepseek.com/v1/chat/completions"
 
@@ -45,7 +17,12 @@ def call_deepseek_api(prompt, history=None):
         "Content-Type": "application/json"
     }
 
-    messages = [{"role": "system", "content": "You are a helpful assistant."}]
+    messages = []
+    if system_instruction:
+        messages.append({"role": "system", "content": system_instruction})
+    else:
+        messages.append({"role": "system", "content": "You are a helpful assistant."})
+        
     if history:
         for h in history:
             messages.append({"role": "user", "content": h["message"]})
@@ -80,14 +57,17 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
             pass
 
     klasifikasi_bahasa = "LOMA" if user_age < 30 else "HALUS"
+
+    system_instruction = ""
+    user_prompt = user_input
     
     # Instruksi berdasarkan fitur dan mode bahasa
     if fitur == "chatbot":
         if mode_bahasa == "Sunda":
             if chat_mode == "Ngobrol":
-                instruksi_bahasa = f"Jawablah hanya dalam Bahasa Sunda {klasifikasi_bahasa}. Jawab pertanyaannya mau itu Bahasa Sunda, Bahasa Indonesia atau English tapi tetap jawab pakai Bahasa Sunda Loma. Gunakan tata bahasa sunda yang baik dan benar."
+                system_instruction = f"Jawablah hanya dalam Bahasa Sunda {klasifikasi_bahasa}. Jawab pertanyaannya mau itu Bahasa Sunda, Bahasa Indonesia atau English tapi tetap jawab pakai Bahasa Sunda Loma. Gunakan tata bahasa sunda yang baik dan benar."
             elif chat_mode == "Belajar":
-                instruksi_bahasa = f"""Anda adalah asisten untuk pelajar Bahasa Sunda.
+                system_instruction = f"""Anda adalah asisten untuk pelajar Bahasa Sunda.
                                     Jawablah hanya dalam Bahasa Sunda {klasifikasi_bahasa}, dengan gaya edukatif dan mudah dipahami oleh pelajar berusia {user_age} tahun.
                                     Jelaskan konsep dengan runtut dan terstruktur.
                                     Jika memungkinkan, berikan contoh atau penjelasan tambahan yang membantu proses belajar.
@@ -95,13 +75,13 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
                                     Mengoreksi Kata atau kalimat jika salah dan beri penjelasan.
                                     """
         elif mode_bahasa == "Indonesia":
-            instruksi_bahasa = "Jawablah hanya dalam Bahasa Indonesia. Jawab pertanyaannya mau itu Bahasa Indonesia, Bahasa Sunda atau English tapi tetap jawab pakai Bahasa Indonesia."
+            system_instruction = "Jawablah hanya dalam Bahasa Indonesia. Jawab pertanyaannya mau itu Bahasa Indonesia, Bahasa Sunda atau English tapi tetap jawab pakai Bahasa Indonesia."
         elif mode_bahasa == "English":
-            instruksi_bahasa = "Please respond only in British English. Answer the questions whether it is in Indonesian, Sundanese or English but always answer in English"
+            system_instruction = "Please respond only in British English. Answer the questions whether it is in Indonesian, Sundanese or English but always answer in English"
         else:
-            instruksi_bahasa = ""
+            system_instruction = ""
 
-        final_prompt = f"""
+        system_instruction += f"""
         {instruksi_bahasa}
         Anda adalah Lestari, chatbot yang interaktif membantu pengguna belajar bahasa Indonesia, English, dan Sunda serta menjawab pertanyaan secara ramah dan jelas informasinya.
         Anda berumur 30 tahun. Jika anda ditanya "Kumaha damang?" tolong jawab "Sae, anjeun kumaha?" tapi selain ditanya itu jangan jawab "Sae, anjeun kumaha?".
@@ -125,7 +105,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
 
 
     elif fitur == "terjemahindosunda":
-        final_prompt = f"""Kamu adalah penerjemah yang ahli bahasa sunda dan bahasa indonesia.
+        system_instruction = f"""Kamu adalah penerjemah yang ahli bahasa sunda dan bahasa indonesia.
         Terjemahkan kalimat berikut ke dalam Bahasa Sunda LOMA secara alami seperti digunakan dalam kehidupan sehari-hari.
         Kenali format paragraf kalimat teks dari pengguna.
         Jaga agar format paragraf dan barisnya tetap sama persis seperti teks asli atau input user.
@@ -142,7 +122,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
         Kalimat: {user_input}"""
         
     elif fitur == "terjemahsundaindo":
-        final_prompt = f"""Kamu adalah penerjemah yang ahli bahasa indonesia dan bahasa sunda.
+        system_instruction = f"""Kamu adalah penerjemah yang ahli bahasa indonesia dan bahasa sunda.
         Terjemahkan kalimat berikut ke dalam Bahasa Indonesia yang baku dan mudah dimengerti.
         Jaga agar format paragraf dan barisnya tetap sama persis seperti teks asli atau input user.
         Jangan menggabungkan paragraf.
@@ -156,13 +136,11 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
 
     else:
         # fallback
-        final_prompt = f"Jawablah dengan sopan dan informatif: {user_input}"
+        system_instruction = f"Jawablah dengan sopan dan informatif: {user_input}"
 
-    formatted_history = None
-    if history:
-        formatted_history = [{"message": h["message"], "response": h["response"]} for h in history]
-    
-    response = call_deepseek_api(prompt=final_prompt, history=formatted_history)
+    formatted_history = [{"message": h["message"], "response": h["response"]} for h in history] if history else None
+
+    response = call_deepseek_api(prompt=user_prompt, history=formatted_history, system_instruction=system_instruction)
     return response
 
 def bersihkan_superscript(teks):
@@ -196,16 +174,4 @@ def kapitalisasi_awal_kalimat(teks):
     # Gabungkan kembali paragraf dengan \n\n
     return "\n\n".join(paragraf_hasil)
     
-# def kapitalisasi_awal_kalimat(teks):
-#     # Pecah teks berdasarkan titik
-#     kalimat_list = re.split(r'([.!?])', teks)
-#     hasil = ""
-#     for i in range(0, len(kalimat_list), 2):
-#         kalimat = kalimat_list[i].strip()
-#         if kalimat:
-#             kapital = kalimat[0].upper() + kalimat[1:] if len(kalimat) > 1 else kalimat.upper()
-#             hasil += kapital
-#         if i+1 < len(kalimat_list):
-#             hasil += kalimat_list[i+1] + " "
-#     return hasil.strip()
 
