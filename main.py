@@ -431,7 +431,11 @@ def handle_send():
     max_history = 10
     recent_history = history[-max_history:]
     history_for_prompt = [{"message": msg["message"], "response": msg["response"]} for msg in recent_history]
-    
+
+    print("[DEBUG] History yang dikirim ke AI:")
+    for h in history_for_prompt:
+        print(f"User: {h['message'][:50]} | Bot: {h['response'][:50]}")
+        
     # Proses AI response (sama seperti sebelumnya)
     option = st.session_state.get("fitur_selector", "Chatbot")
     fitur = "chatbot" if option == "Chatbot" else "terjemahindosunda" if option == "Terjemah Indo → Sunda" else "terjemahsundaindo"
