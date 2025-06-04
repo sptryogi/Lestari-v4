@@ -24,9 +24,9 @@ def call_deepseek_api(prompt, history=None,  system_instruction=None):
         messages.append({"role": "system", "content": "You are a helpful assistant."})
         
     if history:
-        for h in history:
-            messages.append({"role": "user", "content": h["message"]})
-            messages.append({"role": "assistant", "content": h["response"]})
+        for msg in history:
+            messages.append({"role": "user", "content": msg["message"]})
+            messages.append({"role": "assistant", "content": msg["response"]})
 
     messages.append({"role": "user", "content": prompt})
 
