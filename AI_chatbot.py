@@ -140,9 +140,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
         # fallback
         system_instruction = f"Jawablah dengan sopan dan informatif: {user_prompt}"
 
-    formatted_history = None
-    if history:
-        formatted_history = [{"message": h["message"], "response": h["response"]} for h in history]
+    formatted_history = [{"message": m[0], "response": m[1]} for m in history] if history else None
 
     response = call_deepseek_api(prompt=user_prompt, history=formatted_history, system_instruction=system_instruction)
     return response
