@@ -34,7 +34,7 @@ def call_deepseek_api(prompt, history=None,  system_instruction=None):
         "model": "deepseek-chat",
         "messages": messages,
         "temperature": 0.5,
-        "stream": False
+        "stream": True
     }
 
     try:
