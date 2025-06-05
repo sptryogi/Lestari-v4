@@ -263,13 +263,6 @@ def render_topbar():
             unsafe_allow_html=True
         )
 
-# Pengecekan session
-# if "user" not in st.session_state:
-#     st.switch_page("pages/login.py")
-    
-# if "user" not in st.session_state and not st.query_params.get("logout"):
-#     st.switch_page("pages/login.py")
-
 # Panggil topbar
 render_topbar()
 
@@ -281,10 +274,6 @@ df_idiom = pd.read_excel("dataset/data_idiom (3).xlsx")
 
 if "user" not in st.session_state and not st.query_params.get("logout"):
     st.switch_page("pages/login.py")
-# if "user" not in st.session_state:
-#     st.switch_page("pages/login.py")
-    
-
     
 # ========== Sidebar Controls ==========
 with st.sidebar:
@@ -369,14 +358,8 @@ st.markdown("""
 </span>
 """, unsafe_allow_html=True)
 
-# if "chat_history" not in st.session_state:
-#     st.session_state.chat_history = []
-
-# st.markdown(f"**Hasil ekuivalen:** {user_input_ekuivalen}")
-
-# ====================================
-# # Input tanpa label karena sudah ditampilkan sebelumnya
-# user_input = st.text_input(label="", key="user_input")
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
 
 # Inisialisasi session state jika belum ada
 if "user_input" not in st.session_state:
@@ -399,9 +382,10 @@ def handle_send():
     
     # Ambil history dari database
     history = get_chat_history(st.session_state.user.id, current_room)
-    max_history = 10
-    recent_history = history[-max_history:]
-    history_for_prompt = [{"message": msg["message"], "response": msg["response"]} for msg in recent_history]
+    # max_history = 10
+    # recent_history = history[-max_history:]
+    # history_for_prompt = [{"message": msg["message"], "response": msg["response"]} for msg in recent_history]
+    history_for_prompt = st.session_state.chat_history[-30:]
         
     # Proses AI response (sama seperti sebelumnya)
     option = st.session_state.get("fitur_selector", "Chatbot")
@@ -443,7 +427,8 @@ def handle_send():
         "<p style='color: yellow;'>CAG:</p>",
         f"<p style='color: yellow;'>{pasangan_cag}</p>",
     ]
-
+    
+    st.session_state.chat_history.append((user_input, bot_response))
     # Simpan ke database
     save_chat_message(
         user_id=st.session_state.user.id,
