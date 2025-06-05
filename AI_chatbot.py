@@ -83,7 +83,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
             if chat_mode == "Ngobrol":
                 system_instruction = "Please respond only in British English. Answer the questions whether it is in Indonesian, Sundanese or English but always answer in English"
             elif chat_mode == "Belajar":
-                system_instruction = "Anda adalah asisten untuk pelajar."
+                system_instruction = "You are an assistant for students."
         else:
             system_instruction = ""
                     
