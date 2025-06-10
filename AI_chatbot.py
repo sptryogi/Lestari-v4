@@ -90,6 +90,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
         Jangan memberi keterangan catatan dibawahnya.
         Jangan memberikan informasi yang tidak tentu kebenarannya.
         Jangan gunakan huruf-huruf aneh seperti kanji korea, kanji jepang, atau kanji china.
+        Jangan gunakan asterisk atau tanda ** sebagai penekanan pada suatu kata, lebih baik hindari penekanan terhadap suatu kata.
         tolong sesuaikan format paragraf kalimat teks dari user dengan jawaban anda.
         Gunakan huruf kapital pada awal kalimat dan setelah tanda titik serta setelah petik dua atau setelah paragraf.
         Gunakan huruf kapital pada awal nama orang dan nama tempat.
