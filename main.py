@@ -275,17 +275,11 @@ df_kamus = pd.read_excel("dataset/data_kamus_full_14-5-25.xlsx")
 df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']] = df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']].apply(lambda col: col.str.lower())
 df_idiom = pd.read_excel("dataset/data_idiom (3).xlsx")
 
-# if "user" not in st.session_state:
-#     session = supabase.auth.get_session()
-#     if session and session.user:
-#         st.session_state["user"] = session.user  # ✅ pulihkan user otomatis
-#     else:
-#         st.switch_page("pages/login.py")
 if "user" not in st.session_state:
-    session = get_user_session()
+    session = supabase.auth.get_session()
     if session and session.user:
-        st.session_state["user"] = session.user
-    elif not st.query_params.get("logout"):
+        st.session_state["user"] = session.user  # ✅ pulihkan user otomatis
+    else:
         st.switch_page("pages/login.py")
         
 # if "user" not in st.session_state and not st.query_params.get("logout"):
