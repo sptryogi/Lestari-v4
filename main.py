@@ -505,7 +505,7 @@ components.html("""
     <script>
         setInterval(function() {
             fetch(window.location.href);
-        }, 1000 * 60 * 1);  // ping setiap 1 menit
+        }, 1000 * 30);  // ping setiap 30 detik
     </script>
 """, height=0)
 st.markdown("</div>", unsafe_allow_html=True)
