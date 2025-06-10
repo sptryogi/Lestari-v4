@@ -282,7 +282,7 @@ df_idiom = pd.read_excel("dataset/data_idiom (3).xlsx")
 #     else:
 #         st.switch_page("pages/login.py")
 if "user" not in st.session_state:
-    session = supabase.auth.get_session()
+    session = get_user_session()
     if session and session.user:
         st.session_state["user"] = session.user
     elif not st.query_params.get("logout"):
