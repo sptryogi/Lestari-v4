@@ -266,12 +266,12 @@ def render_topbar():
 # Panggil topbar
 render_topbar()
 
-@st.cache_data
-def load_kamus():
-    return pd.read_excel("dataset/data_kamus_full_14-5-25.xlsx")
-df_kamus = load_kamus()
+# @st.cache_data
+# def load_kamus():
+#     return pd.read_excel("dataset/data_kamus_full_14-5-25.xlsx")
+# df_kamus = load_kamus()
 # Load kamus
-# df_kamus = pd.read_excel("dataset/data_kamus_full_14-5-25.xlsx")
+df_kamus = pd.read_excel("dataset/data_kamus_full_14-5-25.xlsx")
 df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']] = df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']].apply(lambda col: col.str.lower())
 df_idiom = pd.read_excel("dataset/data_idiom (3).xlsx")
 
