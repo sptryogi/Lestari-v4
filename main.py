@@ -333,7 +333,7 @@ with st.sidebar:
     
 st.markdown("<h1 style='color:white'>Lestari Bahasa</h1>", unsafe_allow_html=True)
 bahasa_list = ["Sunda", "Indonesia", "English"]
-query_params = st.experimental_get_query_params()
+query_params = st.query_params.get()
 mode_bahasa = query_params.get("bahasa", ["Sunda"])[0]  # Default: Sunda
 
 # Tampilkan pilihan bahasa sebagai tombol inline
