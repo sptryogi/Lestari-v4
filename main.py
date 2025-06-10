@@ -432,12 +432,12 @@ def handle_send():
         f"<p style='color: yellow;'>{pasangan_cag}</p>",
     ]
     
-    st.session_state.chat_history.append((user_input, bot_response))
+    st.session_state.chat_history.append((user_input, text_constraint))
     # Simpan ke database
     save_chat_message(
         user_id=st.session_state.user.id,
         message=user_input,
-        response=bot_response,
+        response=text_constraint,
         room=st.session_state.get("room", "room-1")
     )
     
