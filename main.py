@@ -266,6 +266,7 @@ def render_topbar():
 # Panggil topbar
 render_topbar()
 
+@st.cache_data
 # Load kamus
 df_kamus = pd.read_excel("dataset/data_kamus_full_14-5-25.xlsx")
 # df_kamus = pd.read_excel("dataset_lengkap.xlsx")
