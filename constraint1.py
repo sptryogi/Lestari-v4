@@ -372,7 +372,6 @@ def highlight_text(translated_text, df_kamus, df_idiom, fitur):
 
     hasil_lines = []
     pasangan_ekuivalen = {}
-    kata_lower = kata.lower()
 
     for baris in translated_text.splitlines():
         kata_list = baris.split()
@@ -399,8 +398,8 @@ def highlight_text(translated_text, df_kamus, df_idiom, fitur):
             simbol_depan, kata, simbol_belakang = match.groups()
             kata = pasangan_kata.get(kata, kata)
 
-            if kata_lower not in kata_terdapat:
-                if kata_lower not in kata_terdapat_tidak_loma:
+            if kata.lower not in kata_terdapat:
+                if kata.lower() not in kata_terdapat_tidak_loma:
                     if re.search(r"\d", kata):
                         hasil_baris.append(simbol_depan + kata + simbol_belakang)
                     else:
@@ -440,7 +439,7 @@ def highlight_text(translated_text, df_kamus, df_idiom, fitur):
                             f'{simbol_depan}<span>{kata}</span>{simbol_belakang}'
                         )
             else:
-                # kata_lower = kata.lower()
+                kata_lower = kata.lower()
                 if kata_lower in kata_e_petik:
                     kata = kata.replace("e", "é").replace("E", "É")
                 if kata_lower in kata_e_petik2:
