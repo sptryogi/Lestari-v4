@@ -65,7 +65,7 @@ def save_chat_message(user_id, message, response, room="default"):
     }).execute()
 
 # Fungsi untuk mengambil chat history
-def get_chat_history(user_id, room="default", limit=50):
+def get_chat_history(user_id, room="default", limit=100):
     result = supabase.table("chat_history") \
         .select("*") \
         .eq("user_id", user_id) \
