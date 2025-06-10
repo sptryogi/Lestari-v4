@@ -471,7 +471,7 @@ def ubah_ke_lema(chat_user_indo, df_kamus, df_idiom):
     ) = constraint_text(chat_user_indo, df_kamus, df_idiom)
     
     # Tokenisasi kalimat
-    kata_kata = chat_user_indo.lower().split()
+    kata_kata = chat_user_indo.split()
 
     # Buat mapping dari ARTI EKUIVALEN 1 ke LEMA
     map_arti_ke_lema = {}
@@ -489,7 +489,7 @@ def ubah_ke_lema(chat_user_indo, df_kamus, df_idiom):
                 map_arti_ke_lema[kata.strip().lower()] = lema
 
     # Proses kombinasi kata
-    tokens = re.findall(r"\w+|[^\w\s]", chat_user_indo.lower())
+    tokens = re.findall(r"\w+|[^\w\s]", chat_user_indo)
     
 
     hasil = []
