@@ -124,8 +124,9 @@ def urai_kalimat_sunda(kalimat):
 
 def pengecekan_sublema(text, df_kamsus):    
     
-    text = text.lower()
-    hasil_urai = urai_kalimat_sunda(text)
+    # text = text.lower()
+    text_lower = text.lower()
+    hasil_urai = urai_kalimat_sunda(text_lower)
 
     # Konversi kolom LEMA menjadi set
     lema_set = set(df_kamsus['LEMA'])
@@ -142,7 +143,9 @@ def constraint_text(text, df_kamus, df_idiom):
     
     # ================= Clean text_kecil =================
     text = text.replace("-", " ")
-    text_kecil_clean = re.sub(r"[^\w\s-]", "", text.lower())
+    # text_kecil_clean = re.sub(r"[^\w\s-]", "", text.lower())
+    text_kecil_clean = re.sub(r"[^\w\s-]", "", text)
+    text_lower = re.sub(r"[^\w\s-]", "", text.lower())
 
     kata_kalimat = set(text_kecil_clean.split())
 
@@ -369,6 +372,7 @@ def highlight_text(translated_text, df_kamus, df_idiom, fitur):
 
     hasil_lines = []
     pasangan_ekuivalen = {}
+    kata_lower = kata.lower()
 
     for baris in translated_text.splitlines():
         kata_list = baris.split()
@@ -395,8 +399,8 @@ def highlight_text(translated_text, df_kamus, df_idiom, fitur):
             simbol_depan, kata, simbol_belakang = match.groups()
             kata = pasangan_kata.get(kata, kata)
 
-            if kata.lower() not in kata_terdapat:
-                if kata.lower() not in kata_terdapat_tidak_loma:
+            if kata_lower not in kata_terdapat:
+                if kata_lower not in kata_terdapat_tidak_loma:
                     if re.search(r"\d", kata):
                         hasil_baris.append(simbol_depan + kata + simbol_belakang)
                     else:
@@ -436,7 +440,7 @@ def highlight_text(translated_text, df_kamus, df_idiom, fitur):
                             f'{simbol_depan}<span>{kata}</span>{simbol_belakang}'
                         )
             else:
-                kata_lower = kata.lower()
+                # kata_lower = kata.lower()
                 if kata_lower in kata_e_petik:
                     kata = kata.replace("e", "é").replace("E", "É")
                 if kata_lower in kata_e_petik2:
