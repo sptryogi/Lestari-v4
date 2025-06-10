@@ -282,8 +282,8 @@ if "user" not in st.session_state:
     else:
         st.switch_page("pages/login.py")
         
-# if "user" not in st.session_state and not st.query_params.get("logout"):
-#     st.switch_page("pages/login.py")
+if "user" not in st.session_state and not st.query_params.get("logout"):
+    st.switch_page("pages/login.py")
 
 # ========== Sidebar Controls ==========
 with st.sidebar:
