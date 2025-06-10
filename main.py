@@ -306,14 +306,14 @@ with st.sidebar:
         key="chat_mode"
     )
 
-    if fitur == "chatbot":
-        # mode_bahasa = st.selectbox(
-        #     "🌐 Mode Bahasa",
-        #     ["Sunda", "Indonesia", "English"],
-        #     key="mode_selector"
-        # )
-    else:
-        mode_bahasa = None
+    # if fitur == "chatbot":
+    #     mode_bahasa = st.selectbox(
+    #         "🌐 Mode Bahasa",
+    #         ["Sunda", "Indonesia", "English"],
+    #         key="mode_selector"
+    #     )
+    # else:
+    #     mode_bahasa = None
 
     status = st.toggle("🔍 Lihat Constraint")
 
