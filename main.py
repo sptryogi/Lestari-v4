@@ -372,7 +372,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.markdown("<span style='color:white'>Selamat datang! Silakan ajukan pertanyaan.</span>", unsafe_allow_html=True)
+# st.markdown("<span style='color:white'>Selamat datang! Silakan ajukan pertanyaan.</span>", unsafe_allow_html=True)
 st.markdown("""
 <span style='
     color: white;
