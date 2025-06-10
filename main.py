@@ -266,12 +266,9 @@ def render_topbar():
 # Panggil topbar
 render_topbar()
 
-# @st.cache_data
-# def load_kamus():
-#     return pd.read_excel("dataset/data_kamus_full_14-5-25.xlsx")
-# df_kamus = load_kamus()
 # Load kamus
-df_kamus = pd.read_excel("dataset/data_kamus_full_14-5-25.xlsx")
+# df_kamus = pd.read_excel("dataset/data_kamus_full_14-5-25.xlsx")
+df_kamus = pd.read_excel("dataset/dataset_besar.xlsx")
 df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']] = df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']].apply(lambda col: col.str.lower())
 df_idiom = pd.read_excel("dataset/data_idiom (3).xlsx")
 
@@ -310,11 +307,11 @@ with st.sidebar:
     )
 
     if fitur == "chatbot":
-        mode_bahasa = st.selectbox(
-            "🌐 Mode Bahasa",
-            ["Sunda", "Indonesia", "English"],
-            key="mode_selector"
-        )
+        # mode_bahasa = st.selectbox(
+        #     "🌐 Mode Bahasa",
+        #     ["Sunda", "Indonesia", "English"],
+        #     key="mode_selector"
+        # )
     else:
         mode_bahasa = None
 
@@ -335,23 +332,44 @@ with st.sidebar:
         st.rerun()
     
 st.markdown("<h1 style='color:white'>Lestari Bahasa</h1>", unsafe_allow_html=True)
-bahasa_list = ["Sunda", "Indonesia", "English"]
+# bahasa_list = ["Sunda", "Indonesia", "English"]
+query_params = st.experimental_get_query_params()
+mode_bahasa = query_params.get("bahasa", ["Sunda"])[0]  # Default: Sunda
 
+# Tampilkan pilihan bahasa sebagai tombol inline
 bahasa_display = []
 for bhs in bahasa_list:
     if bhs == mode_bahasa:
-        bahasa_display.append(f"<span style='color:#FFD700;'><b>{bhs}</b></span>")    # italic untuk bahasa aktif
+        warna = "#FFD700"  # warna emas untuk aktif
+        style = "font-weight:bold;"
     else:
-        bahasa_display.append(f"<span style='color: white;'>{bhs}</span>")
-
-bahasa_str = " ".join(bahasa_display)
+        warna = "white"
+        style = "font-weight:normal;"
+    bahasa_display.append(
+        f"<a href='?bahasa={bhs}' style='color:{warna}; {style} margin-right:15px; text-decoration:none;'>{bhs}</a>"
+    )
 
 st.markdown(
-    f"<div style='text-align:left; padding-top: 8px; font-size: 20px; margin-top:0px;'>"
-    f"{bahasa_str}"
-    f"</div>", 
+    f"<div style='text-align:left; font-size:20px; margin-top: 10px;'>"
+    + "".join(bahasa_display) +
+    "</div>", 
     unsafe_allow_html=True
 )
+# bahasa_display = []
+# for bhs in bahasa_list:
+#     if bhs == mode_bahasa:
+#         bahasa_display.append(f"<span style='color:#FFD700;'><b>{bhs}</b></span>")    # italic untuk bahasa aktif
+#     else:
+#         bahasa_display.append(f"<span style='color: white;'>{bhs}</span>")
+
+# bahasa_str = " ".join(bahasa_display)
+
+# st.markdown(
+#     f"<div style='text-align:left; padding-top: 8px; font-size: 20px; margin-top:0px;'>"
+#     f"{bahasa_str}"
+#     f"</div>", 
+#     unsafe_allow_html=True
+# )
 
 # st.markdown("<span style='color:white'>Selamat datang! Silakan ajukan pertanyaan.</span>", unsafe_allow_html=True)
 st.markdown("""
