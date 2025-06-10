@@ -306,14 +306,14 @@ with st.sidebar:
         key="chat_mode"
     )
 
-    # if fitur == "chatbot":
-    #     mode_bahasa = st.selectbox(
-    #         "🌐 Mode Bahasa",
-    #         ["Sunda", "Indonesia", "English"],
-    #         key="mode_selector"
-    #     )
-    # else:
-    #     mode_bahasa = None
+    if fitur == "chatbot":
+        mode_bahasa = st.selectbox(
+            "🌐 Mode Bahasa",
+            ["Sunda", "Indonesia", "English"],
+            key="mode_selector"
+        )
+    else:
+        mode_bahasa = None
 
     status = st.toggle("🔍 Lihat Constraint")
 
@@ -333,46 +333,46 @@ with st.sidebar:
     
 st.markdown("<h1 style='color:white'>Lestari Bahasa</h1>", unsafe_allow_html=True)
 bahasa_list = ["Sunda", "Indonesia", "English"]
-query_params = st.query_params.get()
-mode_bahasa = query_params.get("bahasa", ["Sunda"])[0]  # Default: Sunda
-st.session_state["mode_bahasa"] = mode_bahasa
+# query_params = st.query_params.get()
+# mode_bahasa = query_params.get("bahasa", ["Sunda"])[0]  # Default: Sunda
+# st.session_state["mode_bahasa"] = mode_bahasa
 
 # Tampilkan pilihan bahasa sebagai tombol inline
-bahasa_display = []
-for bhs in bahasa_list:
-    if bhs == mode_bahasa:
-        warna = "#FFD700"  # warna emas untuk aktif
-        style = "font-weight:bold;"
-    else:
-        warna = "white"
-        style = "font-weight:normal;"
-    bahasa_display.append(
-        f"<a href='?bahasa={bhs}' style='color:{warna}; {style} margin-right:15px; text-decoration:none;'>{bhs}</a>"
-    )
-
-st.markdown(
-    f"<div style='text-align:left; font-size:20px; margin-top: 10px;'>"
-    + "".join(bahasa_display) +
-    "</div>", 
-    unsafe_allow_html=True
-)
 # bahasa_display = []
 # for bhs in bahasa_list:
 #     if bhs == mode_bahasa:
-#         bahasa_display.append(f"<span style='color:#FFD700;'><b>{bhs}</b></span>")    # italic untuk bahasa aktif
+#         warna = "#FFD700"  # warna emas untuk aktif
+#         style = "font-weight:bold;"
 #     else:
-#         bahasa_display.append(f"<span style='color: white;'>{bhs}</span>")
-
-# bahasa_str = " ".join(bahasa_display)
+#         warna = "white"
+#         style = "font-weight:normal;"
+#     bahasa_display.append(
+#         f"<a href='?bahasa={bhs}' style='color:{warna}; {style} margin-right:15px; text-decoration:none;'>{bhs}</a>"
+#     )
 
 # st.markdown(
-#     f"<div style='text-align:left; padding-top: 8px; font-size: 20px; margin-top:0px;'>"
-#     f"{bahasa_str}"
-#     f"</div>", 
+#     f"<div style='text-align:left; font-size:20px; margin-top: 10px;'>"
+#     + "".join(bahasa_display) +
+#     "</div>", 
 #     unsafe_allow_html=True
 # )
+bahasa_display = []
+for bhs in bahasa_list:
+    if bhs == mode_bahasa:
+        bahasa_display.append(f"<span style='color:#FFD700;'><b>{bhs}</b></span>")    # italic untuk bahasa aktif
+    else:
+        bahasa_display.append(f"<span style='color: white;'>{bhs}</span>")
 
-# st.markdown("<span style='color:white'>Selamat datang! Silakan ajukan pertanyaan.</span>", unsafe_allow_html=True)
+bahasa_str = " ".join(bahasa_display)
+
+st.markdown(
+    f"<div style='text-align:left; padding-top: 8px; font-size: 20px; margin-top:0px;'>"
+    f"{bahasa_str}"
+    f"</div>", 
+    unsafe_allow_html=True
+)
+
+st.markdown("<span style='color:white'>Selamat datang! Silakan ajukan pertanyaan.</span>", unsafe_allow_html=True)
 st.markdown("""
 <span style='
     color: white;
@@ -419,8 +419,8 @@ def handle_send():
     # Proses AI response (sama seperti sebelumnya)
     option = st.session_state.get("fitur_selector", "Chatbot")
     fitur = "chatbot" if option == "Chatbot" else "terjemahindosunda" if option == "Terjemah Indo → Sunda" else "terjemahsundaindo"
-    mode_bahasa = query_params.get("bahasa", ["Sunda"])[0] if fitur == "chatbot" else None
-    st.session_state["mode_bahasa"] = mode_bahasa
+    mode_bahasa = st.session_state.get("mode_selector", "Sunda") if fitur == "chatbot" else None
+    # st.session_state["mode_bahasa"] = mode_bahasa
 
     if fitur == "chatbot" and mode_bahasa == "Sunda":
         bot_response = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history=history_for_prompt)
