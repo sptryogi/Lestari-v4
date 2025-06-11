@@ -476,11 +476,11 @@ if "user" in st.session_state:
             unsafe_allow_html=True
         )
         if status:
-        for html in html_block:
-            st.markdown(
-                f"<div class='chat-container'><div class='chat-bubble-bot'>{html}</div></div>",
-                unsafe_allow_html=True
-            )
+            for html in html_block:
+                st.markdown(
+                    f"<div class='chat-container'><div class='chat-bubble-bot'>{html}</div></div>",
+                    unsafe_allow_html=True
+                )
 
 st.markdown("</div>", unsafe_allow_html=True)  # ⬅️ END OF chat-container-outer
 
