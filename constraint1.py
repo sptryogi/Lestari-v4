@@ -7,6 +7,10 @@ import numpy as np
 def bersihkan_teks(teks):
     # Menghapus semua karakter kecuali huruf, angka, spasi, dan tanda minus
     return re.sub(r'[^A-Za-z0-9\s-]', '', teks)
+
+def bersihkan_superscript(teks):
+    # Menghapus superscript angka ¹²³⁴⁵⁶⁷⁸⁹⁰ atau angka biasa setelah huruf
+    return re.sub(r'([^\d\s])[\u00B9\u00B2\u00B3\u2070\u2074-\u2079\d]+', r'\1', teks)
  
 def urai_awalan(kata):
     """
@@ -90,6 +94,7 @@ def urai_kata_sunda(kata):
     dalam Bahasa Sunda, mengembalikan bentuk dasar (lema) tanpa duplikat.
     """
     kata = bersihkan_teks(kata)
+    kata = bersihkan_superscript(kata)
 
     # Uraikan awalan saja
     hasil_awalan = urai_awalan(kata)
