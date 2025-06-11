@@ -424,7 +424,6 @@ def handle_send():
     option = st.session_state.get("fitur_selector", "Chatbot")
     fitur = "chatbot" if option == "Chatbot" else "terjemahindosunda" if option == "Terjemah Indo → Sunda" else "terjemahsundaindo"
     mode_bahasa = st.session_state.get("mode_selector", "Sunda") if fitur == "chatbot" else None
-    # st.session_state["mode_bahasa"] = mode_bahasa
 
     if fitur == "chatbot" and mode_bahasa == "Sunda":
         bot_response = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history=history_for_prompt)
