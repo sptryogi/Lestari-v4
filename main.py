@@ -342,46 +342,31 @@ with st.sidebar:
 st.markdown("<h1 style='color:white'>Lestari Bahasa</h1>", unsafe_allow_html=True)
 st.markdown("""
 <style>
-/* Atur baris radio biar horizontal dan rapat */
+/* Buat tampilan horizontal */
 div[data-testid="stRadio"] > div {
     flex-direction: row !important;
-    gap: 10px !important;
+    gap: 16px !important;
     margin-bottom: 0px !important;
-}
-
-/* Set ukuran dan tampilan setiap item radio */
-div[data-testid="stRadio"] > div > div {
-    display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 4px 10px;
-    border-radius: 8px;
-    transition: background-color 0.3s ease;
 }
 
-/* Teks di radio */
-div[data-testid="stMarkdownContainer"] p {
+/* Styling umum untuk semua teks radio */
+div.st-emotion-cache-1hyd1ho.e1icttdg0 p {
     font-size: 20px !important;
     font-weight: bold !important;
     color: white !important;
-    margin: 0px;
+    margin: 0;
+    padding: 4px 8px;
+    transition: color 0.3s ease;
 }
 
-/* Jika radio dipilih, ubah latar dan teksnya jadi emas */
-div[data-testid="stRadio"] input[type="radio"]:checked + div {
-    background-color: #FFD700 !important;
-}
-
-div[data-testid="stRadio"] input[type="radio"]:checked + div p {
-    color: black !important;
-}
-
-/* Hilangkan margin bawah radio keseluruhan */
-div[data-testid="stRadio"] {
-    margin-bottom: 8px !important;
+/* Ubah warna teks jadi emas saat dipilih */
+div[data-testid="stRadio"] input[type="radio"]:checked + div div.st-emotion-cache-1hyd1ho.e1icttdg0 p {
+    color: #FFD700 !important;
 }
 </style>
 """, unsafe_allow_html=True)
+
 bahasa_list = ["Sunda", "Indonesia", "English"]
 
 if "mode_bahasa" not in st.session_state:
