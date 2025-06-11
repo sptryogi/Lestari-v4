@@ -356,22 +356,6 @@ mode_bahasa = st.radio(
 
 st.session_state.mode_bahasa = mode_bahasa
 
-# Tampilkan teks dengan warna sesuai pilihan
-bahasa_display = []
-for bhs in bahasa_list:
-    if bhs == st.session_state.mode_bahasa:
-        bahasa_display.append(f"<span style='color:#FFD700;'><b>{bhs}</b></span>")
-    else:
-        bahasa_display.append(f"<span style='color: white;'>{bhs}</span>")
-
-bahasa_str = " ".join(bahasa_display)
-
-st.markdown(
-    f"<div style='text-align:left; padding-top: 8px; font-size: 20px; margin-top:0px;'>"
-    f"{bahasa_str}"
-    f"</div>", 
-    unsafe_allow_html=True
-)
 
 # bahasa_list = ["Sunda", "Indonesia", "English"]
 
