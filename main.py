@@ -218,11 +218,7 @@ st.markdown(
 )
 
 # Fungsi render topbar yang akan menampilkan login/logout
-def render_topbar():
-    if "email" not in st.session_state:
-        st.warning("Silakan login terlebih dahulu.")
-        st.stop()
-        
+def render_topbar():     
     if st.session_state.get("user"):
         # Tampilan setelah login (email + tombol logout)
         st.markdown(
