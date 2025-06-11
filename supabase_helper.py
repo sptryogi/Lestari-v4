@@ -57,12 +57,25 @@ def fetch_chat_history(user_id, room):
 
 # Fungsi untuk menyimpan chat history
 def save_chat_message(user_id, message, response, room="default"):
+    # Cek jumlah history chat dulu
+    result = supabase.table("chat_history") \
+        .select("id", count="exact") \
+        .eq("user_id", user_id) \
+        .eq("room", room) \
+        .execute()
+
+    if result.count >= 100:
+        return {"error": "limit_exceeded"}
+
+    # Jika belum penuh, simpan
     supabase.table("chat_history").insert({
         "user_id": user_id,
         "message": message,
         "response": response,
         "room": room
     }).execute()
+
+    return {"status": "success"}
 
 # Fungsi untuk mengambil chat history
 def get_chat_history(user_id, room="default", limit=100):
