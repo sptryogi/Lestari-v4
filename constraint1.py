@@ -7,7 +7,23 @@ import numpy as np
 def bersihkan_teks(teks):
     # Menghapus semua karakter kecuali huruf, angka, spasi, dan tanda minus
     return re.sub(r'[^A-Za-z0-9\s-]', '', teks)
+ 
+def bersihkan_kamus(df):
+    """
+    Bersihkan kamus dari nilai NaN yang bisa berubah menjadi 'nan' string,
+    serta pastikan kolom-kolom penting tidak mengandung nilai kosong.
 
+    - Ganti NaN dengan "" di kolom teks seperti: LEMA, SUBLEMA, SINONIM, CONTOH KALIMAT, dll.
+    - Lowercase opsional juga bisa di sini kalau konsisten.
+    """
+    kolom_teks = ["LEMA"]
+
+    for kolom in kolom_teks:
+        if kolom in df.columns:
+            df[kolom] = df[kolom].fillna("").astype(str)
+    
+    return df
+ 
 def bersihkan_superscript(teks):
     # Menghapus superscript angka ¹²³⁴⁵⁶⁷⁸⁹⁰ atau angka biasa setelah huruf
     return re.sub(r'([^\d\s])[\u00B9\u00B2\u00B3\u2070\u2074-\u2079\d]+', r'\1', teks)
