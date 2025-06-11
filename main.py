@@ -219,6 +219,10 @@ st.markdown(
 
 # Fungsi render topbar yang akan menampilkan login/logout
 def render_topbar():
+    if "email" not in st.session_state:
+        st.warning("Silakan login terlebih dahulu.")
+        st.stop()
+        
     if st.session_state.get("user"):
         # Tampilan setelah login (email + tombol logout)
         st.markdown(
@@ -273,7 +277,7 @@ df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']] = df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1
 df_idiom = pd.read_excel("dataset/data_idiom (3).xlsx")
 
 def auth_guard():
-    if "user" not in st.session_state or "email" not in st.session_state:
+    if "user" not in st.session_state:
         session = supabase.auth.get_session()
         if session and session.user:
             st.session_state["user"] = session.user
