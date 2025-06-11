@@ -341,30 +341,46 @@ with st.sidebar:
     
 st.markdown("<h1 style='color:white'>Lestari Bahasa</h1>", unsafe_allow_html=True)
 st.markdown("""
-    <style>
-    /* Atur container utama radio button agar horizontal dan rapat */
-    div[data-testid="stRadio"] > div {
-        flex-direction: row !important;
-        gap: 20px !important;
-        margin-bottom: 4px !important;
-    }
+<style>
+/* Atur baris radio biar horizontal dan rapat */
+div[data-testid="stRadio"] > div {
+    flex-direction: row !important;
+    gap: 10px !important;
+    margin-bottom: 0px !important;
+}
 
-    /* Styling teks masing-masing pilihan */
-    div[data-testid="stMarkdownContainer"] p {
-        font-size: 20px !important;
-        font-weight: bold !important;
-        color: white !important;
-        margin: 0px !important;
-        padding: 4px 12px !important;
-        border-radius: 8px;
-        transition: all 0.3s ease-in-out;
-    }
+/* Set ukuran dan tampilan setiap item radio */
+div[data-testid="stRadio"] > div > div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
 
-    /* Jika radio dipilih, ubah warnanya jadi emas */
-    div[data-baseweb="radio"] input[type="radio"]:checked + div p {
-        color: #FFD700 !important;
-    }
-    </style>
+/* Teks di radio */
+div[data-testid="stMarkdownContainer"] p {
+    font-size: 20px !important;
+    font-weight: bold !important;
+    color: white !important;
+    margin: 0px;
+}
+
+/* Jika radio dipilih, ubah latar dan teksnya jadi emas */
+div[data-testid="stRadio"] input[type="radio"]:checked + div {
+    background-color: #FFD700 !important;
+}
+
+div[data-testid="stRadio"] input[type="radio"]:checked + div p {
+    color: black !important;
+}
+
+/* Hilangkan margin bawah radio keseluruhan */
+div[data-testid="stRadio"] {
+    margin-bottom: 8px !important;
+}
+</style>
 """, unsafe_allow_html=True)
 bahasa_list = ["Sunda", "Indonesia", "English"]
 
