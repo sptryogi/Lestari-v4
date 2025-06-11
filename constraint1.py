@@ -16,7 +16,7 @@ def bersihkan_kamus(df):
     - Ganti NaN dengan "" di kolom teks seperti: LEMA, SUBLEMA, SINONIM, CONTOH KALIMAT, dll.
     - Lowercase opsional juga bisa di sini kalau konsisten.
     """
-    kolom_teks = ["LEMA"]
+    kolom_teks = ["LEMA", "SUBLEMA"]
 
     for kolom in kolom_teks:
         if kolom in df.columns:
