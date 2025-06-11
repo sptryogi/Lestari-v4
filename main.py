@@ -145,7 +145,7 @@ st.markdown(
         margin-left: auto;
         font-size: 20px;
         border: 2px solid black;
-        text-align: justify;
+        text-align: right;
         line-height: 20px;
     }
 
@@ -161,7 +161,7 @@ st.markdown(
         font-size: 18px;
         font-family: Times New Roman;
         border: 2px solid black;
-        text-align: justify;
+        text-align: left;
         line-height: 20px;
     }
 
