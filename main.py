@@ -476,9 +476,9 @@ if "user" in st.session_state:
             unsafe_allow_html=True
         )
         if status:
-            for html in html_block:
+            for html_block in st.session_state.chat_history:
                 st.markdown(
-                    f"<div class='chat-container'><div class='chat-bubble-bot'>{html}</div></div>",
+                    f"<div class='chat-container'><div class='chat-bubble-bot'>{html_block}</div></div>",
                     unsafe_allow_html=True
                 )
 
