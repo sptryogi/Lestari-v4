@@ -443,7 +443,7 @@ def handle_send():
         f"<p style='color: yellow;'>{pasangan_cag}</p>",
     ]
     
-    st.session_state.chat_history.append((user_input, text_constraint))
+    st.session_state.chat_history.append((user_input, text_constraint, html_block))
     # Simpan ke database
     result = save_chat_message(
         user_id=st.session_state.user.id,
