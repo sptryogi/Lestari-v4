@@ -273,10 +273,11 @@ df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']] = df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1
 df_idiom = pd.read_excel("dataset/data_idiom (3).xlsx")
 
 def auth_guard():
-    if "user" not in st.session_state:
+    if "user" not in st.session_state or "email" not in st.session_state:
         session = supabase.auth.get_session()
         if session and session.user:
             st.session_state["user"] = session.user
+            st.session_state["email"] = session.user.email
         else:
             st.warning("Silakan login terlebih dahulu.")
             st.session_state.clear()
