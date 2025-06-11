@@ -264,7 +264,7 @@ def render_topbar():
         )
 
 # Panggil topbar
-render_topbar()
+# render_topbar()
 
 if "email" not in st.session_state:
     st.warning("Silakan login terlebih dahulu.")
@@ -287,7 +287,7 @@ def auth_guard():
             st.session_state.clear()
             st.switch_page("pages/login.py")
 auth_guard()
-
+render_topbar()
         
 # if "user" not in st.session_state and not st.query_params.get("logout"):
 #     st.switch_page("pages/login.py")
