@@ -272,13 +272,8 @@ df_kamus = pd.read_excel("dataset/dataset_besar.xlsx")
 df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']] = df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']].apply(lambda col: col.str.lower())
 df_idiom = pd.read_excel("dataset/data_idiom (3).xlsx")
 
-for col in df_kamus.columns:
-    if df_kamus[col].dtype == "object":
-        df_kamus[col] = df_kamus[col].astype(str).apply(bersihkan_superscript)
-
-for col in df_idiom.columns:
-    if df_idiom[col].dtype == "object":
-        df_idiom[col] = df_idiom[col].astype(str).apply(bersihkan_superscript)
+df_kamus["LEMA"] = df_kamus["LEMA"].fillna("").astype(str).apply(bersihkan_superscript)
+df_kamus["SUBLEMA"] = df_kamus["SUBLEMA"].fillna("").astype(str).apply(bersihkan_superscript)
 
 def auth_guard():
     if "user" not in st.session_state:
