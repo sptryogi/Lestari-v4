@@ -345,27 +345,31 @@ bahasa_list = ["Sunda", "Indonesia", "English"]
 if "mode_bahasa" not in st.session_state:
     st.session_state.mode_bahasa = "Sunda"
 
-st.markdown("<div style='padding-top:10px; font-size:20px;'>Pilih Mode Bahasa:</div>", unsafe_allow_html=True)
+mode_bahasa = st.radio(
+    "Pilih Mode Bahasa:",
+    bahasa_list,
+    horizontal=True,
+    index=bahasa_list.index(st.session_state.mode_bahasa),
+    label_visibility="collapsed",
+    key="mode_bahasa_radio"
+)
 
-cols = st.columns(len(bahasa_list))
+st.session_state.mode_bahasa = mode_bahasa
 
-for i, bhs in enumerate(bahasa_list):
-    with cols[i]:
-        if st.button(bhs, key=f"btn_{bhs}"):
-            st.session_state.mode_bahasa = bhs
-
-# Tampilkan bahasa yang sedang aktif dengan style emas di tombol
-styled_buttons = []
+# Tampilkan teks dengan warna sesuai pilihan
+bahasa_display = []
 for bhs in bahasa_list:
-    color = "#FFD700" if bhs == st.session_state.mode_bahasa else "white"
-    weight = "bold" if bhs == st.session_state.mode_bahasa else "normal"
-    styled_buttons.append(
-        f"<span style='color: {color}; font-weight: {weight}; font-size: 20px;'>{bhs}</span>"
-    )
+    if bhs == st.session_state.mode_bahasa:
+        bahasa_display.append(f"<span style='color:#FFD700;'><b>{bhs}</b></span>")
+    else:
+        bahasa_display.append(f"<span style='color: white;'>{bhs}</span>")
 
-# Gabung dan tampilkan dalam satu baris
+bahasa_str = " ".join(bahasa_display)
+
 st.markdown(
-    f"<div style='text-align:left; font-size:20px; margin-bottom:10px;'>{' &nbsp; | &nbsp; '.join(styled_buttons)}</div>",
+    f"<div style='text-align:left; padding-top: 8px; font-size: 20px; margin-top:0px;'>"
+    f"{bahasa_str}"
+    f"</div>", 
     unsafe_allow_html=True
 )
 
