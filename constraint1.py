@@ -530,8 +530,8 @@ def ubah_ke_lema(chat_user_indo, df_kamus, df_idiom):
             i += 1  # ⬅️ WAJIB untuk menghindari infinite loop
     
         hasil_akhir = (
-            # " ".join(hasil)
-            " ".join(str(item) for item in hasil)
+            " ".join(hasil)
+            # " ".join(str(item) for item in hasil)
             .replace(" ,", ",")
             .replace(" .", ".")
             .replace(" ?", "?")
