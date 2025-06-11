@@ -342,17 +342,27 @@ with st.sidebar:
 st.markdown("<h1 style='color:white'>Lestari Bahasa</h1>", unsafe_allow_html=True)
 st.markdown("""
     <style>
-    div[data-testid="stRadio"] label {
+    /* Atur container utama radio button agar horizontal dan rapat */
+    div[data-testid="stRadio"] > div {
+        flex-direction: row !important;
+        gap: 20px !important;
+        margin-bottom: 4px !important;
+    }
+
+    /* Styling teks masing-masing pilihan */
+    div[data-testid="stMarkdownContainer"] p {
         font-size: 20px !important;
         font-weight: bold !important;
         color: white !important;
-        margin-right: 20px;
+        margin: 0px !important;
+        padding: 4px 12px !important;
+        border-radius: 8px;
+        transition: all 0.3s ease-in-out;
     }
-    div[data-testid="stRadio"] input[type="radio"]:checked + div > label {
+
+    /* Jika radio dipilih, ubah warnanya jadi emas */
+    div[data-baseweb="radio"] input[type="radio"]:checked + div p {
         color: #FFD700 !important;
-    }
-    div[data-testid="stRadio"] {
-        margin-bottom: 8px !important;
     }
     </style>
 """, unsafe_allow_html=True)
