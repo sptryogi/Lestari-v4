@@ -446,7 +446,7 @@ def handle_send():
         f"<p style='color: yellow;'>{pasangan_cag}</p>",
     ]
     
-    st.session_state.chat_history.append((user_input, text_constraint, html_block))
+    st.session_state.chat_history.append((user_input, text_constraint))
     # Simpan ke database
     result = save_chat_message(
         user_id=st.session_state.user.id,
@@ -478,12 +478,6 @@ if "user" in st.session_state:
             f"<div class='chat-container'><div class='chat-bubble-bot'>{chat['response']}</div></div>",
             unsafe_allow_html=True
         )
-        if status:
-            for html_block in st.session_state.chat_history:
-                st.markdown(
-                    f"<div class='chat-container'><div class='chat-bubble-bot'>{html_block}</div></div>",
-                    unsafe_allow_html=True
-                )
 
 st.markdown("</div>", unsafe_allow_html=True)  # ⬅️ END OF chat-container-outer
 
