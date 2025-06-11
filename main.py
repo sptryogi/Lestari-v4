@@ -340,6 +340,22 @@ with st.sidebar:
         st.rerun()
     
 st.markdown("<h1 style='color:white'>Lestari Bahasa</h1>", unsafe_allow_html=True)
+st.markdown("""
+    <style>
+    div[data-testid="stRadio"] label {
+        font-size: 20px !important;
+        font-weight: bold !important;
+        color: white !important;
+        margin-right: 20px;
+    }
+    div[data-testid="stRadio"] input[type="radio"]:checked + div > label {
+        color: #FFD700 !important;
+    }
+    div[data-testid="stRadio"] {
+        margin-bottom: 8px !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
 bahasa_list = ["Sunda", "Indonesia", "English"]
 
 if "mode_bahasa" not in st.session_state:
