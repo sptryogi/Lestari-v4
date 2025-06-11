@@ -337,29 +337,7 @@ with st.sidebar:
     
 st.markdown("<h1 style='color:white'>Lestari Bahasa</h1>", unsafe_allow_html=True)
 bahasa_list = ["Sunda", "Indonesia", "English"]
-# query_params = st.query_params.get()
-# mode_bahasa = query_params.get("bahasa", ["Sunda"])[0]  # Default: Sunda
-# st.session_state["mode_bahasa"] = mode_bahasa
 
-# Tampilkan pilihan bahasa sebagai tombol inline
-# bahasa_display = []
-# for bhs in bahasa_list:
-#     if bhs == mode_bahasa:
-#         warna = "#FFD700"  # warna emas untuk aktif
-#         style = "font-weight:bold;"
-#     else:
-#         warna = "white"
-#         style = "font-weight:normal;"
-#     bahasa_display.append(
-#         f"<a href='?bahasa={bhs}' style='color:{warna}; {style} margin-right:15px; text-decoration:none;'>{bhs}</a>"
-#     )
-
-# st.markdown(
-#     f"<div style='text-align:left; font-size:20px; margin-top: 10px;'>"
-#     + "".join(bahasa_display) +
-#     "</div>", 
-#     unsafe_allow_html=True
-# )
 bahasa_display = []
 for bhs in bahasa_list:
     if bhs == mode_bahasa:
@@ -464,12 +442,16 @@ def handle_send():
     
     st.session_state.chat_history.append((user_input, text_constraint))
     # Simpan ke database
-    save_chat_message(
+    result = save_chat_message(
         user_id=st.session_state.user.id,
         message=user_input,
         response=text_constraint,
         room=st.session_state.get("room", "room-1")
     )
+
+    if result.get("error") == "limit_exceeded":
+        st.warning("Chat history Anda penuh, silakan hapus terlebih dahulu.")
+        st.stop()
     
     clear_input()
     
