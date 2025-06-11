@@ -272,15 +272,19 @@ df_kamus = pd.read_excel("dataset/dataset_besar.xlsx")
 df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']] = df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']].apply(lambda col: col.str.lower())
 df_idiom = pd.read_excel("dataset/data_idiom (3).xlsx")
 
-# if "user" not in st.session_state:
-#     session = get_auth_session()
-#     if session and session.user:
-#         st.session_state["user"] = session.user  # ✅ pulihkan user otomatis
-#     else:
-#         st.switch_page("pages/login.py")
+def auth_guard():
+    if "user" not in st.session_state:
+        session = supabase.auth.get_session()
+        if session and session.user:
+            st.session_state["user"] = session.user
+        else:
+            st.session_state.clear()
+            st.switch_page("pages/login.py")
+auth_guard()
+
         
-if "user" not in st.session_state and not st.query_params.get("logout"):
-    st.switch_page("pages/login.py")
+# if "user" not in st.session_state and not st.query_params.get("logout"):
+#     st.switch_page("pages/login.py")
 
 # ========== Sidebar Controls ==========
 with st.sidebar:
