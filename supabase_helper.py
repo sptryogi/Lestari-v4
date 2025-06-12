@@ -98,9 +98,9 @@ def get_first_chat_preview(user_id, room):
         .execute()
 
     if result.data:
-        msg = result.data[0]["message"] or ""
+        # msg = result.data[0]["message"] or ""
         res = result.data[0]["response"] or ""
-        text = msg.strip() or res.strip()
+        text = res.strip()
         # Ambil 5 kata pertama dari message/response
         preview = " ".join(text.split()[:5]) + "..." if text else "Chat kosong..."
         return preview
