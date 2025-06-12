@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import re
 import pybase64
-from AI_chatbot import generate_text_deepseek, call_deepseek_api, kapitalisasi_awal_kalimat, bersihkan_superscript
+from AI_chatbot import generate_text_deepseek, call_deepseek_api, kapitalisasi_awal_kalimat, bersihkan_superscript, ekstrak_teks, hitung_token
 from constraint1 import highlight_text, constraint_text, ubah_ke_lema, find_the_lema_pair, cari_arti_lema, bersihkan_kamus
 import streamlit.components.v1 as components
 from supabase_helper import *
@@ -287,8 +287,11 @@ def auth_guard():
             st.switch_page("pages/login.py")
 auth_guard()
         
-# if "user" not in st.session_state and not st.query_params.get("logout"):
-#     st.switch_page("pages/login.py")
+if "show_file_uploader" not in st.session_state:
+    st.session_state.show_file_uploader = False
+
+if "uploaded_file" not in st.session_state:
+    st.session_state.uploaded_file = None
 
 # ========== Sidebar Controls ==========
 with st.sidebar:
@@ -461,9 +464,30 @@ def handle_send():
         st.warning("Silakan login terlebih dahulu.")
         st.stop()
         return
-    
+
+    extracted = ""
+    if st.session_state.get("uploaded_file"):
+        file = st.session_state.uploaded_file
+        extracted = ekstrak_teks(file)
+        token = hitung_token(extracted)
+        if token > 3000:
+            st.warning("❗ File anda melebihi batas token")
+            return
+
+    manual_input = st.session_state.get("user_input", "").strip()
+
+    if extracted and manual_input:
+        user_input = extracted + "\n" + manual_input
+    elif extracted:
+        user_input = extracted
+    elif manual_input:
+        user_input = manual_input
+    else:
+        st.warning("Silakan ketik pesan atau unggah file.")
+        return
+
     pasangan_cag = {}
-    user_input = st.session_state.user_input
+    # user_input = st.session_state.user_input
     current_room = st.session_state.get("room", "default")
     
     # Ambil history dari database
@@ -529,6 +553,8 @@ def handle_send():
         st.stop()
     
     clear_input()
+    st.session_state.uploaded_file = None
+    st.session_state.show_file_uploader = False
     
 # Modifikasi bagian tampilan chat history
 if "user" in st.session_state:
@@ -550,7 +576,7 @@ if "user" in st.session_state:
 
 st.markdown("</div>", unsafe_allow_html=True)  # ⬅️ END OF chat-container-outer
 
-col1, col2 = st.columns([6, 1])
+col1, col2, col3 = st.columns([6, 1, 1])
 with col1:
     user_input = st.text_area(
         label="", height=80, key="user_input", placeholder="Tulis pesan...",
@@ -559,6 +585,20 @@ with col1:
    
 with col2:
     st.button("➡", on_click=handle_send)
+
+with col3:
+    if st.button("📎", help="Lampirkan file", use_container_width=True):
+        st.session_state.show_file_uploader = not st.session_state.show_file_uploader
+
+    if st.session_state.show_file_uploader:
+        uploaded = st.file_uploader(
+            label="",
+            type=["pdf", "docx", "png", "jpg", "jpeg"],
+            label_visibility="collapsed"
+        )
+        if uploaded:
+            st.session_state.uploaded_file = uploaded
+            st.success(f"📎 File '{uploaded.name}' terunggah")
 
 col_left, col_right = st.columns([1, 2])
 with col_left:
