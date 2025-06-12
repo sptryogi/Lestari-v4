@@ -342,18 +342,17 @@ with st.sidebar:
 st.markdown("<h1 style='color:white'>Lestari Bahasa</h1>", unsafe_allow_html=True)
 st.markdown("""
 <style>
-/* Jarak antar radio button lebih rapat */
-div[data-testid="stRadio"] > div {
+/* Atur radio di dalam ID khusus */
+#pilihan-bahasa div[data-testid="stRadio"] > div {
     flex-direction: row !important;
-    gap: 12px !important;  /* lebih kecil dari sebelumnya */
-    margin-top: 4px !important;  /* jarak atasnya kecil */
+    gap: 12px !important;
+    margin-top: 4px !important;
     margin-bottom: 0px !important;
     align-items: center;
-    justify-content: flex-start;
 }
 
-/* Styling teks radio */
-div.st-emotion-cache-1hyd1ho.e1icttdg0 p {
+/* Styling teks khusus radio ini */
+#pilihan-bahasa div.st-emotion-cache-1hyd1ho.e1icttdg0 p {
     font-size: 20px !important;
     font-weight: bold !important;
     color: white !important;
@@ -362,13 +361,15 @@ div.st-emotion-cache-1hyd1ho.e1icttdg0 p {
     transition: color 0.3s ease;
 }
 
-/* Teks jadi emas saat dipilih */
-div[data-testid="stRadio"] input[type="radio"]:checked + div div.st-emotion-cache-1hyd1ho.e1icttdg0 p {
+/* Hanya ubah warna teks saat radio ini dipilih */
+#pilihan-bahasa input[type="radio"]:checked + div div.st-emotion-cache-1hyd1ho.e1icttdg0 p {
     color: #FFD700 !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
+
+st.markdown('<div id="pilihan-bahasa">', unsafe_allow_html=True)
 bahasa_list = ["Sunda", "Indonesia", "English"]
 
 if "mode_bahasa" not in st.session_state:
