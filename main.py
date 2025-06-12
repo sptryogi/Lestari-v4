@@ -342,8 +342,18 @@ with st.sidebar:
 st.markdown("<h1 style='color:white'>Lestari Bahasa</h1>", unsafe_allow_html=True)
 st.markdown("""
 <style>
-/* Teks default radio: putih dan bold */
-#pilihan-bahasa [data-testid="stMarkdownContainer"] p {
+/* Container radio button horizontal */
+div[data-testid="stRadio"] > div {
+    flex-direction: row !important;
+    gap: 12px !important;
+    margin-top: 4px !important;
+    margin-bottom: 0px !important;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* Target khusus label radio button bahasa */
+div[data-testid="stRadio"] div[data-testid="stMarkdownContainer"] p {
     font-size: 20px !important;
     font-weight: bold !important;
     color: white !important;
@@ -352,16 +362,13 @@ st.markdown("""
     transition: color 0.3s ease;
 }
 
-/* Jika radio dipilih: ubah teks jadi emas */
-#pilihan-bahasa input[type="radio"]:checked + div [data-testid="stMarkdownContainer"] p {
+/* Warna emas saat dipilih - target lebih spesifik */
+div[data-testid="stRadio"] input[type="radio"]:checked + div div[data-testid="stMarkdownContainer"] p {
     color: #FFD700 !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
-
-
-components.html('<div id="pilihan-bahasa">', height=0)
 bahasa_list = ["Sunda", "Indonesia", "English"]
 
 if "mode_bahasa" not in st.session_state:
@@ -377,8 +384,6 @@ mode_bahasa = st.radio(
 )
 
 st.session_state.mode_bahasa = mode_bahasa
-components.html('</div>', height=0)
-
 
 # bahasa_list = ["Sunda", "Indonesia", "English"]
 
