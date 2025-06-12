@@ -326,14 +326,33 @@ with st.sidebar:
     status = st.toggle("🔍 Lihat Constraint")
 
     # Room chat tetap (room-1 sampai room-5)
-    room_options = [f"room-{i}" for i in range(1, 6)]
-    current_room = st.session_state.get("room", "room-1")
+    # room_options = [f"room-{i}" for i in range(1, 6)]
+    # current_room = st.session_state.get("room", "room-1")
 
-    selected_room = st.selectbox(
+    # selected_room = st.selectbox(
+    #     "Pilih Chat-Room",
+    #     room_options,
+    #     index=room_options.index(current_room)
+    # )
+
+    # if selected_room != current_room:
+    #     st.session_state.room = selected_room
+    #     st.rerun()
+    room_options = [f"room-{i}" for i in range(1, 6)]
+    room_labels = []
+
+    for r in room_options:
+        preview = get_first_chat_preview(st.session_state.user.id, r)
+        room_labels.append(f"💬 {preview}")
+
+    selected_label = st.selectbox(
         "Pilih Chat-Room",
-        room_options,
+        room_labels,
         index=room_options.index(current_room)
     )
+
+    # Temukan room_id berdasarkan label
+    selected_room = room_options[room_labels.index(selected_label)]
 
     if selected_room != current_room:
         st.session_state.room = selected_room
