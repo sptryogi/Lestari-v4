@@ -345,10 +345,11 @@ st.markdown("""
 /* Atur radio di dalam ID khusus */
 #pilihan-bahasa div[data-testid="stRadio"] > div {
     flex-direction: row !important;
-    gap: 12px !important;
-    margin-top: 4px !important;
+    gap: 12px !important;  /* lebih kecil dari sebelumnya */
+    margin-top: 4px !important;  /* jarak atasnya kecil */
     margin-bottom: 0px !important;
     align-items: center;
+    justify-content: flex-start;
 }
 
 /* Styling teks khusus radio ini */
@@ -362,7 +363,7 @@ st.markdown("""
 }
 
 /* Hanya ubah warna teks saat radio ini dipilih */
-#pilihan-bahasa input[type="radio"]:checked + div div.st-emotion-cache-1hyd1ho.e1icttdg0 p {
+#pilihan-bahasa div[data-testid="stRadio"] input[type="radio"]:checked + div div.st-emotion-cache-1hyd1ho.e1icttdg0 p {
     color: #FFD700 !important;
 }
 </style>
