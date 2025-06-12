@@ -339,6 +339,7 @@ with st.sidebar:
     #     st.session_state.room = selected_room
     #     st.rerun()
     room_options = [f"room-{i}" for i in range(1, 6)]
+    current_room = st.session_state.get("room", "room-1")
     room_labels = []
 
     for r in room_options:
