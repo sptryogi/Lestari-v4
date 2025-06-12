@@ -342,25 +342,27 @@ with st.sidebar:
 st.markdown("<h1 style='color:white'>Lestari Bahasa</h1>", unsafe_allow_html=True)
 st.markdown("""
 <style>
-/* Buat tampilan horizontal */
+/* Jarak antar radio button lebih rapat */
 div[data-testid="stRadio"] > div {
     flex-direction: row !important;
-    gap: 16px !important;
+    gap: 12px !important;  /* lebih kecil dari sebelumnya */
+    margin-top: 4px !important;  /* jarak atasnya kecil */
     margin-bottom: 0px !important;
     align-items: center;
+    justify-content: flex-start;
 }
 
-/* Styling umum untuk semua teks radio */
+/* Styling teks radio */
 div.st-emotion-cache-1hyd1ho.e1icttdg0 p {
     font-size: 20px !important;
     font-weight: bold !important;
     color: white !important;
     margin: 0;
-    padding: 4px 8px;
+    padding: 2px 6px;
     transition: color 0.3s ease;
 }
 
-/* Ubah warna teks jadi emas saat dipilih */
+/* Teks jadi emas saat dipilih */
 div[data-testid="stRadio"] input[type="radio"]:checked + div div.st-emotion-cache-1hyd1ho.e1icttdg0 p {
     color: #FFD700 !important;
 }
