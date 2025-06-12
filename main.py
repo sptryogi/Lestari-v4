@@ -212,6 +212,21 @@ st.markdown(
     .scroll-to-bottom.show {
         display: block;
     }
+
+    /* Ubah tombol 📎 jadi hijau */
+    button[data-testid="stBaseButton-secondary"] {
+        background-color: #28a745 !important;  /* hijau */
+        color: white !important;
+        border: none !important;
+        border-radius: 5px !important;
+        padding: 0.25rem 0.75rem !important;
+    }
+
+    /* Tambahan efek hover */
+    button[data-testid="stBaseButton-secondary"]:hover {
+        background-color: #218838 !important;
+        color: white !important;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -576,19 +591,8 @@ if "user" in st.session_state:
 
 st.markdown("</div>", unsafe_allow_html=True)  # ⬅️ END OF chat-container-outer
 
-#warna hijau tombol upload 
-st.markdown("""
-<style>
-    button[kind="secondary"] {
-        background-color: #28a745 !important;  /* hijau */
-        color: white !important;
-        border-radius: 6px;
-        padding: 6px 12px;
-    }
-</style>
-""", unsafe_allow_html=True)
 
-col1, col2, col3 = st.columns([6, 1, 1])
+col1, col2 = st.columns([6, 1])
 with col1:
     user_input = st.text_area(
         label="", height=80, key="user_input", placeholder="Tulis pesan...",
@@ -598,7 +602,8 @@ with col1:
 with col2:
     st.button("➡", on_click=handle_send)
 
-with col3:
+col_left, col_right = st.columns([1, 2])
+with col_left:
     if st.button("📎", help="Lampirkan file"):
         st.session_state.show_file_uploader = not st.session_state.show_file_uploader
 
@@ -611,9 +616,7 @@ with col3:
         if uploaded:
             st.session_state.uploaded_file = uploaded
             st.success(f"📎 File '{uploaded.name}' terunggah")
-
-col_left, col_right = st.columns([1, 2])
-with col_left:
+with col_right:
     if st.button("🔄 Delete Chat History"):
         supabase.table("chat_history") \
             .delete() \
