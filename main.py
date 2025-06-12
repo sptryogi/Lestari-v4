@@ -342,15 +342,6 @@ with st.sidebar:
 st.markdown("<h1 style='color:white'>Lestari Bahasa</h1>", unsafe_allow_html=True)
 st.markdown("""
 <style>
-/* Pastikan radio horizontal dan rapat */
-#pilihan-bahasa [data-testid="stRadio"] > div {
-    flex-direction: row !important;
-    gap: 12px !important;
-    margin-top: 6px !important;
-    margin-bottom: 0px !important;
-    align-items: center;
-}
-
 /* Teks default radio: putih dan bold */
 #pilihan-bahasa [data-testid="stMarkdownContainer"] p {
     font-size: 20px !important;
