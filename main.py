@@ -362,29 +362,33 @@ with st.sidebar:
 st.markdown("<h1 style='color:white'>Lestari Bahasa</h1>", unsafe_allow_html=True)
 st.markdown("""
 <style>
-/* Container radio button horizontal */
+/* Container utama radio button */
+div[data-testid="stRadio"] {
+    margin-top: 4px !important;  /* Jarak dari judul di atas */
+    margin-bottom: 4px !important;
+}
+
+/* Baris radio button */
 div[data-testid="stRadio"] > div {
     flex-direction: row !important;
-    gap: 12px !important;
-    margin-top: 4px !important;
-    margin-bottom: 0px !important;
+    gap: 8px !important;  /* Lebih rapat dari sebelumnya (12px) */
     align-items: center;
-    justify-content: flex-start;
 }
 
-/* Target khusus label radio button bahasa */
+/* Label bahasa */
 div[data-testid="stRadio"] div[data-testid="stMarkdownContainer"] p {
-    font-size: 20px !important;
+    font-size: 18px !important;  /* Sedikit lebih kecil */
     font-weight: bold !important;
     color: white !important;
-    margin: 0;
-    padding: 2px 6px;
-    transition: color 0.3s ease;
+    margin: 0 !important;
+    padding: 0 4px !important;  /* Padding lebih kecil */
+    line-height: 1.2 !important;
 }
 
-/* Warna emas saat dipilih - target lebih spesifik */
+/* Warna saat dipilih */
 div[data-testid="stRadio"] input[type="radio"]:checked + div div[data-testid="stMarkdownContainer"] p {
     color: #FFD700 !important;
+    text-shadow: 0 0 2px rgba(255, 215, 0, 0.5);
 }
 </style>
 """, unsafe_allow_html=True)
