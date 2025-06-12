@@ -576,6 +576,18 @@ if "user" in st.session_state:
 
 st.markdown("</div>", unsafe_allow_html=True)  # ⬅️ END OF chat-container-outer
 
+#warna hijau tombol upload 
+st.markdown("""
+<style>
+    button[kind="secondary"] {
+        background-color: #28a745 !important;  /* hijau */
+        color: white !important;
+        border-radius: 6px;
+        padding: 6px 12px;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 col1, col2, col3 = st.columns([6, 1, 1])
 with col1:
     user_input = st.text_area(
@@ -587,7 +599,7 @@ with col2:
     st.button("➡", on_click=handle_send)
 
 with col3:
-    if st.button("📎", help="Lampirkan file", use_container_width=True):
+    if st.button("📎", help="Lampirkan file"):
         st.session_state.show_file_uploader = not st.session_state.show_file_uploader
 
     if st.session_state.show_file_uploader:
