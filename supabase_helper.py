@@ -87,3 +87,21 @@ def get_chat_history(user_id, room="default", limit=100):
         .limit(limit) \
         .execute()
     return result.data if result else []
+
+def get_first_chat_preview(user_id, room):
+    result = supabase.table("chat_history") \
+        .select("message, response") \
+        .eq("user_id", user_id) \
+        .eq("room", room) \
+        .order("created_at", asc=True) \
+        .limit(1) \
+        .execute()
+
+    if result.data:
+        msg = result.data[0]["message"] or ""
+        res = result.data[0]["response"] or ""
+        # Ambil 5 kata pertama dari message/response
+        preview = " ".join((msg or res).split()[:5]) + "..."
+        return preview
+    return "Chat kosong..."
+
