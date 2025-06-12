@@ -602,7 +602,7 @@ with col1:
 with col2:
     st.button("➡", on_click=handle_send)
 
-col_left, col_right = st.columns([1, 1])
+col_left, col_right = st.columns([1, 2])
 with col_left:
     if st.button("📎", help="Lampirkan file"):
         st.session_state.show_file_uploader = not st.session_state.show_file_uploader
