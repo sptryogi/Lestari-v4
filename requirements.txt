@@ -7,3 +7,8 @@ numpy
 scikit-learn
 pybase64
 supabase
+pymupdf
+python-docx
+pillow
+easyocr
+tiktoken
