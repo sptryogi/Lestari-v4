@@ -93,15 +93,16 @@ def get_first_chat_preview(user_id, room):
         .select("message, response") \
         .eq("user_id", user_id) \
         .eq("room", room) \
-        .order("created_at", asc=True) \
+        .order("created_at", desc=False) \
         .limit(1) \
         .execute()
 
     if result.data:
         msg = result.data[0]["message"] or ""
         res = result.data[0]["response"] or ""
+        text = msg.strip() or res.strip()
         # Ambil 5 kata pertama dari message/response
-        preview = " ".join((msg or res).split()[:5]) + "..."
+        preview = " ".join(text.split()[:5]) + "..." if text else "Chat kosong..."
         return preview
     return "Chat kosong..."
 
