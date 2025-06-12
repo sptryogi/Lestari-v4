@@ -364,8 +364,8 @@ st.markdown("""
 <style>
 /* Container utama radio button */
 div[data-testid="stRadio"] {
-    margin-top: 4px !important;  /* Jarak dari judul di atas */
-    margin-bottom: 4px !important;
+    margin-top: 2px !important;  /* Jarak dari judul di atas */
+    margin-bottom: 2px !important;
 }
 
 /* Baris radio button */
