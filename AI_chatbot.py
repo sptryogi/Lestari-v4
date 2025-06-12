@@ -6,6 +6,11 @@ import string
 from supabase_helper import *
 import requests
 import json
+import fitz  # PyMuPDF
+import docx
+from PIL import Image
+import easyocr
+import tiktoken
 
 # Fungsi untuk memanggil Deepseek API
 def call_deepseek_api(prompt, history=None,  system_instruction=None):
@@ -172,5 +177,33 @@ def kapitalisasi_awal_kalimat(teks):
 
     # Gabungkan kembali paragraf dengan \n\n
     return "\n\n".join(paragraf_hasil)
+
+def hitung_token(teks):
+    enc = tiktoken.get_encoding("cl100k_base")
+    return len(enc.encode(teks))
+
+reader = easyocr.Reader(['id', 'en'])  # Tambahkan 'su' untuk Bahasa Sunda
+
+def ekstrak_teks(file):
+    if file.type == "application/pdf":
+        import fitz  # PyMuPDF
+        doc = fitz.open(stream=file.read(), filetype="pdf")
+        return "\n".join(page.get_text() for page in doc)
+
+    elif file.type in ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"]:
+        import docx
+        doc = docx.Document(file)
+        return "\n".join([para.text for para in doc.paragraphs])
+
+    elif file.type.startswith("image/"):
+        from PIL import Image
+        import numpy as np
+        img = Image.open(file).convert("RGB")
+        img_array = np.array(img)
+        results = reader.readtext(img_array, detail=0)
+        return "\n".join(results)
+
+    else:
+        return "❌ Jenis file tidak didukung."
     
 
