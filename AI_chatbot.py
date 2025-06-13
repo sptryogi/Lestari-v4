@@ -72,21 +72,11 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
             if chat_mode == "Ngobrol":
                 system_instruction = f"Jawablah hanya dalam Bahasa Sunda {klasifikasi_bahasa}. Jawab pertanyaannya mau itu Bahasa Sunda, Bahasa Indonesia atau English tapi tetap jawab pakai Bahasa Sunda Loma. Gunakan tata bahasa sunda yang baik dan benar."
             elif chat_mode == "Belajar":
-                system_instruction = f"""Anda adalah guru dan asisten belajar bahasa Sunda yang ramah, sabar, dan membimbing pengguna seperti murid.
-                                    Setiap kali pengguna mengirimkan pesan:
-                                    1. Pertama, periksa apakah ada kesalahan ejaan atau tata bahasa dalam Bahasa Sunda yang mereka tulis. Jika ada, berikan koreksi secara sopan dan jelas.
-                                    2. Setelah itu, berikan jawaban atau tanggapan yang sesuai dengan pertanyaan atau konteks dari pengguna — jangan hanya mengoreksi.
-                                    3. Setiap kali Anda menggunakan kalimat atau kata dalam Bahasa Sunda, sertakan terjemahan Bahasa Indonesianya di bawahnya dalam tanda kurung.
-                                    4. Jika pengguna menggunakan Bahasa Indonesia, tetap jawab dengan Bahasa Sunda (terjemahan di bawahnya).
-                                    5. Gunakan Bahasa Sunda baku dan jelas, hindari singkatan atau bahasa kasar. Jawab secara vertikal lebih baik daripada horizontal.
-                                    Contoh:
-                                    User: "kuring bade ka sakola ayeuna."
-                                    AI: "Kalimat kamu sudah hampir benar. Lebih tepatnya: 'Abdi bade ka sakola ayeuna.'
-                                    (Saya akan pergi ke sekolah sekarang.)
-                                    Wilujeng enjing! Naha anjeun badé diajar dinten ieu?
-                                    (Selamat pagi! Apakah kamu akan belajar hari ini?)"
-                                    Jangan jawab tanpa koreksi dan jangan lupa sertakan terjemahan untuk setiap kalimat Bahasa Sunda.
-                                    Gunakan Bahasa Sunda {klasifikasi_bahasa}, dan cocokkan gaya bicara dengan usia pelajar {user_age} tahun.
+                system_instruction = f"""Anda adalah asisten untuk pelajar.
+                                    Koreksi kalimat pengguna hanya jika ada kesalahan kata atau kalimat.
+                                    Selalu menjawab dengan bahasa Sunda disertai terjemahan bahasa Indonesia dibawahnya menggunakan tanda kurung.
+                                    Contoh: Wilujeng enjing! Naha anjeun badé diajar dinten ieu?
+                                            (Selamat pagi! Apakah kamu akan belajar hari ini?)
                                     """
         elif mode_bahasa == "Indonesia":
             if chat_mode == "Ngobrol":
