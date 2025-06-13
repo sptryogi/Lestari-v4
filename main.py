@@ -308,79 +308,12 @@ if "show_file_uploader" not in st.session_state:
 if "uploaded_file" not in st.session_state:
     st.session_state.uploaded_file = None
 
-# ========== Sidebar Controls ==========
-with st.sidebar:
-    st.header("⚙️ Pengaturan")
+if "last_chat_mode" not in st.session_state:
+    st.session_state.last_chat_mode = None
 
-    option = st.selectbox(
-        "Pilih Fitur",
-        ["Chatbot", "Terjemah Indo → Sunda", "Terjemah Sunda → Indo"],
-        key="fitur_selector"
-    )
+if "sudah_disapa" not in st.session_state:
+    st.session_state.sudah_disapa = False
 
-    fitur = "chatbot"
-    if option == "Chatbot":
-        fitur = "chatbot"
-    elif option == "Terjemah Indo → Sunda":
-        fitur = "terjemahindosunda"
-    else:
-        fitur = "terjemahsundaindo"
-
-    chat_mode = st.selectbox(
-        "Pilih Mode Chat",
-        ["Ngobrol", "Belajar"],
-        key="chat_mode"
-    )
-
-    # if fitur == "chatbot":
-    #     mode_bahasa = st.selectbox(
-    #         "🌐 Mode Bahasa",
-    #         ["Sunda", "Indonesia", "English"],
-    #         key="mode_selector"
-    #     )
-    # else:
-    #     mode_bahasa = None
-
-    status = st.toggle("🔍 Lihat Constraint")
-
-    # Room chat tetap (room-1 sampai room-5)
-    # room_options = [f"room-{i}" for i in range(1, 6)]
-    # current_room = st.session_state.get("room", "room-1")
-
-    # selected_room = st.selectbox(
-    #     "Pilih Chat-Room",
-    #     room_options,
-    #     index=room_options.index(current_room)
-    # )
-
-    # if selected_room != current_room:
-    #     st.session_state.room = selected_room
-    #     st.rerun()
-    room_options = [f"room-{i}" for i in range(1, 6)]
-    current_room = st.session_state.get("room", "room-1")
-    room_labels = []
-
-    for r in room_options:
-        preview = get_first_chat_preview(st.session_state.user.id, r)
-        room_labels.append(f"💬 {preview}")
-
-    selected_label = st.selectbox(
-        "Pilih Chat-Room",
-        room_labels,
-        index=room_options.index(current_room)
-    )
-
-    # Temukan room_id berdasarkan label
-    selected_room = room_options[room_labels.index(selected_label)]
-    
-    if selected_room != current_room or chat_mode != st.session_state.get("last_mode"):
-        st.session_state.sudah_disapa = False
-        st.session_state["last_mode"] = chat_mode
-
-    if selected_room != current_room:
-        st.session_state.room = selected_room
-        st.rerun()
-    
 st.markdown("<h1 style='color:white'>Lestari Bahasa</h1>", unsafe_allow_html=True)
 st.markdown("""
 <style>
@@ -431,7 +364,6 @@ mode_bahasa = st.radio(
 
 st.session_state.mode_bahasa = mode_bahasa
 
-
 st.markdown("""
 <span style='
     color: white;
@@ -446,6 +378,58 @@ st.markdown("""
 </span>
 """, unsafe_allow_html=True)
 
+# ========== Sidebar Controls ==========
+with st.sidebar:
+    st.header("⚙️ Pengaturan")
+
+    option = st.selectbox(
+        "Pilih Fitur",
+        ["Chatbot", "Terjemah Indo → Sunda", "Terjemah Sunda → Indo"],
+        key="fitur_selector"
+    )
+
+    fitur = "chatbot"
+    if option == "Chatbot":
+        fitur = "chatbot"
+    elif option == "Terjemah Indo → Sunda":
+        fitur = "terjemahindosunda"
+    else:
+        fitur = "terjemahsundaindo"
+
+    chat_mode = st.selectbox(
+        "Pilih Mode Chat",
+        ["Ngobrol", "Belajar"],
+        key="chat_mode"
+    )
+    # Deteksi perubahan mode belajar
+    if (fitur == "chatbot" and chat_mode == "Belajar" and mode_bahasa == "Sunda" and st.session_state.last_chat_mode != "Belajar"):
+        st.session_state.sudah_disapa = False
+        st.session_state.last_chat_mode = "Belajar"
+        st.rerun()
+        
+    status = st.toggle("🔍 Lihat Constraint")
+
+    room_options = [f"room-{i}" for i in range(1, 6)]
+    current_room = st.session_state.get("room", "room-1")
+    room_labels = []
+
+    for r in room_options:
+        preview = get_first_chat_preview(st.session_state.user.id, r)
+        room_labels.append(f"💬 {preview}")
+
+    selected_label = st.selectbox(
+        "Pilih Chat-Room",
+        room_labels,
+        index=room_options.index(current_room)
+    )
+
+    # Temukan room_id berdasarkan label
+    selected_room = room_options[room_labels.index(selected_label)]
+
+    if selected_room != current_room:
+        st.session_state.room = selected_room
+        st.rerun()
+    
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
@@ -453,8 +437,16 @@ if "chat_history" not in st.session_state:
 if "user_input" not in st.session_state:
     st.session_state.user_input = ""
 
-if "sudah_disapa" not in st.session_state:
+# Deteksi perubahan mode belajar
+if (
+    fitur == "chatbot"
+    and chat_mode == "Belajar"
+    and mode_bahasa == "Sunda"
+    and st.session_state.last_chat_mode != "Belajar"
+):
     st.session_state.sudah_disapa = False
+    st.session_state.last_chat_mode = "Belajar"
+    st.rerun()
 
 # Fungsi untuk mengosongkan input
 def clear_input():
@@ -574,9 +566,14 @@ if "user" in st.session_state:
         room=st.session_state.get("room", "room-1")
     )
 
-    if (st.session_state.get("fitur_selector") == "Chatbot" and st.session_state.get("chat_mode") == "Belajar" and st.session_state.get("mode_selector") == "Sunda" and not st.session_state.sudah_disapa):
+    if (
+        fitur == "chatbot"
+        and chat_mode == "Belajar"
+        and mode_bahasa == "Sunda"
+        and not st.session_state.sudah_disapa
+    ):
         st.markdown(
-            f"<div class='chat-container'><div class='chat-bubble-bot'>Wilujeng enjing! Kumaha damang?<br><br><i>(Selamat pagi! Apa kabar?)</i></div></div>",
+            f"<div class='chat-container'><div class='chat-bubble-bot'>Wilujeng enjing! Kumaha damang?<br><br>(<i>Selamat pagi! Apa kabar?</i>)</div></div>",
             unsafe_allow_html=True
         )
         st.session_state.sudah_disapa = True
