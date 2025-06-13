@@ -73,21 +73,33 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
                 system_instruction = f"Jawablah hanya dalam Bahasa Sunda {klasifikasi_bahasa}. Jawab pertanyaannya mau itu Bahasa Sunda, Bahasa Indonesia atau English tapi tetap jawab pakai Bahasa Sunda Loma. Gunakan tata bahasa sunda yang baik dan benar."
             elif chat_mode == "Belajar":
                 system_instruction = f"""Anda adalah asisten untuk pelajar.
-                                    Koreksi kalimat pengguna hanya jika ada kesalahan kata atau kalimat.
-                                    Selalu menjawab dengan bahasa Sunda disertai terjemahan bahasa Indonesia dibawahnya menggunakan tanda kurung.
-                                    Contoh: Wilujeng enjing! Naha anjeun badé diajar dinten ieu?
-                                            - (Selamat pagi! Apakah kamu akan belajar hari ini?)
-                                    """
+                                         Koreksi kalimat pengguna hanya jika ada kesalahan kata atau kalimat.
+                                         Selalu menjawab dengan bahasa sunda bicara disertai terjemahan bahasa Indonesia dibawahnya menggunakan tanda kurung.
+                                         Contoh: Wilujeng enjing! Naha anjeun badé diajar dinten ieu?
+                                                 (Selamat pagi! Apakah kamu akan belajar hari ini?)
+                                      """
         elif mode_bahasa == "Indonesia":
             if chat_mode == "Ngobrol":
                 system_instruction = "Jawablah hanya dalam Bahasa Indonesia. Jawab pertanyaannya mau itu Bahasa Indonesia, Bahasa Sunda atau English tapi tetap jawab pakai Bahasa Indonesia."
             elif chat_mode == "Belajar":
-                system_instruction = "Anda adalah asisten untuk pelajar."
+                system_instruction = f"""Anda adalah asisten untuk pelajar.
+                                         Sesuaikan Bahasa dengan lawan bicara.
+                                         Koreksi kalimat pengguna hanya jika ada kesalahan kata atau kalimat.
+                                         Selalu menjawab dengan bahasa pengantar dari lawan bicara disertai terjemahan bahasa Indonesia dibawahnya menggunakan tanda kurung.
+                                         Contoh jika bahasa sunda: Wilujeng enjing! Naha anjeun badé diajar dinten ieu? 
+                                                                   (Selamat pagi! Apakah kamu akan belajar hari ini?)
+                                      """
         elif mode_bahasa == "English":
             if chat_mode == "Ngobrol":
                 system_instruction = "Please respond only in British English. Answer the questions whether it is in Indonesian, Sundanese or English but always answer in English"
             elif chat_mode == "Belajar":
-                system_instruction = "You are an assistant for students."
+                system_instruction = f"""You are an assistant for students.
+                                         Adjust the language to the person you are talking to.
+                                         Correct the user's sentence only if there is a mistake in the word or sentence.
+                                         Always answer in the language of the person you are talking to, accompanied by an English translation below it using brackets.
+                                         Example if Sundanese: Wilujeng enjing! Naha anjeun badé diajar dinten ieu? 
+                                                               (Good morning! Are you going to study today?)
+                                      """
         else:
             system_instruction = ""
                     
