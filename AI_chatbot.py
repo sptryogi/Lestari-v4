@@ -12,6 +12,30 @@ from PIL import Image
 import easyocr
 import tiktoken
 
+relasi_tutur = {
+    "bapak": {"anak": "LOMA", "istri": "LOMA", "teman": "LOMA", "atasan": "HALUS"},
+    "ibu": {"anak": "LOMA", "suami": "LOMA", "teman": "LOMA", "atasan": "HALUS"},
+    "anak": {"bapak": "HALUS", "ibu": "HALUS", "teman": "LOMA/KASAR", "guru": "HALUS"},
+    "atasan": {"bawahan": "LOMA"}
+}
+
+def deteksi_relasi_kutipan(teks):
+    hasil = []
+    pola = r"(\w+)\s+berkata\s+kepada\s+(\w+):\s+\"(.*?)\""
+    cocok = re.findall(pola, teks, flags=re.IGNORECASE)
+
+    for pembicara, pendengar, kutipan in cocok:
+        pembicara = pembicara.lower()
+        pendengar = pendengar.lower()
+        tingkat = relasi_tutur.get(pembicara, {}).get(pendengar, "L1")
+        hasil.append({
+            "pembicara": pembicara,
+            "pendengar": pendengar,
+            "kutipan": kutipan,
+            "tingkat": tingkat
+        })
+    return hasil
+
 # Fungsi untuk memanggil Deepseek API
 def call_deepseek_api(prompt, history=None,  system_instruction=None):
     api_key = st.secrets["API_KEY"]
@@ -65,7 +89,16 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
 
     system_instruction = ""
     user_prompt = user_input
-    
+
+    # ✨ Tambahan: Deteksi kutipan langsung dan sisipkan ke system_instruction
+    kutipan_terdeteksi = deteksi_relasi_kutipan(user_prompt)
+    if kutipan_terdeteksi:
+        info_kutipan = "\n".join([
+            f"Pembicara: {k['pembicara']}, Pendengar: {k['pendengar']}, Tingkat tutur: {k['tingkat']}, Kutipan: \"{k['kutipan']}\""
+            for k in kutipan_terdeteksi
+        ])
+        system_instruction = f"Tolong pahami dan gunakan tingkat tutur dalam bahasa Sunda sesuai relasi berikut:\n{info_kutipan}\n\n" + system_instruction
+        
     # Instruksi berdasarkan fitur dan mode bahasa
     if fitur == "chatbot":
         if mode_bahasa == "Sunda":
