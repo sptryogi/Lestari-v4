@@ -12,6 +12,76 @@ from PIL import Image
 import easyocr
 import tiktoken
 
+relasi_tutur = {
+    "bapak": {"anak": "L1", "istri": "L1", "teman": "L1", "atasan": "H"},
+    "ibu": {"anak": "L1", "suami": "L1", "teman": "L1", "atasan": "H"},
+    "anak": {"bapak": "H", "ibu": "H", "teman": "L2", "guru": "H"},
+    "atasan": {"bawahan": "L1"},
+}
+
+def deteksi_relasi_kutipan(teks):
+    hasil = []
+    pola_list = [
+        r"(\w+)\s+berkata\s+kepada\s+(\w+):\s+\"(.*?)\"",
+        r"(\w+)\s+menjawab\s+(\w+):\s+\"(.*?)\"",
+        r"kata\s+(\w+)\s+kepada\s+(\w+),?\s*\"(.*?)\"",
+        r"ujar\s+(\w+)\s+kepada\s+(\w+),?\s*\"(.*?)\"",
+        r"(\w+)\s+pun\s+berkata\s+kepada\s+(\w+):\s*\"(.*?)\"",
+        r"(\w+)\s+menyuruh\s+(\w+):\s*\"(.*?)\"",
+        r"(\w+)\s+meminta\s+kepada\s+(\w+):\s*\"(.*?)\"",
+        r"(\w+)\s+menasihati\s+(\w+):\s*\"(.*?)\"",
+        r"(\w+)\s+berseru\s+kepada\s+(\w+):\s*\"(.*?)\"",
+        r"(\w+)\s+berbicara\s+dengan\s+(\w+):\s*\"(.*?)\""
+    ]
+
+    for pola in pola_list:
+        cocok = re.findall(pola, teks, flags=re.IGNORECASE)
+        for pembicara, pendengar, kutipan in cocok:
+            pembicara = pembicara.lower()
+            pendengar = pendengar.lower()
+            tingkat = relasi_tutur.get(pembicara, {}).get(pendengar, "L1")
+            hasil.append({
+                "pembicara": pembicara,
+                "pendengar": pendengar,
+                "kutipan": kutipan,
+                "tingkat": tingkat
+            })
+
+    if not hasil:
+        instruksi = (
+            "Identifikasi apakah ada kutipan langsung dalam teks berikut.\n"
+            "Jika ada, tentukan siapa pembicara dan siapa pendengarnya, serta kutipannya.\n"
+            "Kemudian tentukan tingkat tutur sesuai relasi sosial dari daftar ini:\n"
+            "- bapak → anak = L1\n"
+            "- anak → bapak/ibu = H\n"
+            "- anak → teman = L2\n"
+            "Jawaban dalam format:\n"
+            "Pembicara: ...\nPendengar: ...\nKutipan: \"...\"\nTingkat: ..."
+        )
+        response = call_deepseek_api(teks, system_instruction=instruksi)
+        match = re.search(r"Pembicara: (.*?)\nPendengar: (.*?)\nKutipan: \"(.*?)\"\nTingkat: (.*?)\b", response)
+        if match:
+            pembicara, pendengar, kutipan, tingkat = match.groups()
+            hasil.append({
+                "pembicara": pembicara.strip().lower(),
+                "pendengar": pendengar.strip().lower(),
+                "kutipan": kutipan.strip(),
+                "tingkat": tingkat.strip().upper()
+            })
+
+    return hasil
+
+def sisipkan_kutipan_ke_system_instruction(teks, instruksi_awal):
+    kutipan = deteksi_relasi_kutipan(teks)
+    if not kutipan:
+        return instruksi_awal
+
+    bagian = "\n\nTerdeteksi kutipan langsung berikut:\n"
+    for k in kutipan:
+        bagian += f"- Pembicara: {k['pembicara']}, Pendengar: {k['pendengar']}, Tingkat: {k['tingkat']}, Kutipan: \"{k['kutipan']}\"\n"
+
+    return instruksi_awal + bagian
+
 # Fungsi untuk memanggil Deepseek API
 def call_deepseek_api(prompt, history=None,  system_instruction=None):
     api_key = st.secrets["API_KEY"]
@@ -74,7 +144,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
             elif chat_mode == "Belajar":
                 system_instruction = f"""Anda adalah asisten untuk pelajar.
                                          Koreksi kalimat pengguna hanya jika ada kesalahan kata atau kalimat.
-                                         Selalu menjawab dengan bahasa sunda bicara disertai terjemahan bahasa Indonesia dibawahnya menggunakan tanda kurung.
+                                         Selalu menjawab dengan bahasa sunda, tiap kalimat disertai terjemahan bahasa Indonesia dibawahnya menggunakan tanda kurung.
                                          Contoh: Wilujeng enjing! Naha anjeun badé diajar dinten ieu?
                                                  (Selamat pagi! Apakah kamu akan belajar hari ini?)
                                       """
@@ -85,7 +155,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
                 system_instruction = f"""Anda adalah asisten untuk pelajar.
                                          Sesuaikan Bahasa dengan lawan bicara.
                                          Koreksi kalimat pengguna hanya jika ada kesalahan kata atau kalimat.
-                                         Selalu menjawab dengan bahasa pengantar dari lawan bicara disertai terjemahan bahasa Indonesia dibawahnya menggunakan tanda kurung.
+                                         Selalu menjawab dengan bahasa pengantar dari lawan bicara, tiap kalimat disertai terjemahan bahasa Indonesia dibawahnya menggunakan tanda kurung.
                                          Contoh jika bahasa sunda: Wilujeng enjing! Naha anjeun badé diajar dinten ieu? 
                                                                    (Selamat pagi! Apakah kamu akan belajar hari ini?)
                                       """
@@ -114,7 +184,6 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
         Gunakan huruf kapital pada awal kalimat dan setelah tanda titik serta setelah petik dua atau setelah paragraf.
         Gunakan huruf kapital pada awal nama orang dan nama tempat.
         Gunakan huruf kapital yang sama jika pada kalimat atau kata pada input user menggunakan huruf kapital.
-        Jangan menggabungkan paragraf.
         Selalu akhiri dengan pertanyaan. "
         """
         # Pertanyaan dari pengguna: "{user_prompt}
@@ -137,7 +206,8 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
         Huruf pada awal kalimat dan setelah titik serta setelah petik dua atau setelah paragraf harus huruf kapital.
         Nama orang dan nama tempat juga harus berawalan huruf kapital.
         """
-        
+        system_instruction = sisipkan_kutipan_ke_system_instruction(user_prompt, system_instruction)
+
     elif fitur == "terjemahsundaindo":
         system_instruction = f"""Kamu adalah penerjemah yang ahli bahasa indonesia dan bahasa sunda.
         Terjemahkan kalimat berikut ke dalam Bahasa Indonesia yang baku dan mudah dimengerti.
@@ -157,7 +227,6 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
         system_instruction = f"Jawablah dengan sopan dan informatif: {user_prompt}"
 
     formatted_history = [{"message": m[0], "response": m[1]} for m in history] if history else None
-
     response = call_deepseek_api(prompt=user_prompt, history=formatted_history, system_instruction=system_instruction)
     return response
 
