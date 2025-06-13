@@ -145,7 +145,7 @@ st.markdown(
         margin-left: auto;
         font-size: 20px;
         border: 2px solid black;
-        text-align: right;
+        text-align: left;
         line-height: 20px;
     }
 
