@@ -618,7 +618,7 @@ with col2:
 
 col_left, col_right = st.columns([1, 2])
 with col_left:
-    if st.button("📎", help="Lampirkan file"):
+    if st.button("Attach File", help="Lampirkan file"):
         st.session_state.show_file_uploader = not st.session_state.show_file_uploader
 
     if st.session_state.show_file_uploader:
