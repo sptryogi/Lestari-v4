@@ -516,6 +516,16 @@ def handle_send():
     option = st.session_state.get("fitur_selector", "Chatbot")
     fitur = "chatbot" if option == "Chatbot" else "terjemahindosunda" if option == "Terjemah Indo → Sunda" else "terjemahsundaindo"
     mode_bahasa = st.session_state.get("mode_bahasa", "Sunda") if fitur == "chatbot" else None
+    
+    if fitur == "chatbot" and mode_bahasa == "Sunda" and chat_mode == "Belajar" and not history:
+        bot_response = "Wilujeng enjing! Kumaha damang?\n\n(Selamat pagi! Apa kabar?)"
+        save_chat_message(
+            user_id=st.session_state.user.id,
+            message="(AI menyapa otomatis)",
+            response=bot_response,
+            room=current_room
+        )
+        st.rerun()
 
     if fitur == "chatbot" and mode_bahasa == "Sunda":
         bot_response = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history=history_for_prompt)
