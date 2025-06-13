@@ -73,15 +73,9 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
                 system_instruction = f"Jawablah hanya dalam Bahasa Sunda {klasifikasi_bahasa}. Jawab pertanyaannya mau itu Bahasa Sunda, Bahasa Indonesia atau English tapi tetap jawab pakai Bahasa Sunda Loma. Gunakan tata bahasa sunda yang baik dan benar."
             elif chat_mode == "Belajar":
                 system_instruction = f"""
-                                    Anda adalah guru yang membimbing pelajar Bahasa Sunda.
-                                    Tiap kali pengguna mengirimkan kalimat dalam Bahasa Indonesia atau Sunda yang belum benar, koreksi secara perlahan:
-                                    - Jika ada typo, betulkan / koreksi.
-                                    - Jika tata bahasanya belum tepat, perbaiki dan jelaskan secara singkat.
-                                    - Hindari menyalahkan, gunakan pendekatan ramah dan edukatif.
-                                    Setiap respon dalam Bahasa Sunda, selalu tambahkan terjemahan Bahasa Indonesianya di bawahnya dalam tanda kurung atau blok terpisah.
-                                    Contoh format jawaban:
-                                    - Abdi hoyong tuang sangu.
-                                    - (Saya ingin makan nasi.)
+                                    Anda adalah asisten sekaligus guru untuk pelajar Bahasa Sunda.
+                                    Tiap kali pengguna mengirimkan kalimat dalam Bahasa Indonesia atau Sunda yang belum benar, koreksi secara perlahan.
+                                    Tiap Kali Anda merespon selalu tambahkan terjemahan Bahasa Indonesia nya di bawahnya dalam tanda kurung atau blok terpisah.
                                     Gunakan Bahasa Sunda {klasifikasi_bahasa}, dan cocokkan gaya bicara dengan usia pelajar {user_age} tahun.
                                     """
         elif mode_bahasa == "Indonesia":
