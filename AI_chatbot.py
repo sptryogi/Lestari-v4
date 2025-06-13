@@ -13,10 +13,10 @@ import easyocr
 import tiktoken
 
 relasi_tutur = {
-    "bapak": {"anak": "L1", "istri": "L1", "teman": "L1", "atasan": "H"},
-    "ibu": {"anak": "L1", "suami": "L1", "teman": "L1", "atasan": "H"},
-    "anak": {"bapak": "H", "ibu": "H", "teman": "L2", "guru": "H"},
-    "atasan": {"bawahan": "L1"},
+    "bapak": {"anak": "Loma", "istri": "Loma", "teman": "Loma", "atasan": "Halus"},
+    "ibu": {"anak": "Loma", "suami": "Loma", "teman": "Loma", "atasan": "Halus"},
+    "anak": {"bapak": "Halus", "ibu": "Halus", "teman": "Loma/kasar", "guru": "Halus"},
+    "atasan": {"bawahan": "Loma"},
 }
 
 def deteksi_relasi_kutipan(teks):
@@ -52,9 +52,10 @@ def deteksi_relasi_kutipan(teks):
             "Identifikasi apakah ada kutipan langsung dalam teks berikut.\n"
             "Jika ada, tentukan siapa pembicara dan siapa pendengarnya, serta kutipannya.\n"
             "Kemudian tentukan tingkat tutur sesuai relasi sosial dari daftar ini:\n"
-            "- bapak → anak = L1\n"
-            "- anak → bapak/ibu = H\n"
-            "- anak → teman = L2\n"
+            "- bapak → anak = Loma\n"
+            "- anak → bapak/ibu = Halus\n"
+            "- anak → teman = Loma/kasar\n"
+            "- atasan → bawahan = Loma\n"
             "Jawaban dalam format:\n"
             "Pembicara: ...\nPendengar: ...\nKutipan: \"...\"\nTingkat: ..."
         )
