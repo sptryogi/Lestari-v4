@@ -82,11 +82,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
             if chat_mode == "Ngobrol":
                 system_instruction = "Jawablah hanya dalam Bahasa Indonesia. Jawab pertanyaannya mau itu Bahasa Indonesia, Bahasa Sunda atau English tapi tetap jawab pakai Bahasa Indonesia."
             elif chat_mode == "Belajar":
-                system_instruction = f"""Anda adalah asisten untuk pelajar.
-                                        Koreksi kalimat pengguna hanya jika ada kesalahan kata atau kalimat.
-                                        Selalu menjawab dengan bahasa Sunda disertai terjemahan bahasa Indonesia dibawahnya menggunakan tanda kurung.
-                                        Contoh: Wilujeng enjing! Naha anjeun badé diajar dinten ieu?
-                                                - (Selamat pagi! Apakah kamu akan belajar hari ini?)"""
+                system_instruction = "Anda adalah asisten untuk pelajar."
         elif mode_bahasa == "English":
             if chat_mode == "Ngobrol":
                 system_instruction = "Please respond only in British English. Answer the questions whether it is in Indonesian, Sundanese or English but always answer in English"
