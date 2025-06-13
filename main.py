@@ -372,6 +372,10 @@ with st.sidebar:
 
     # Temukan room_id berdasarkan label
     selected_room = room_options[room_labels.index(selected_label)]
+    
+    if selected_room != current_room or chat_mode != st.session_state.get("last_mode"):
+        st.session_state.sudah_disapa = False
+        st.session_state["last_mode"] = chat_mode
 
     if selected_room != current_room:
         st.session_state.room = selected_room
@@ -427,25 +431,7 @@ mode_bahasa = st.radio(
 
 st.session_state.mode_bahasa = mode_bahasa
 
-# bahasa_list = ["Sunda", "Indonesia", "English"]
 
-# bahasa_display = []
-# for bhs in bahasa_list:
-#     if bhs == mode_bahasa:
-#         bahasa_display.append(f"<span style='color:#FFD700;'><b>{bhs}</b></span>")    # italic untuk bahasa aktif
-#     else:
-#         bahasa_display.append(f"<span style='color: white;'>{bhs}</span>")
-
-# bahasa_str = " ".join(bahasa_display)
-
-# st.markdown(
-#     f"<div style='text-align:left; padding-top: 8px; font-size: 20px; margin-top:0px;'>"
-#     f"{bahasa_str}"
-#     f"</div>", 
-#     unsafe_allow_html=True
-# )
-
-# st.markdown("<span style='color:white'>Selamat datang! Silakan ajukan pertanyaan.</span>", unsafe_allow_html=True)
 st.markdown("""
 <span style='
     color: white;
@@ -466,6 +452,9 @@ if "chat_history" not in st.session_state:
 # Inisialisasi session state jika belum ada
 if "user_input" not in st.session_state:
     st.session_state.user_input = ""
+
+if "sudah_disapa" not in st.session_state:
+    st.session_state.sudah_disapa = False
 
 # Fungsi untuk mengosongkan input
 def clear_input():
@@ -584,6 +573,13 @@ if "user" in st.session_state:
         user_id=st.session_state.user.id,
         room=st.session_state.get("room", "room-1")
     )
+
+    if (st.session_state.get("fitur_selector") == "Chatbot" and st.session_state.get("chat_mode") == "Belajar" and st.session_state.get("mode_selector") == "Sunda" and not st.session_state.sudah_disapa):
+        st.markdown(
+            f"<div class='chat-container'><div class='chat-bubble-bot'>Wilujeng enjing! Kumaha damang?<br><br><i>(Selamat pagi! Apa kabar?)</i></div></div>",
+            unsafe_allow_html=True
+        )
+        st.session_state.sudah_disapa = True
     
     for chat in chat_history:
         st.markdown(
