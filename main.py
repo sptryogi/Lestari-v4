@@ -519,14 +519,14 @@ def handle_send():
     elif option == "Terjemah Sunda → Indo":
         fitur = "terjemahsundaindo"
         bot_response = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history=None)
-        text_constraint, kata_terdapat, kata_tidak_terdapat, pasangan_kata, pasangan_ekuivalen = ubah_ke_lema(bot_response2, df_kamus, df_idiom)
+        text_constraint, kata_terdapat, kata_tidak_terdapat, pasangan_kata, pasangan_ekuivalen = ubah_ke_lema(bot_response, df_kamus, df_idiom)
         pasangan_kata = {}
         pasangan_ekuivalen = {}
         pasangan_kata = {}
     elif option == "Terjemah Indo → Sunda":
         fitur = "terjemahindosunda"
         bot_response = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history=None)
-        bot_response_ekuivalen, pasangan_ganti_ekuivalen = ubah_ke_lema(bot_response2, df_kamus, df_idiom)
+        bot_response_ekuivalen, pasangan_ganti_ekuivalen = ubah_ke_lema(bot_response, df_kamus, df_idiom)
         text_constraint, kata_terdapat, kata_tidak_terdapat, pasangan_kata, pasangan_ekuivalen = highlight_text(bot_response_ekuivalen, df_kamus, df_idiom, fitur)
         text_constraint = kapitalisasi_awal_kalimat(text_constraint)
 
