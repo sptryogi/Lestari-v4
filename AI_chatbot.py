@@ -263,7 +263,7 @@ def hitung_token(teks):
     enc = tiktoken.get_encoding("cl100k_base")
     return len(enc.encode(teks))
 
-reader = easyocr.Reader(['id', 'en'])  # Tambahkan 'su' untuk Bahasa Sunda
+# reader = easyocr.Reader(['id', 'en'])  # Tambahkan 'su' untuk Bahasa Sunda
 
 def ekstrak_teks(file):
     if file.type == "application/pdf":
