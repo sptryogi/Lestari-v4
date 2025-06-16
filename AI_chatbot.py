@@ -49,8 +49,8 @@ def deteksi_relasi_kutipan(teks):
 
     if not hasil:
         instruksi = (
-            "Identifikasi apakah ada kutipan langsung dalam teks berikut.\n"
-            "Jika ada, tentukan siapa pembicara dan siapa pendengarnya, serta kutipannya.\n"
+            "Identifikasi apakah ada kalimat langsung (kutipan) dalam teks berikut.\n"
+            "Jika ada, tentukan siapa pembicara dan siapa pendengarnya, serta kalimat langsung (kutipan)nya.\n"
             "Kemudian tentukan tingkat tutur sesuai relasi sosial dari daftar ini:\n"
             "- bapak → anak = Loma\n"
             "- bapak → isteri = Loma\n"
@@ -65,7 +65,7 @@ def deteksi_relasi_kutipan(teks):
             "- ibu → atasan = Halus\n"
             "- atasan → bawahan = Loma\n"
             "Jawaban dalam format:\n"
-            "Pembicara: ...\nPendengar: ...\nKutipan: \"...\"\nTingkat: ..."
+            "Pembicara: ...\nPendengar: ...\nKalimat langsung(Kutipan): \"...\"\nTingkat: ..."
         )
         response = call_deepseek_api(teks, system_instruction=instruksi)
         match = re.search(r"Pembicara: (.*?)\nPendengar: (.*?)\nKutipan: \"(.*?)\"\nTingkat: (.*?)\b", response)
