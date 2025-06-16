@@ -8,8 +8,8 @@ import requests
 import json
 import fitz  # PyMuPDF
 import docx
-from PIL import Image
-import easyocr
+# from PIL import Image
+# import easyocr
 import tiktoken
 
 relasi_tutur = {
@@ -94,10 +94,9 @@ def call_deepseek_api(prompt, history=None,  system_instruction=None):
     }
 
     messages = []
-    if system_instruction:
-        messages.append({"role": "system", "content": system_instruction})
-    else:
-        messages.append({"role": "system", "content": "You are a helpful assistant."})
+    # Tambahkan instruksi hanya jika benar-benar diperlukan
+    if system_instruction and system_instruction.strip() != "":
+        messages.append({"role": "system", "content": "You are a helpful assistant." + system_instruction})
         
     if history:
         for msg in history:
@@ -109,7 +108,7 @@ def call_deepseek_api(prompt, history=None,  system_instruction=None):
     payload = {
         "model": "deepseek-chat",
         "messages": messages,
-        "temperature": 0.5,
+        "temperature": 0.7,
         "stream": False
     }
 
@@ -180,8 +179,6 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
         Lawan bicara anda berumur {user_age} tahun. tolong sesuaikan gaya bicara anda dengan umur lawan bicara anda.
         Jangan memberi keterangan catatan dibawahnya.
         Jangan memberikan informasi yang tidak tentu kebenarannya.
-        Jangan gunakan huruf-huruf aneh seperti kanji korea, kanji jepang, atau kanji china.
-        tolong sesuaikan format paragraf kalimat teks dari user dengan jawaban anda.
         Gunakan huruf kapital pada awal kalimat dan setelah tanda titik serta setelah petik dua atau setelah paragraf.
         Gunakan huruf kapital pada awal nama orang dan nama tempat.
         Gunakan huruf kapital yang sama jika pada kalimat atau kata pada input user menggunakan huruf kapital.
@@ -280,12 +277,13 @@ def ekstrak_teks(file):
         return "\n".join([para.text for para in doc.paragraphs])
 
     elif file.type.startswith("image/"):
-        from PIL import Image
-        import numpy as np
-        img = Image.open(file).convert("RGB")
-        img_array = np.array(img)
-        results = reader.readtext(img_array, detail=0)
-        return "\n".join(results)
+        # from PIL import Image
+        # import numpy as np
+        # img = Image.open(file).convert("RGB")
+        # img_array = np.array(img)
+        # results = reader.readtext(img_array, detail=0)
+        # return "\n".join(results)
+        return "[Gambar terlampir, tidak diproses sebagai teks]"
 
     else:
         return "❌ Jenis file tidak didukung."
