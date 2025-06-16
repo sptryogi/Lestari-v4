@@ -53,8 +53,16 @@ def deteksi_relasi_kutipan(teks):
             "Jika ada, tentukan siapa pembicara dan siapa pendengarnya, serta kutipannya.\n"
             "Kemudian tentukan tingkat tutur sesuai relasi sosial dari daftar ini:\n"
             "- bapak → anak = Loma\n"
+            "- bapak → isteri = Loma\n"
+            "- bapak → teman = Loma\n"
+            "- bapak → atasan = Halus\n"
             "- anak → bapak/ibu = Halus\n"
+            "- anak → orang dewasa/Guru = Halus\n"
             "- anak → teman = Loma/kasar\n"
+            "- ibu → anak = Loma\n"
+            "- ibu → suami = Loma\n"
+            "- ibu → teman = Loma\n"
+            "- ibu → atasan = Halus\n"
             "- atasan → bawahan = Loma\n"
             "Jawaban dalam format:\n"
             "Pembicara: ...\nPendengar: ...\nKutipan: \"...\"\nTingkat: ..."
@@ -141,7 +149,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
     if fitur == "chatbot":
         if mode_bahasa == "Sunda":
             if chat_mode == "Ngobrol":
-                system_instruction = "Selalu jawab dalam Bahasa Sunda walaupun ditanya dalam bahasa lain. Gunakan tutur {klasifikasi_bahasa}, jika Loma maka semua Loma, Jika Halus maka semua Halus. Jangan pernah gunakan kosakata dalam Bahasa Jawa. Gunakan tata bahasa sunda yang baik dan benar."
+                system_instruction = "Selalu jawab dalam Bahasa Sunda walaupun ditanya dalam bahasa lain. Gunakan tutur {klasifikasi_bahasa}, jika Loma maka semua Loma, Jika Halus maka semua Halus. Jangan pernah gunakan kosakata dalam Bahasa Jawa. Gunakan tata bahasa sunda yang baik dan benar. Setiap mengeluarkan Kata "Nak" ganti jadi "Jang"."
             elif chat_mode == "Belajar":
                 system_instruction = f"""Anda adalah asisten untuk pelajar.
                                          Koreksi kalimat pengguna hanya jika ada kesalahan kata atau kalimat.
