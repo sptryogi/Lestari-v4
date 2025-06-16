@@ -491,7 +491,7 @@ def handle_send():
     # max_history = 10
     # recent_history = history[-max_history:]
     # history_for_prompt = [{"message": msg["message"], "response": msg["response"]} for msg in recent_history]
-    history_for_prompt = st.session_state.chat_history[-30:]
+    history_for_prompt = st.session_state.chat_history[-10:]
         
     # Proses AI response (sama seperti sebelumnya)
     option = st.session_state.get("fitur_selector", "Chatbot")
