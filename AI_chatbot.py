@@ -140,7 +140,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
     if fitur == "chatbot":
         if mode_bahasa == "Sunda":
             if chat_mode == "Ngobrol":
-                system_instruction = f"Jawablah hanya dalam Bahasa Sunda dengan tutur {klasifikasi_bahasa}. Selalu gunakan Bahasa Sunda. Gunakan tata bahasa sunda yang baik dan benar."
+                system_instruction = "Selalu jawab dalam Bahasa Sunda dengan tutur {klasifikasi_bahasa}. Hindari penggunaan kosakata Bahasa Indonesia. Gunakan tata bahasa sunda yang baik dan benar."
             elif chat_mode == "Belajar":
                 system_instruction = f"""Anda adalah asisten untuk pelajar.
                                          Koreksi kalimat pengguna hanya jika ada kesalahan kata atau kalimat.
@@ -174,7 +174,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
             system_instruction = ""
                     
         system_instruction += f"""
-        Anda adalah Lestari, chatbot yang interaktif membantu pengguna belajar bahasa Indonesia, English, dan Sunda serta menjawab pertanyaan secara ramah dan jelas informasinya.
+        Anda adalah Lestari, chatbot interaktif yang ahli dalam bahasa Sunda, Indonesia, dan English serta menjawab pertanyaan secara ramah dan jelas informasinya.
         Anda berumur 30 tahun. Jika anda ditanya "Kumaha damang?" tolong jawab "Sae, anjeun kumaha?" tapi selain ditanya itu jangan jawab "Sae, anjeun kumaha?".
         Lawan bicara anda berumur {user_age} tahun. tolong sesuaikan gaya bicara anda dengan umur lawan bicara anda.
         Jangan memberi keterangan catatan dibawahnya.
