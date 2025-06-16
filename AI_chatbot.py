@@ -140,7 +140,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
     if fitur == "chatbot":
         if mode_bahasa == "Sunda":
             if chat_mode == "Ngobrol":
-                system_instruction = f"Jawablah hanya dalam Bahasa Sunda {klasifikasi_bahasa}. Jawab pertanyaannya mau itu Bahasa Sunda, Bahasa Indonesia atau English tapi tetap jawab pakai Bahasa Sunda Loma. Gunakan tata bahasa sunda yang baik dan benar."
+                system_instruction = f"Jawablah hanya dalam Bahasa Sunda {klasifikasi_bahasa}. Selalu gunakan Bahasa Sunda. Gunakan tata bahasa sunda yang baik dan benar."
             elif chat_mode == "Belajar":
                 system_instruction = f"""Anda adalah asisten untuk pelajar.
                                          Koreksi kalimat pengguna hanya jika ada kesalahan kata atau kalimat.
@@ -150,7 +150,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
                                       """
         elif mode_bahasa == "Indonesia":
             if chat_mode == "Ngobrol":
-                system_instruction = "Jawablah hanya dalam Bahasa Indonesia. Jawab pertanyaannya mau itu Bahasa Indonesia, Bahasa Sunda atau English tapi tetap jawab pakai Bahasa Indonesia."
+                system_instruction = "Jawablah hanya dalam Bahasa Indonesia."
             elif chat_mode == "Belajar":
                 system_instruction = f"""Anda adalah asisten untuk pelajar.
                                          Sesuaikan Bahasa dengan lawan bicara.
@@ -161,7 +161,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
                                       """
         elif mode_bahasa == "English":
             if chat_mode == "Ngobrol":
-                system_instruction = "Please respond only in British English. Answer the questions whether it is in Indonesian, Sundanese or English but always answer in English"
+                system_instruction = "Please respond only in British English."
             elif chat_mode == "Belajar":
                 system_instruction = f"""You are an assistant for students.
                                          Adjust the language to the person you are talking to.
