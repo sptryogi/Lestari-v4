@@ -94,9 +94,10 @@ def call_deepseek_api(prompt, history=None,  system_instruction=None):
     }
 
     messages = []
-    # Tambahkan instruksi hanya jika benar-benar diperlukan
-    if system_instruction and system_instruction.strip() != "":
-        messages.append({"role": "system", "content": "You are a helpful assistant." + system_instruction})
+    if system_instruction:
+        messages.append({"role": "system", "content": system_instruction})
+    else:
+        messages.append({"role": "system", "content": "You are a helpful assistant."})
         
     if history:
         for msg in history:
