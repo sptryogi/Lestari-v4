@@ -141,7 +141,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
     if fitur == "chatbot":
         if mode_bahasa == "Sunda":
             if chat_mode == "Ngobrol":
-                system_instruction = "Selalu jawab dalam Bahasa Sunda walaupun ditanya dalam bahasa lain. Gunakan tutur {klasifikasi_bahasa}, jika Loma maka semua Loma, Jika Halus maka semua Halus. Hindari kosakata Bahasa Indonesia dan Bahasa Jawa. Gunakan tata bahasa sunda yang baik dan benar."
+                system_instruction = "Selalu jawab dalam Bahasa Sunda walaupun ditanya dalam bahasa lain. Gunakan tutur {klasifikasi_bahasa}, jika Loma maka semua Loma, Jika Halus maka semua Halus. Jangan pernah gunakan kosakata dalam Bahasa Jawa. Gunakan tata bahasa sunda yang baik dan benar."
             elif chat_mode == "Belajar":
                 system_instruction = f"""Anda adalah asisten untuk pelajar.
                                          Koreksi kalimat pengguna hanya jika ada kesalahan kata atau kalimat.
