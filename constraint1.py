@@ -2,6 +2,7 @@ import random
 import re
 import pandas as pd
 import numpy as np
+import difflib
 
  # ================= PENGURAIAN SUBLEMA =================
 def bersihkan_teks(teks):
@@ -27,7 +28,43 @@ def bersihkan_kamus(df):
 def bersihkan_superscript(teks):
     # Menghapus superscript angka ¹²³⁴⁵⁶⁷⁸⁹⁰ atau angka biasa setelah huruf
     return re.sub(r'([^\d\s])[\u00B9\u00B2\u00B3\u2070\u2074-\u2079\d]+', r'\1', teks)
- 
+
+def koreksi_typo_dari_respon(teks_ai, df_kamus):
+    kata_asli = teks_ai.split()
+    hasil_koreksi = []
+
+    # Ambil semua kata dari kolom LEMA dan SUBLEMA
+    kata_valid = set(df_kamus["LEMA"].dropna().str.lower()) | set(df_kamus["SUBLEMA"].dropna().str.lower())
+
+    for kata in kata_asli:
+        kata_bersih = re.sub(r"[^\w-]", "", kata.lower())  # hilangkan tanda baca
+        if kata_bersih in kata_valid:
+            hasil_koreksi.append(kata)  # langsung masuk
+        else:
+            # Cari kemiripan dengan kolom ARTI
+            semua_arti = pd.concat([
+                df_kamus["ARTI 1"].dropna().str.lower(),
+                df_kamus["ARTI EKUIVALEN 1"].dropna().str.lower()
+            ]).unique()
+
+            terdekat = difflib.get_close_matches(kata_bersih, semua_arti, n=1, cutoff=0.8)
+            if terdekat:
+                # Cari baris sumber dari arti terdekat ini
+                baris_match = df_kamus[
+                    (df_kamus["ARTI 1"].str.lower() == terdekat[0]) |
+                    (df_kamus["ARTI EKUIVALEN 1"].str.lower() == terdekat[0])
+                ]
+
+                if not baris_match.empty:
+                    lemma_pengganti = baris_match["LEMA"].iloc[0]
+                    hasil_koreksi.append(f"<b>{lemma_pengganti}</b>")  # bisa kasih highlight bold
+                else:
+                    hasil_koreksi.append(f"<i>{kata}</i>")
+            else:
+                hasil_koreksi.append(f"<i>{kata}</i>")
+
+    return " ".join(hasil_koreksi)
+
 def urai_awalan(kata):
     """
     Fungsi ini mengurai kata hasil imbuhan (misal: 'sublema') sehingga
