@@ -50,8 +50,8 @@ def deteksi_relasi_kutipan(teks):
     if not hasil:
         instruksi = (
             "Identifikasi apakah ada kalimat langsung (kutipan) dalam teks berikut.\n"
-            "Jika ada, tentukan siapa pembicara dan siapa pendengarnya, serta kalimat langsung (kutipan)nya.\n"
-            "Kemudian tentukan tingkat tutur sesuai relasi sosial dari daftar ini:\n"
+            "Jika ada, tentukan siapa pembicara dan siapa pendengarnya anggap keduanya pasangan berbicara, serta kalimat langsung (kutipan)nya.\n"
+            "Kemudian sesuaikan kalimat didalam kalimat langsung tersebut berdasarkan tingkat tutur relasi sosial dari daftar ini:\n"
             "- bapak → anak = Loma\n"
             "- bapak → isteri = Loma\n"
             "- bapak → teman = Loma\n"
