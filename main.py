@@ -655,7 +655,7 @@ components.html("""
     <script>
         setInterval(function() {
             fetch(window.location.href);
-        }, 1000 * 5);  // ping setiap 5 detik
+        }, 1000 * 30);  // ping setiap 5 detik
     </script>
 """, height=0)
 st.markdown("</div>", unsafe_allow_html=True)
