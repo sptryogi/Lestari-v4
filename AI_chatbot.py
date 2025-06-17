@@ -117,7 +117,7 @@ def call_deepseek_api(prompt, history=None,  system_instruction=None):
     payload = {
         "model": "deepseek-chat",
         "messages": messages,
-        "temperature": 0.7,
+        "temperature": 0.5,
         "stream": False
     }
 
