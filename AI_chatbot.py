@@ -117,11 +117,11 @@ def call_deepseek_api(prompt, history=None,  system_instruction=None):
     payload = {
         "model": "deepseek-chat",
         "messages": messages,
-        "temperature": 0.5,
-        # "temperature": 0.3,  # Rendah agar tidak kreatif mengarang kata
-        # "top_p": 0.9,
-        # "frequency_penalty": 1.5,  # Hukum keras kata non-Sunda
-        # "presence_penalty": 0.5,
+        # "temperature": 0.5,
+        "temperature": 0.3,  # Rendah agar tidak kreatif mengarang kata
+        "top_p": 0.9,
+        "frequency_penalty": 1.5,  # Hukum keras kata non-Sunda
+        "presence_penalty": 0.5,
         "stream": False
     }
 
@@ -153,8 +153,8 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
     if fitur == "chatbot":
         if mode_bahasa == "Sunda":
             if chat_mode == "Ngobrol":
-                system_instruction = f"""Selalu jawab dalam Bahasa Sunda walaupun ditanya dalam bahasa lain. Gunakan tutur {klasifikasi_bahasa}, jika Loma maka semua Loma, Jika Halus maka semua Halus. Jangan pernah kata yang bukan bahasa Sunda!. Gunakan tata bahasa sunda yang baik dan benar. 
-                                            Setiap mengeluarkan Kata ("Nak") ganti jadi ("Jang").
+                system_instruction = f"""Sok ngajawab ku basa Sunda sanajan ditanya ku basa sejen. Gunakeun lafal {klasifikasi_bahasa}, lamun Loma mangka sakabeh Loma, lamun Halus mangka sakabeh Halus. Ulah sok make kecap-kecap anu lain basa Sunda!. Gunakeun tata basa Sunda anu alus tur bener. 
+                                            Unggal waktos Anjeun ngucapkeun kecap ("Nak"), robah jadi ("Jang").
                                       """
             elif chat_mode == "Belajar":
                 system_instruction = f"""Anda adalah asisten untuk pelajar.
