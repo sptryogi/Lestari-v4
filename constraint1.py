@@ -486,7 +486,7 @@ def highlight_text(translated_text, df_kamus, df_idiom, fitur):
                         else:
                             ekuivalen = kata
                             hasil_baris.append(                               
-                                f'{simbol_depan}<span style="font-style:italic; font-weight: bold;">{ekuivalen}</span>{simbol_belakang}'
+                                f'{simbol_depan}<i><b>{ekuivalen}</b></i>{simbol_belakang}'
                             )                            
                             print("TIDAK ADA EKUIVALENNYA")
 
