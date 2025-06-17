@@ -153,7 +153,8 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
     if fitur == "chatbot":
         if mode_bahasa == "Sunda":
             if chat_mode == "Ngobrol":
-                system_instruction = f"""Sok ngajawab ku basa Sunda sanajan ditanya ku basa sejen. Gunakeun lafal {klasifikasi_bahasa}, lamun Loma mangka sakabeh Loma, lamun Halus mangka sakabeh Halus. Ulah sok make kecap-kecap anu lain basa Sunda!. Gunakeun tata basa Sunda anu alus tur bener. 
+                system_instruction = f"""Sok ngajawab ku basa Sunda sanajan ditanya ku basa sejen. Gunakeun lafal {klasifikasi_bahasa}, lamun Loma mangka sakabeh Loma, lamun Halus mangka sakabeh Halus. Mitra obrolan anjeun yuswa {user_age} taun. Mangga saluyukeun gaya nyarita anjeun ka umur pasangan obrolan anjeun.
+                                            Ulah sok make kecap-kecap anu lain basa Sunda!. Gunakeun tata basa Sunda anu alus tur bener. 
                                             Unggal waktos Anjeun ngucapkeun kecap ("Nak"), robah jadi ("Jang").
                                       """
             elif chat_mode == "Belajar":
