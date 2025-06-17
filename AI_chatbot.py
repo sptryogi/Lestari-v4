@@ -157,6 +157,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
                                             Ulah sok make kecap-kecap anu lain basa Sunda!. Gunakeun tata basa Sunda anu alus tur bener. 
                                             Unggal waktos Anjeun ngucapkeun kecap ("Nak"), robah jadi ("Jang").
                                       """
+                system_instruction = sisipkan_kutipan_ke_system_instruction(user_prompt, system_instruction)
             elif chat_mode == "Belajar":
                 system_instruction = f"""Anda adalah asisten untuk pelajar.
                                          Koreksi kalimat pengguna hanya jika ada kesalahan kata atau kalimat.
