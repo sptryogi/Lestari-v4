@@ -59,11 +59,11 @@ def koreksi_typo_dari_respon(teks_ai, df_kamus):
             if cocok:
                 lemma = arti_map.get(cocok[0])
                 if lemma:
-                    hasil_koreksi.append(lemma)
+                    hasil_koreksi.append(f"<b>{lemma}</b>")
                 else:
-                    hasil_koreksi.append(kata)
+                    hasil_koreksi.append(f"<i>{kata}</i>")
             else:
-                hasil_koreksi.append(kata)
+                hasil_koreksi.append(f"<i>{kata}</i>")
 
     return " ".join(hasil_koreksi)
 
