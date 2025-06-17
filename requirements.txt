@@ -10,5 +10,4 @@ supabase
 pymupdf
 python-docx
 pillow
-easyocr
 tiktoken
