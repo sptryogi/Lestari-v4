@@ -55,7 +55,7 @@ def koreksi_typo_dari_respon(teks_ai, df_kamus):
         if kata_bersih in kata_valid:
             hasil_koreksi.append(kata)
         else:
-            cocok = difflib.get_close_matches(kata_bersih, arti_kandidat, n=1, cutoff=0.8)
+            cocok = difflib.get_close_matches(kata_bersih, arti_kandidat, n=1, cutoff=0.6)
             if cocok:
                 lemma = arti_map.get(cocok[0])
                 if lemma:
