@@ -33,37 +33,40 @@ def koreksi_typo_dari_respon(teks_ai, df_kamus):
     kata_asli = teks_ai.split()
     hasil_koreksi = []
 
-    # Ambil semua kata dari kolom LEMA dan SUBLEMA
+    # Gabungkan semua kata valid dari LEMA dan SUBLEMA
     kata_valid = set(df_kamus["LEMA"].dropna().str.lower()) | set(df_kamus["SUBLEMA"].dropna().str.lower())
 
+    # Buat daftar semua arti individual, pecah koma
+    arti_kandidat = set()
+    arti_map = {}  # untuk pemetaan balik: arti -> (LEMA/SUBLEMA)
+
+    for _, row in df_kamus.iterrows():
+        for kolom_arti in ["ARTI 1", "ARTI EKUIVALEN 1"]:
+            arti_raw = row.get(kolom_arti, "")
+            if pd.notna(arti_raw):
+                pecah = [a.strip().lower() for a in arti_raw.split(",") if a.strip()]
+                for arti in pecah:
+                    arti_kandidat.add(arti)
+                    arti_map[arti] = row.get("LEMA") or row.get("SUBLEMA")
+
     for kata in kata_asli:
-        kata_bersih = re.sub(r"[^\w-]", "", kata.lower())  # hilangkan tanda baca
+        kata_bersih = re.sub(r"[^\w-]", "", kata.lower())
+
         if kata_bersih in kata_valid:
-            hasil_koreksi.append(kata)  # langsung masuk
+            hasil_koreksi.append(kata)
         else:
-            # Cari kemiripan dengan kolom ARTI
-            semua_arti = pd.concat([
-                df_kamus["ARTI 1"].dropna().str.lower(),
-                df_kamus["ARTI EKUIVALEN 1"].dropna().str.lower()
-            ]).unique()
-
-            terdekat = difflib.get_close_matches(kata_bersih, semua_arti, n=1, cutoff=0.8)
-            if terdekat:
-                # Cari baris sumber dari arti terdekat ini
-                baris_match = df_kamus[
-                    (df_kamus["ARTI 1"].str.lower() == terdekat[0]) |
-                    (df_kamus["ARTI EKUIVALEN 1"].str.lower() == terdekat[0])
-                ]
-
-                if not baris_match.empty:
-                    lemma_pengganti = baris_match["LEMA"].iloc[0]
-                    hasil_koreksi.append(f"<b>{lemma_pengganti}</b>")  # bisa kasih highlight bold
+            cocok = difflib.get_close_matches(kata_bersih, arti_kandidat, n=1, cutoff=0.8)
+            if cocok:
+                lemma = arti_map.get(cocok[0])
+                if lemma:
+                    hasil_koreksi.append(lemma)
                 else:
-                    hasil_koreksi.append(f"<i>{kata}</i>")
+                    hasil_koreksi.append(kata)
             else:
-                hasil_koreksi.append(f"<i>{kata}</i>")
+                hasil_koreksi.append(kata)
 
     return " ".join(hasil_koreksi)
+
 
 def urai_awalan(kata):
     """
