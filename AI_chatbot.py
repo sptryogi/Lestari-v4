@@ -118,6 +118,10 @@ def call_deepseek_api(prompt, history=None,  system_instruction=None):
         "model": "deepseek-chat",
         "messages": messages,
         "temperature": 0.5,
+        # "temperature": 0.3,  # Rendah agar tidak kreatif mengarang kata
+        # "top_p": 0.9,
+        # "frequency_penalty": 1.5,  # Hukum keras kata non-Sunda
+        # "presence_penalty": 0.5,
         "stream": False
     }
 
