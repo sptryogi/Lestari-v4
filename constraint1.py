@@ -444,7 +444,7 @@ def highlight_text(translated_text, df_kamus, df_idiom, fitur):
                     kata_list_clean = re.sub(r"[^a-zA-Z0-9\s]", "", kata_list[i])
                     if kata_list_clean not in kata_terdapat:
                         hasil_baris.append(
-                            f'<span style="font-style:italic;">{kata_list[i]}</span>'
+                            f'<i>{kata_list[i]}</i>'
                         )
                     else:
                         hasil_baris.append(kata_list[i])
@@ -462,7 +462,7 @@ def highlight_text(translated_text, df_kamus, df_idiom, fitur):
                         hasil_baris.append(simbol_depan + kata + simbol_belakang)
                     else:
                         hasil_baris.append(
-                            f'{simbol_depan}<span style="font-style:italic;">{kata}</span>{simbol_belakang}'
+                            f'{simbol_depan}<i>{kata}</i>{simbol_belakang}'
                         )
                 else:
                     if kata not in filtered_words_idiom and fitur == "chatbot":
