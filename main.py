@@ -3,7 +3,7 @@ import pandas as pd
 import re
 import pybase64
 from AI_chatbot import generate_text_deepseek, call_deepseek_api, kapitalisasi_awal_kalimat, bersihkan_superscript, ekstrak_teks, hitung_token
-from constraint1 import highlight_text, constraint_text, ubah_ke_lema, find_the_lema_pair, cari_arti_lema, bersihkan_kamus
+from constraint1 import highlight_text, constraint_text, ubah_ke_lema, find_the_lema_pair, cari_arti_lema, bersihkan_kamus, koreksi_typo_dari_respon
 import streamlit.components.v1 as components
 from supabase_helper import *
 import uuid, time
@@ -508,6 +508,7 @@ def handle_send():
         bot_response = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history=history_for_prompt)
         pasangan_ganti_ekuivalen = {}
         # bot_response_ekuivalen, pasangan_ganti_ekuivalen = ubah_ke_lema(bot_response, df_kamus, df_idiom)
+        bot_response = koreksi_typo_dari_respon (bot_response, df_kamus) 
         text_constraint, kata_terdapat, kata_tidak_terdapat, pasangan_kata, pasangan_ekuivalen = highlight_text(bot_response, df_kamus, df_idiom, fitur)
         text_constraint = kapitalisasi_awal_kalimat(text_constraint)
     elif fitur == "chatbot" and (mode_bahasa == "Indonesia" or mode_bahasa == "English"):
