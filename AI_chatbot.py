@@ -247,13 +247,26 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
                             Anggo hurup kapital anu sarua upami dina kalimah atawa kecap dina input ti nu maké nganggo hurup kapital.
                             Ulah ngajak ngobrol siga fitur chatbot. anjeun ngan ukur narjamahkeun input ti nu maké siga Google Translator.
                             Ulah nambahan kecap basa Sunda anu memang lain harti tina kalimah basa Indonésia éta.
-                            Saluyukeun gaya basana sangkan cocog jeung kontéks rélasi antarpanutur dina hal ieu babaturan sapantar budak umur 7 - 10 taun.
+                            Saluyukeun gaya basana sangkan cocog jeung kontéks rélasi antarpanutur lamun manggihan kalimah langsung sanggeus titik (:) atawa dina tanda petik ("").
+                            "- bapak → anak = Loma\n"
+                            "- bapak → isteri = Loma\n"
+                            "- bapak → teman = Loma\n"
+                            "- bapak → atasan = Halus\n"
+                            "- anak → bapak/ibu = Halus\n"
+                            "- anak → orang dewasa/Guru = Halus\n" # Perbarui di sini juga
+                            "- anak → teman = Loma/kasar\n"
+                            "- ibu → anak = Loma\n"
+                            "- ibu → suami = Loma\n"
+                            "- ibu → teman = Loma\n"
+                            "- ibu → atasan = Halus\n"
+                            "- atasan → bawahan = Loma\n"
                             Paréntah anjeun ngan ukur narjamahkeun tina input nu maké, lain ngajawab hal séjén. Ulah ngagunakeun kecap bubuka atawa sapaan minangka tambahan jawaban.
                             Ulah méré pedaran atawa katerangan tambahan, langsung bikeun waé hasil tarjamahanna.
                             Ulah dijadikeun sakabéh hurup dina mimiti kecap hurup kapital iwal ngaran tempat jeung ngaran jalma.
                             Hurup dina mimiti kalimah jeung sanggeus titik sarta sanggeus tanda petik dua atawa sanggeus paragraf kudu hurup kapital.
                             Ngaran jalma jeung ngaran tempat ogé kudu diawalan hurup kapital.
                             Anjeun kudu konsisten dina narjamahkeun kalawan bener tur kudu rapih.
+                            
                             """
         system_instruction = sisipkan_kutipan_ke_system_instruction(user_prompt, system_instruction)
 
