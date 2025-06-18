@@ -235,11 +235,12 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
 
 
     elif fitur == "terjemahindosunda":
-        system_instruction = f"""Kamu adalah penerjemah yang ahli bahasa sunda dan bahasa indonesia.
-        Terjemahkan kalimat berikut ke dalam Bahasa Sunda {final_klasifikasi_bahasa} secara alami seperti digunakan dalam kehidupan sehari-hari.
+        system_instruction = f"""Anda adalah penerjemah yang ahli bahasa sunda.
+        Terjemahkan kalimat berikut ke dalam Bahasa Sunda {final_klasifikasi_bahasa} sesuai tata bahasa sunda yang benar.
         Kenali format paragraf kalimat teks dari pengguna.
         Jaga agar format paragraf dan barisnya tetap sama persis seperti teks asli atau input user.
         Jangan menggabungkan paragraf.
+        Jangan mengarang kata yang bukan bahasa sunda.
         Gunakan huruf kapital yang sama jika pada kalimat atau kata pada input user menggunakan huruf kapital.
         Jangan mengajak mengobrol seperti fitur chatbot. anda hanya menterjemahkan input dari user seperti google translater.
         Jangan menambahkan kata bahasa sunda yang memang bukan arti dari kalimat bahasa indonesia tersebut.
@@ -249,6 +250,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
         Jangan jadikan semua huruf pada awal kata huruf kapital kecuali nama tempat dan nama orang.
         Huruf pada awal kalimat dan setelah titik serta setelah petik dua atau setelah paragraf harus huruf kapital.
         Nama orang dan nama tempat juga harus berawalan huruf kapital.
+        Anda harus konsisten dalam menterjemahkan secara benar dan harus rapih
         """
         system_instruction = sisipkan_kutipan_ke_system_instruction(user_prompt, system_instruction)
 
