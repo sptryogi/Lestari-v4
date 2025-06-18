@@ -510,7 +510,7 @@ def handle_send():
         # bot_response_ekuivalen, pasangan_ganti_ekuivalen = ubah_ke_lema(bot_response, df_kamus, df_idiom)
         # bot_koreksi = koreksi_typo_dari_respon(bot_response, df_kamus)
         text_constraint, kata_terdapat, kata_tidak_terdapat, pasangan_kata, pasangan_ekuivalen = highlight_text(bot_response, df_kamus, df_idiom, fitur)
-        text_constraint = kapitalisasi_awal_kalimat(text_constraint)
+        # text_constraint = kapitalisasi_awal_kalimat(text_constraint)
     elif fitur == "chatbot" and (mode_bahasa == "Indonesia" or mode_bahasa == "English"):
         bot_response = generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa, chat_mode, history=history_for_prompt)
         text_constraint = bot_response
@@ -531,7 +531,8 @@ def handle_send():
         # bot_response_ekuivalen, pasangan_ganti_ekuivalen = ubah_ke_lema(bot_response, df_kamus, df_idiom)
         # bot_koreksi = koreksi_typo_dari_respon(bot_response, df_kamus)
         text_constraint, kata_terdapat, kata_tidak_terdapat, pasangan_kata, pasangan_ekuivalen = highlight_text(bot_response, df_kamus, df_idiom, fitur)
-        text_constraint = kapitalisasi_awal_kalimat(text_constraint)
+        text_constraint = koreksi_typo_dari_respon(text_constraint, df_kamus)
+        # text_constraint = kapitalisasi_awal_kalimat(text_constraint)
         pasangan_kata = {}
         pasangan_ekuivalen = {}
         pasangan_kata = {}
