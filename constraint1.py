@@ -33,39 +33,52 @@ def koreksi_typo_dari_respon(teks_ai, df_kamus):
     kata_asli = teks_ai.split()
     hasil_koreksi = []
 
-    # Gabungkan semua kata valid dari LEMA dan SUBLEMA
-    kata_valid = set(df_kamus["LEMA"].dropna().str.lower()) | set(df_kamus["SUBLEMA"].dropna().str.lower())
+    # Siapkan data referensi
+    lema_list = df_kamus["LEMA"].dropna().str.lower().unique()
+    sublema_list = df_kamus["SUBLEMA"].dropna().str.lower().unique()
+    kata_valid = set(lema_list) | set(sublema_list)
 
-    # Buat daftar semua arti individual, pecah koma
-    arti_kandidat = set()
-    arti_map = {}  # untuk pemetaan balik: arti -> (LEMA/SUBLEMA)
+    # Untuk pencarian mirip
+    semua_lemma_sublema = list(kata_valid)
+
+    # Buat daftar arti ekuivalen dan pemetaan ke LEMA/SUBLEMA
+    arti_ekuivalen_map = {}
+    arti_kandidat = []
 
     for _, row in df_kamus.iterrows():
-        for kolom_arti in ["ARTI 1", "ARTI EKUIVALEN 1"]:
-            arti_raw = row.get(kolom_arti, "")
-            if pd.notna(arti_raw):
-                pecah = [a.strip().lower() for a in arti_raw.split(",") if a.strip()]
-                for arti in pecah:
-                    arti_kandidat.add(arti)
-                    arti_map[arti] = row.get("LEMA") or row.get("SUBLEMA")
+        arti_raw = row.get("ARTI EKUIVALEN 1", "")
+        if pd.notna(arti_raw):
+            arti_list = [a.strip().lower() for a in arti_raw.split(",") if a.strip()]
+            for arti in arti_list:
+                arti_kandidat.append(arti)
+                arti_ekuivalen_map[arti] = row.get("LEMA") or row.get("SUBLEMA")
 
     for kata in kata_asli:
         kata_bersih = re.sub(r"[^\w-]", "", kata.lower())
 
         if kata_bersih in kata_valid:
             hasil_koreksi.append(kata)
-        else:
-            cocok = difflib.get_close_matches(kata_bersih, arti_kandidat, n=1, cutoff=0.6)
-            if cocok:
-                lemma = arti_map.get(cocok[0])
-                if lemma:
-                    hasil_koreksi.append(f"<b>{lemma}</b>")
-                else:
-                    hasil_koreksi.append(f"<i>{kata}</i>")
+            continue
+
+        # Coba koreksi ke LEMA/SUBLEMA
+        cocok_langsung = difflib.get_close_matches(kata_bersih, semua_lemma_sublema, n=1, cutoff=0.75)
+        if cocok_langsung:
+            hasil_koreksi.append(f"<b>{cocok_langsung[0]}</b>")
+            continue
+
+        # Jika tidak ada, coba koreksi ke arti ekuivalen
+        cocok_arti = difflib.get_close_matches(kata_bersih, arti_kandidat, n=1, cutoff=0.75)
+        if cocok_arti:
+            lemma = arti_ekuivalen_map.get(cocok_arti[0])
+            if lemma:
+                hasil_koreksi.append(f"<b>{lemma.lower()}</b>")
             else:
                 hasil_koreksi.append(f"<i>{kata}</i>")
+        else:
+            hasil_koreksi.append(f"<i>{kata}</i>")
 
     return " ".join(hasil_koreksi)
+
 
 
 def urai_awalan(kata):
