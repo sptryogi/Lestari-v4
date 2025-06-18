@@ -478,7 +478,7 @@ def highlight_text(translated_text, df_kamus, df_idiom, fitur):
                             f'{simbol_depan}<i>{kata}</i>{simbol_belakang}'
                         )
                 else:
-                    if kata not in filtered_words_idiom and (fitur == "chatbot" or fitur == "terjemahindosunda):
+                    if kata not in filtered_words_idiom and (fitur == "chatbot" or fitur == "terjemahindosunda"):
                         # print(f"==? ASD : {kata}")
                         ekuivalen = df_kamus[(df_kamus["LEMA"] == kata) | (df_kamus["SUBLEMA"] == kata)]["ARTI EKUIVALEN 1"].values
                         if len(ekuivalen) > 0 and not pd.isna(
