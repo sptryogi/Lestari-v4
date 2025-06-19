@@ -48,6 +48,15 @@ def koreksi_typo_dari_respon(teks_ai, df_kamus):
     sublema_list = df_kamus["SUBLEMA"].dropna().str.lower().unique()
     semua_lema_sublema = list(set(lema_list) | set(sublema_list))
 
+    # Petakan semua kata ke KLAS mereka
+    kata_ke_klas = {}
+    for _, row in df_kamus.iterrows():
+        for kolom in ["LEMA", "SUBLEMA"]:
+            kata = row.get(kolom)
+            klas = row.get("KLAS.")
+            if pd.notna(kata):
+                kata_ke_klas[str(kata).lower()] = str(klas).strip() if pd.notna(klas) else None
+
     arti_ke_lema_sublema_map = {}
     arti_ekuivalen_data = []
 
@@ -75,28 +84,53 @@ def koreksi_typo_dari_respon(teks_ai, df_kamus):
     parts = pola_italic.split(teks_ai)
     hasil_akhir = []
 
+    # Urutan POS yang wajar
+    valid_sequence = {
+        "N": ["V", "Adj", "P", "Pro", None],
+        "Pro": ["V", "Adj", "Adv", "P", "Modal", None],
+        "V": ["N", "Pro", "Num", "Adv", "Adj", None],
+        "Adj": ["P", "N", None],
+        "Adv": ["V", "Adj", "Adv", "Modal", None],
+        "Num": ["N", None],
+        "P": ["N", "V", "Adj", "Pro", "Modal", None],
+        "Modal": ["V", None],
+        None: ["N", "V", "Adj", "P", "Pro", "Adv", "Num", "Modal", None],
+    }
+
     for i, part in enumerate(parts):
         if i % 2 == 1:  # bagian <i>...</i>
             kata_typo_asli = part
             kata_bersih = re.sub(r"[^\w-]", "", kata_typo_asli.lower())
 
+            # Cek kata sebelum dan sesudah
+            kata_sebelum = re.sub(r"[^\w-]", "", parts[i - 1].split()[-1].lower()) if i - 1 >= 0 and parts[i - 1].split() else None
+            kata_sesudah = re.sub(r"[^\w-]", "", parts[i + 1].split()[0].lower()) if i + 1 < len(parts) and parts[i + 1].split() else None
+
+            pos_sebelum = kata_ke_klas.get(kata_sebelum, None)
+            pos_sesudah = kata_ke_klas.get(kata_sesudah, None)
+
+            def is_valid_pos(kandidat):
+                pos_kandidat = kata_ke_klas.get(kandidat, None)
+                valid_after = valid_sequence.get(pos_sebelum, valid_sequence[None])
+                valid_before = valid_sequence.get(pos_kandidat, valid_sequence[None])
+                return (pos_kandidat in valid_after) and (pos_sesudah in valid_before)
+
             # Step 1: cari ke LEMA/SUBLEMA
-            cocok_lema = cari_terdekat_leven(kata_bersih, semua_lema_sublema, max_typo=2)
-            if cocok_lema:
-                hasil_akhir.append(f"<b>{cocok_lema}</b>")
+            kandidat = cari_terdekat_leven(kata_bersih, semua_lema_sublema, max_typo=2)
+            if kandidat and is_valid_pos(kandidat):
+                hasil_akhir.append(f"<b>{kandidat}</b>")
                 continue
 
             # Step 2: cari ke ARTI EKUIVALEN → ganti ke LEMA
-            cocok_arti = cari_terdekat_leven(kata_bersih, semua_arti_ekuivalen_unik, max_typo=2)
-            if cocok_arti:
-                lemma = arti_ke_lema_sublema_map.get(cocok_arti)
-                if lemma:
+            kandidat_arti = cari_terdekat_leven(kata_bersih, semua_arti_ekuivalen_unik, max_typo=2)
+            if kandidat_arti:
+                lemma = arti_ke_lema_sublema_map.get(kandidat_arti)
+                if lemma and is_valid_pos(lemma):
                     hasil_akhir.append(f"<b>{lemma}</b>")
                     continue
 
             # Step 3: tetap italic
             hasil_akhir.append(f"<i>{kata_typo_asli}</i>")
-
         else:
             hasil_akhir.append(part)
 
