@@ -43,6 +43,7 @@ if chat_user:
 
     ## ========================= AI TERJEMAH =========================
     import os
+    terjemahan_user = chat_user
    
 
     ## ========================= Check Kata tidak ada di kamus =========================
@@ -73,7 +74,7 @@ if chat_user:
         return "".join([c for c in nfkd_form if not unicodedata.combining(c)])
 
     # Kalimat asal
-    kalimat_asal = re.sub(r"[^a-zA-Z0-9\s\-\u00C0-\u00FF]", "", kalimat_asal)
+    kalimat_asal = re.sub(r"[^a-zA-Z0-9\s\-\u00C0-\u00FF]", "", terjemahan_user)
 
     # Normalisasi aksen (ubah 'é' menjadi 'e', dll.)
     kalimat_asal = remove_accents(kalimat_asal.lower())
