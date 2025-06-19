@@ -557,13 +557,9 @@ def handle_send():
             response=text_constraint,
             room=st.session_state.get("room", "room-1")
         )
-    except APIError as e:
-        if "row-level security" in str(e):
-            st.warning("Session Anda telah kedaluwarsa. Silakan login ulang.")
-            st.switch_page("pages/login.py")
-            st.stop()
-        else:
-            raise e
+    except Exception as e:
+        st.error("Terjadi kesalahan koneksi. Silakan muat ulang halaman atau login ulang.")
+        st.stop()
 
     if result.get("error") == "limit_exceeded":
         st.warning("Chat history Anda penuh, silakan hapus terlebih dahulu.")
