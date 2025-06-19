@@ -1,4 +1,5 @@
 import streamlit as st
+import requests
 from AI_chatbot import bersihkan_superscript
 # UI Styling
 st.markdown(
