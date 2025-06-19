@@ -32,7 +32,7 @@ def bersihkan_superscript(teks):
 
 def cari_terdekat_leven(kata_typo, kandidat_list, max_typo=2):
     kandidat_terdekat = None
-    jarak_terendah = max_typo + 1  # Default gagal
+    jarak_terendah = max_typo  # Default gagal
 
     for kandidat in kandidat_list:
         d = lev_dist(kata_typo, kandidat)
