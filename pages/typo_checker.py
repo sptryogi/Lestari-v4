@@ -1,5 +1,5 @@
 import streamlit as st
-
+from AI_chatbot import bersihkan_superscript
 # UI Styling
 st.markdown(
     """
@@ -52,6 +52,7 @@ if chat_user:
 
     # Baca data kamus
     df_kamus = pd.read_excel("dataset/dataset_lengkap.xlsx")
+    df_kamus["LEMA"] = df_kamus["LEMA"].fillna("").astype(str).apply(bersihkan_superscript)
 
     # Isi NaN dengan string kosong lalu split
     # Pastikan SUBLEMA string dan split
