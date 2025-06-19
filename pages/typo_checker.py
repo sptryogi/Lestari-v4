@@ -33,6 +33,8 @@ st.title("Typo Checker")
 ## ========================= User Input =========================
 # Input teks dari pengguna
 chat_user = st.text_input("Masukkan teks 'Sunda' yang Ingin dicek Typo:")
+DEEPSEEK_API_KEY = st.secrets["API_KEY"]
+DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions"
 
 # Tampilkan hasil input
 if chat_user:
@@ -40,43 +42,8 @@ if chat_user:
     st.success(chat_user)
 
     ## ========================= AI TERJEMAH =========================
-    #import openai
     import os
-    from groq import Groq
-    #from dotenv import load_dotenv
-
-    # openai.api_key = os.getenv("OPENAI_API_KEY")
-    #openai.api_key = "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"
-    client = Groq(
-        # ================ STREAMLIT ================
-        # This is the default and can be omitted
-        api_key=st.secrets["api_key"],
-        # ================ STREAMLIT ================
-
-        # ================ LOKAL ================
-        # api_key=api_key,
-        # ================ LOKAL ================
-    )
-
-    # response = client.chat.completions.create(
-    #     messages=[
-    #         {"role": "system", "content": "You are a helpful assistant."},
-    #         {
-    #             "role": "user",
-    #             "content": f"""
-    #             Terjemahkan ke Bahasa Indonesia ini ke Bahasa Sunda Loma. Hanya Jawab Dalam Bahasa Sunda.
-    #             Pertanyaan:
-    #             {chat_user}
-    #             Jawaban:
-    #     """,
-    #         },
-    #     ],
-    #     model="meta-llama/llama-4-scout-17b-16e-instruct",
-    # )
-    # terjemahan_user = response.choices[0].message.content
-    terjemahan_user = chat_user
-    # st.write(f"Terjemahan AI:")
-    # st.success(terjemahan_user)
+   
 
     ## ========================= Check Kata tidak ada di kamus =========================
     import pandas as pd
@@ -84,7 +51,7 @@ if chat_user:
     import unicodedata
 
     # Baca data kamus
-    df_kamus = pd.read_excel("dataset/data_kamus (32).xlsx")
+    df_kamus = pd.read_excel("dataset/dataset_lengkap.xlsx")
 
     # Isi NaN dengan string kosong lalu split
     df_kamus["SUBLEMA"] = df_kamus["SUBLEMA"].fillna("").astype(str)
@@ -97,7 +64,6 @@ if chat_user:
         return "".join([c for c in nfkd_form if not unicodedata.combining(c)])
 
     # Kalimat asal
-    kalimat_asal = terjemahan_user
     kalimat_asal = re.sub(r"[^a-zA-Z0-9\s\-\u00C0-\u00FF]", "", kalimat_asal)
 
     # Normalisasi aksen (ubah 'é' menjadi 'e', dll.)
@@ -149,13 +115,6 @@ if chat_user:
         import pandas as pd
         import string
         import re
-
-        # # Kamus lema dan POS Tag
-        # data = {
-        #     'lema': ['Saya', 'berjalan', 'cepat', 'di', 'rumah'],
-        #     'POS_Tag': ['Noun', 'Verb', 'Adverb', 'Preposition', 'Noun']
-        # }
-        # df_kamus = pd.DataFrame(data)
 
         kata_tidak_ada_dan_calon_final = {}
 
@@ -376,24 +335,33 @@ if chat_user:
         for kata_x_ditemukan, sub_dict in final_dict.items():
             start_time = time.time()
 
-            response = client.chat.completions.create(
-                messages=[
+            headers = {
+                "Authorization": f"Bearer {DEEPSEEK_API_KEY}",
+                "Content-Type": "application/json",
+            }
+            
+            payload = {
+                "model": "deepseek-chat",
+                "messages": [
                     {"role": "system", "content": "You are a helpful assistant."},
                     {
                         "role": "user",
                         "content": f"""
                         Pertanyaan: Kata Kata Sunda: '{terjemahan_user}'
                         {format_kandidat_kata(kata_x_ditemukan, sub_dict)}
-
+            
                         Berdasarkan konteks Jawaban Sunda, kata bahasa sunda mana yang paling cocok menggantikan '{kata_x_ditemukan}'? JAWAB HANYA DENGAN 1 KATA BAHASA SUNDA.
                         Jika tidak ada yang cocok TETAP gunakan kata ini '{kata_x_ditemukan}'
-                """,
+                        """,
                     },
                 ],
-                model="meta-llama/llama-4-scout-17b-16e-instruct",
-            )
+                "temperature": 0.7
+            }
 
-            kata_pengganti[kata_x_ditemukan] = response.choices[0].message.content
+            response = requests.post(DEEPSEEK_API_URL, headers=headers, json=payload)
+            hasil = response.json()
+
+            kata_pengganti[kata_x_ditemukan] = hasil["choices"][0]["message"]["content"]
 
         # Ganti kata sesuai kamus kata_pengganti
         for kata_lama, kata_baru in kata_pengganti.items():
