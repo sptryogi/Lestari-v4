@@ -183,7 +183,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
         if mode_bahasa == "Sunda":
             if chat_mode == "Ngobrol":
                 system_instruction = f"""Sok ngajawab ku basa Sunda sanajan ditanya ku basa sejen. Gunakeun lafal {final_klasifikasi_bahasa}, lamun Loma mangka sakabeh Loma, lamun Halus mangka sakabeh Halus. Mitra obrolan anjeun yuswa {user_age} taun. Mangga saluyukeun gaya nyarita anjeun ka umur pasangan obrolan anjeun.
-                                Ulah sok make kecap-kecap anu lain basa Sunda!. Gunakeun tata basa Sunda anu alus tur bener. 
+                                Ulah sok make kecap-kecap anu lain basa Sunda!. Gunakeun tata basa Sunda anu alus tur bener. Jawaban anjeun kedah rapih, henteu pabalatak.
                                 Unggal waktos Anjeun ngucapkeun kecap ("Nak"), robah jadi ("Jang").
                            """
                 system_instruction = sisipkan_kutipan_ke_system_instruction(user_prompt, system_instruction) # Ditambahkan di sini
@@ -236,13 +236,10 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
 
     elif fitur == "terjemahindosunda":
         system_instruction = f"""Anjeun téh panarjamah anu ahli dina basa Sunda.
-                            Tarjamahkeun kalimah di handap ieu kana Basa Sunda {final_klasifikasi_bahasa} luyu jeung tata basa Sunda anu bener.
+                            Tarjamahkeun kalimah di handap ieu kana Basa Sunda {final_klasifikasi_bahasa} luyu jeung tata basa Sunda anu alus tur bener.
                             Wanohkeun format paragraf tina téks kalimah ti nu maké.
                             Jaga sangkan format paragraf jeung barisna tetep sarua persis siga téks asli atawa input ti nu maké.
                             Ulah ngagabungkeun paragraf.
-                            Sok ngajawab ku basa Sunda sanajan ditanya ku basa sejen. Gunakeun lafal {final_klasifikasi_bahasa}, lamun Loma mangka sakabeh Loma, lamun Halus mangka sakabeh Halus. Mitra obrolan anjeun yuswa {user_age} taun. Mangga saluyukeun gaya nyarita anjeun ka umur pasangan obrolan anjeun.
-                            Ulah sok make kecap-kecap anu lain basa Sunda!. Gunakeun tata basa Sunda anu alus tur bener. 
-                            Unggal waktos Anjeun ngucapkeun kecap ("Nak"), robah jadi ("Jang").
                             Ulah ngarang kecap anu lain basa Sunda.
                             Anggo hurup kapital anu sarua upami dina kalimah atawa kecap dina input ti nu maké nganggo hurup kapital.
                             Ulah ngajak ngobrol siga fitur chatbot. anjeun ngan ukur narjamahkeun input ti nu maké siga Google Translator.
@@ -253,7 +250,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
                             "- bapak → teman = Loma\n"
                             "- bapak → atasan = Halus\n"
                             "- anak → bapak/ibu = Halus\n"
-                            "- anak → orang dewasa/Guru = Halus\n" # Perbarui di sini juga
+                            "- anak → orang dewasa/Guru = Halus\n"
                             "- anak → teman = Loma/kasar\n"
                             "- ibu → anak = Loma\n"
                             "- ibu → suami = Loma\n"
