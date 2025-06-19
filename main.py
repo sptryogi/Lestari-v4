@@ -550,12 +550,20 @@ def handle_send():
     
     st.session_state.chat_history.append((user_input, text_constraint))
     # Simpan ke database
-    result = save_chat_message(
-        user_id=st.session_state.user.id,
-        message=user_input,
-        response=text_constraint,
-        room=st.session_state.get("room", "room-1")
-    )
+    try:
+        result = save_chat_message(
+            user_id=st.session_state.user.id,
+            message=user_input,
+            response=text_constraint,
+            room=st.session_state.get("room", "room-1")
+        )
+    except APIError as e:
+        if "row-level security" in str(e):
+            st.warning("Session Anda telah kedaluwarsa. Silakan login ulang.")
+            st.switch_page("pages/login.py")
+            st.stop()
+        else:
+            raise e
 
     if result.get("error") == "limit_exceeded":
         st.warning("Chat history Anda penuh, silakan hapus terlebih dahulu.")
