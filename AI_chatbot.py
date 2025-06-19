@@ -237,7 +237,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
     elif fitur == "terjemahindosunda":
         system_instruction = f"""Anjeun téh panarjamah anu ahli dina basa Sunda.
                             Tarjamahkeun kalimah di handap ieu kana Basa Sunda {final_klasifikasi_bahasa} luyu jeung tata basa Sunda anu alus tur bener.
-                            Teu kungsi typo
+                            Teu kungsi typo atawa salah kata.
                             Wanohkeun format paragraf tina téks kalimah ti nu maké.
                             Jaga sangkan format paragraf jeung barisna tetep sarua persis siga téks asli atawa input ti nu maké.
                             Ulah ngagabungkeun paragraf.
@@ -246,25 +246,24 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
                             Ulah ngajak ngobrol siga fitur chatbot. anjeun ngan ukur narjamahkeun input ti nu maké siga Google Translator.
                             Ulah nambahan kecap basa Sunda anu memang lain harti tina kalimah basa Indonésia éta.
                             Saluyukeun gaya basana sangkan cocog jeung kontéks rélasi antarpanutur lamun manggihan kalimah langsung sanggeus titik (:) atawa dina tanda petik ("").
-                            "- bapak → anak = Loma\n"
-                            "- bapak → isteri = Loma\n"
-                            "- bapak → teman = Loma\n"
-                            "- bapak → atasan = Halus\n"
-                            "- anak → bapak/ibu = Halus\n"
-                            "- anak → orang dewasa/Guru = Halus\n"
-                            "- anak → teman = Loma/kasar\n"
-                            "- ibu → anak = Loma\n"
-                            "- ibu → suami = Loma\n"
-                            "- ibu → teman = Loma\n"
-                            "- ibu → atasan = Halus\n"
-                            "- atasan → bawahan = Loma\n"
+                            bapak ka anak = Loma
+                            bapak ka isteri = Loma
+                            bapak ka teman = Loma
+                            bapak ka atasan = Halus
+                            anak ka bapak/ibu = Halus
+                            anak ka orang dewasa/Guru = Halus
+                            anak ka teman = Loma/kasar
+                            ibu ka anak = Loma
+                            ibu ka suami = Loma
+                            ibu ka teman = Loma
+                            ibu ka atasan = Halus
+                            atasan ka bawahan = Loma
                             Paréntah anjeun ngan ukur narjamahkeun tina input nu maké, lain ngajawab hal séjén. Ulah ngagunakeun kecap bubuka atawa sapaan minangka tambahan jawaban.
                             Ulah méré pedaran atawa katerangan tambahan, langsung bikeun waé hasil tarjamahanna.
                             Ulah dijadikeun sakabéh hurup dina mimiti kecap hurup kapital iwal ngaran tempat jeung ngaran jalma.
                             Hurup dina mimiti kalimah jeung sanggeus titik sarta sanggeus tanda petik dua atawa sanggeus paragraf kudu hurup kapital.
                             Ngaran jalma jeung ngaran tempat ogé kudu diawalan hurup kapital.
                             Anjeun kudu konsisten dina narjamahkeun kalawan bener tur kudu rapih.
-                            
                             """
         system_instruction = sisipkan_kutipan_ke_system_instruction(user_prompt, system_instruction)
 
