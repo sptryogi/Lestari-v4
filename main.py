@@ -550,17 +550,14 @@ def handle_send():
     
     st.session_state.chat_history.append((user_input, text_constraint))
     # Simpan ke database
-    try:
-        result = save_chat_message(
-            user_id=st.session_state.user.id,
-            message=user_input,
-            response=text_constraint,
-            room=st.session_state.get("room", "room-1")
-        )
-    except Exception as e:
-        st.error("Terjadi kesalahan koneksi. Silakan muat ulang halaman atau login ulang.")
-        st.stop()
-
+    
+    result = save_chat_message(
+        user_id=st.session_state.user.id,
+        message=user_input,
+        response=text_constraint,
+        room=st.session_state.get("room", "room-1")
+    )
+    
     if result.get("error") == "limit_exceeded":
         st.warning("Chat history Anda penuh, silakan hapus terlebih dahulu.")
         st.stop()
