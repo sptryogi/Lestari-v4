@@ -54,9 +54,17 @@ if chat_user:
     df_kamus = pd.read_excel("dataset/dataset_lengkap.xlsx")
 
     # Isi NaN dengan string kosong lalu split
+    # Pastikan SUBLEMA string dan split
     df_kamus["SUBLEMA"] = df_kamus["SUBLEMA"].fillna("").astype(str)
-    combined_raw = df_kamus["LEMA"].tolist() + df_kamus["SUBLEMA"].str.split(",").sum()
-    combined_raw = [kata.strip() for kata in combined_raw]
+    sublema_list = df_kamus["SUBLEMA"].str.split(",").sum()
+    
+    # Gabungkan dengan LEMA, pastikan semua string dan tidak NaN
+    lema_list = df_kamus["LEMA"].fillna("").astype(str).tolist()
+    
+    # Gabungkan dan bersihkan
+    combined_raw = lema_list + sublema_list
+    combined_raw = [str(kata).strip() for kata in combined_raw if isinstance(kata, str)]
+
 
     # Fungsi untuk menghapus aksen dari karakter
     def remove_accents(input_str):
