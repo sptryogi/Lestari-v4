@@ -3,6 +3,7 @@ import re
 import pandas as pd
 import numpy as np
 import difflib
+from Levenshtein import distance as lev_dist
 
  # ================= PENGURAIAN SUBLEMA =================
 def bersihkan_teks(teks):
@@ -29,29 +30,32 @@ def bersihkan_superscript(teks):
     # Menghapus superscript angka ¹²³⁴⁵⁶⁷⁸⁹⁰ atau angka biasa setelah huruf
     return re.sub(r'([^\d\s])[\u00B9\u00B2\u00B3\u2070\u2074-\u2079\d]+', r'\1', teks)
 
-def koreksi_typo_dari_respon(teks_ai, df_kamus):
-    # Asumsi df_kamus adalah DataFrame yang sudah dimuat dengan kolom LEMA, SUBLEMA, ARTI EKUIVALEN 1
+def cari_terdekat_leven(kata_typo, kandidat_list, max_typo=2):
+    kandidat_terdekat = None
+    jarak_terendah = max_typo + 1  # Default gagal
 
-    # Siapkan data referensi dari df_kamus
+    for kandidat in kandidat_list:
+        d = lev_dist(kata_typo, kandidat)
+        if d <= max_typo and d < jarak_terendah:
+            kandidat_terdekat = kandidat
+            jarak_terendah = d
+
+    return kandidat_terdekat
+
+
+def koreksi_typo_dari_respon(teks_ai, df_kamus):
     lema_list = df_kamus["LEMA"].dropna().str.lower().unique()
     sublema_list = df_kamus["SUBLEMA"].dropna().str.lower().unique()
-    
-    # Gabungkan semua kata valid dari LEMA dan SUBLEMA
     semua_lema_sublema = list(set(lema_list) | set(sublema_list))
 
-    # Buat pemetaan dari ARTI EKUIVALEN 1 ke LEMA/SUBLEMA aslinya
-    arti_ekuivalen_data = [] # List of tuples (arti_lower, lema_atau_sublema_asli)
-    
-    # Map untuk menyimpan LEMA/SUBLEMA asli dari ARTI EKUIVALEN 1
-    # Jika ada beberapa LEMA/SUBLEMA untuk satu ARTI EKUIVALEN, kita ambil yang pertama
     arti_ke_lema_sublema_map = {}
+    arti_ekuivalen_data = []
 
     for _, row in df_kamus.iterrows():
         lema_asli = row.get("LEMA")
         sublema_asli = row.get("SUBLEMA")
         arti_raw = row.get("ARTI EKUIVALEN 1", "")
 
-        # Ambil kata asli yang akan ditukar (prioritas LEMA, jika tidak ada SUBLEMA)
         kata_penukar_asli = None
         if pd.notna(lema_asli):
             kata_penukar_asli = str(lema_asli).lower()
@@ -60,55 +64,42 @@ def koreksi_typo_dari_respon(teks_ai, df_kamus):
 
         if pd.notna(arti_raw) and kata_penukar_asli:
             arti_list = [a.strip().lower() for a in str(arti_raw).split(",") if a.strip()]
-            for arti_tunggal in arti_list:
-                # Pastikan setiap 'arti_tunggal' hanya memetakan ke satu 'kata_penukar_asli'
-                # Ini penting jika 'arti_tunggal' bisa muncul di beberapa baris DataFrame
-                if arti_tunggal not in arti_ke_lema_sublema_map:
-                    arti_ke_lema_sublema_map[arti_tunggal] = kata_penukar_asli
-                # Tambahkan ke list untuk pencarian difflib
-                arti_ekuivalen_data.append(arti_tunggal)
-    
-    # Membuat set unik dari arti_ekuivalen_data untuk pencarian efisien
+            for arti in arti_list:
+                if arti not in arti_ke_lema_sublema_map:
+                    arti_ke_lema_sublema_map[arti] = kata_penukar_asli
+                arti_ekuivalen_data.append(arti)
+
     semua_arti_ekuivalen_unik = list(set(arti_ekuivalen_data))
 
-
-    # Logika iterasi untuk teks_ai
-    # Kita akan mencari pola <i>...</i>
-    # Pola regex untuk menangkap teks di dalam <i></i>
     pola_italic = re.compile(r"<i>(.*?)</i>")
-
-    # Pecah teks_ai berdasarkan pola italic, tapi tetap mempertahankan teks di luar italic
     parts = pola_italic.split(teks_ai)
-    
     hasil_akhir = []
 
     for i, part in enumerate(parts):
-        if i % 2 == 1: # Ini adalah teks yang ada di dalam <i></i> (kata yang sebelumnya dianggap typo)
-            kata_typo_asli = part # Ini adalah kata yang sebelumnya di-italic
+        if i % 2 == 1:  # bagian <i>...</i>
+            kata_typo_asli = part
             kata_bersih = re.sub(r"[^\w-]", "", kata_typo_asli.lower())
 
-            # --- Langkah 1: Koreksi ke LEMA/SUBLEMA ---
-            cocok_lema_sublema = difflib.get_close_matches(kata_bersih, semua_lema_sublema, n=1, cutoff=0.75)
-            if cocok_lema_sublema:
-                # Jika ditemukan yang mirip di LEMA/SUBLEMA, gunakan itu (dan bold)
-                hasil_akhir.append(f"<b>{cocok_lema_sublema[0]}</b>")
-                continue # Lanjut ke bagian teks berikutnya
+            # Step 1: cari ke LEMA/SUBLEMA
+            cocok_lema = cari_terdekat_leven(kata_bersih, semua_lema_sublema, max_typo=2)
+            if cocok_lema:
+                hasil_akhir.append(f"<b>{cocok_lema}</b>")
+                continue
 
-            # --- Langkah 2: Koreksi ke ARTI EKUIVALEN 1 ---
-            cocok_arti = difflib.get_close_matches(kata_bersih, semua_arti_ekuivalen_unik, n=1, cutoff=0.75)
+            # Step 2: cari ke ARTI EKUIVALEN → ganti ke LEMA
+            cocok_arti = cari_terdekat_leven(kata_bersih, semua_arti_ekuivalen_unik, max_typo=2)
             if cocok_arti:
-                # Jika ditemukan yang mirip di ARTI EKUIVALEN 1, ambil LEMA/SUBLEMA aslinya
-                lema_penukar = arti_ke_lema_sublema_map.get(cocok_arti[0])
-                if lema_penukar:
-                    hasil_akhir.append(f"<b>{lema_penukar}</b>")
-                    continue # Lanjut ke bagian teks berikutnya
+                lemma = arti_ke_lema_sublema_map.get(cocok_arti)
+                if lemma:
+                    hasil_akhir.append(f"<b>{lemma}</b>")
+                    continue
 
-            # --- Langkah 3: Jika tidak ada yang cocok, tetap italic ---
+            # Step 3: tetap italic
             hasil_akhir.append(f"<i>{kata_typo_asli}</i>")
 
-        else: # Ini adalah teks di luar <i></i> (kata yang tidak di-italic atau sisa teks)
+        else:
             hasil_akhir.append(part)
-            
+
     return "".join(hasil_akhir)
 
 
