@@ -146,6 +146,71 @@ def koreksi_typo_dari_respon(teks_ai, df_kamus):
 
     return "".join(hasil_akhir)
 
+def ganti_sinonim_berdasarkan_tingkat(teks, df_kamus):
+    # 1. Deteksi kalimat langsung dalam tanda petik
+    pola = r'"([^"]+)"'
+    kutipan_list = re.findall(pola, teks)
+
+    for kutipan in kutipan_list:
+        kata_kutipan = kutipan.split()
+
+        # 2. Deteksi tingkat tutur dominan di kutipan
+        tingkat_kata = []
+        for kata in kata_kutipan:
+            kata_bersih = re.sub(r"[^\w-]", "", kata.lower())
+            cocok = df_kamus[
+                (df_kamus['LEMA'].str.lower() == kata_bersih) |
+                (df_kamus['SUBLEMA'].str.lower() == kata_bersih)
+            ]
+            if not cocok.empty:
+                tingkat_kata += cocok['(HALUS/LOMA/KASAR)'].dropna().tolist()
+
+        if not tingkat_kata:
+            continue  # Skip kalau tidak ada cocok sama sekali
+
+        # Hitung dominan sesuai kategori
+        tingkat_kata = [t.lower() for t in tingkat_kata]
+        dominan_halus = sum(t in ['HALUS', 'HALUS/LOMA', 'LOMA/HALUS'] for t in tingkat_kata)
+        dominan_loma = sum(t in ['LOMA', 'LOMA/KASAR', 'KASAR/LOMA'] for t in tingkat_kata)
+
+        kategori = 'HALUS' if dominan_halus >= dominan_loma else 'LOMA'
+        kategori_filter = ['HALUS', 'HALUS/LOMA', 'LOMA/HALUS'] if kategori == 'HALUS' else ['LOMA', 'LOMA/KASAR', 'KASAR/LOMA']
+
+        # 3. Ubah setiap kata dengan sinonim dari kategori yang cocok
+        kata_baru = []
+        for kata in kata_kutipan:
+            tanda = re.findall(r'[.,!?]$', kata)
+            suffix = tanda[0] if tanda else ''
+            kata_bersih = re.sub(r"[^\w-]", "", kata.lower())
+
+            row_kamus = df_kamus[
+                (df_kamus['LEMA'].str.lower() == kata_bersih) |
+                (df_kamus['SUBLEMA'].str.lower() == kata_bersih)
+            ]
+            diganti = False
+
+            if not row_kamus.empty:
+                sinonim_raw = row_kamus.iloc[0]['SINONIM'] if 'SINONIM' in row_kamus.columns else ""
+                if pd.notna(sinonim_raw):
+                    sinonim_list = [s.strip().lower() for s in sinonim_raw.split(".") if s.strip()]
+                    for s in sinonim_list:
+                        match_row = df_kamus[
+                            ((df_kamus['LEMA'].str.lower() == s) | (df_kamus['SUBLEMA'].str.lower() == s)) &
+                            (df_kamus['(HALUS/LOMA/KASAR)'].str.lower().isin(kategori_filter))
+                        ]
+                        if not match_row.empty:
+                            lemma_atau_sub = match_row.iloc[0]['LEMA'] if pd.notna(match_row.iloc[0]['LEMA']) else match_row.iloc[0]['SUBLEMA']
+                            kata_baru.append(lemma_atau_sub + suffix)
+                            diganti = True
+                            break
+
+            if not diganti:
+                kata_baru.append(kata)  # Tetap
+
+        # 4. Ganti di teks asli
+        teks = teks.replace(f'"{kutipan}"', f'"{' '.join(kata_baru)}"')
+
+    return teks
 
 
 def urai_awalan(kata):
