@@ -208,7 +208,8 @@ def ganti_sinonim_berdasarkan_tingkat(teks, df_kamus):
                 kata_baru.append(kata)  # Tetap
 
         # 4. Ganti di teks asli
-        teks = teks.replace(f'"{kutipan}"', f'"{' '.join(kata_baru)}"')
+        hasil_ganti = " ".join(kata_baru)
+        teks = teks.replace(f'"{kutipan}"', f'"{hasil_ganti}"')
 
     return teks
 
