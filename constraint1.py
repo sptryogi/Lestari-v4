@@ -266,18 +266,29 @@ def koreksi_typo_dari_respon(teks_ai, df_kamus):
             # if kandidat_konteks and is_valid_pos(kandidat_konteks):
             #     hasil_akhir.append(f"<b>{kandidat_konteks}</b>")
             #     continue
-            kandidat = cari_terdekat_leven(kata_bersih, semua_lema_sublema, max_typo=2)
-            if kandidat and is_valid_pos(kandidat):
-                hasil_akhir.append(f"<b>{kandidat}</b>")
+            # METODE 1
+            # kandidat = cari_terdekat_leven(kata_bersih, semua_lema_sublema, max_typo=2)
+            # if kandidat and is_valid_pos(kandidat):
+            #     hasil_akhir.append(f"<b>{kandidat}</b>")
+            #     continue
+            cocok_lema = cari_terdekat_leven(kata_bersih, semua_lema_sublema, max_typo=2)
+            if cocok_lema:
+                hasil_akhir.append(f"<b>{cocok_lema}</b>")
                 continue
 
             # Step 2: cari ke ARTI EKUIVALEN → ganti ke LEMA
-            kandidat_arti = cari_terdekat_leven(kata_bersih, semua_arti_ekuivalen_unik, max_typo=2)
-            if kandidat_arti:
-                lemma = arti_ke_lema_sublema_map.get(kandidat_arti)
-                if lemma and is_valid_pos(lemma):
-                    hasil_akhir.append(f"<b>{lemma}</b>")
-                    continue
+            # kandidat_arti = cari_terdekat_leven(kata_bersih, semua_arti_ekuivalen_unik, max_typo=2)
+            # if kandidat_arti:
+            #     lemma = arti_ke_lema_sublema_map.get(kandidat_arti)
+            #     if lemma and is_valid_pos(lemma):
+            #         hasil_akhir.append(f"<b>{lemma}</b>")
+            #         continue
+           cocok_arti = cari_terdekat_leven(kata_bersih, semua_arti_ekuivalen_unik, max_typo=2)
+           if cocok_arti:
+               lemma = arti_ke_lema_sublema_map.get(cocok_arti)
+               if lemma:
+                   hasil_akhir.append(f"<b>{lemma}</b>")
+                   continue
 
             # Step 3: tetap italic
             hasil_akhir.append(f"<i>{kata_typo_asli}</i>")
