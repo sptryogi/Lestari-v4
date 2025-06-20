@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import difflib
 from Levenshtein import distance as lev_dist
+from AI_chatbot import pilih_berdasarkan_konteks_llm
 
  # ================= PENGURAIAN SUBLEMA =================
 def bersihkan_teks(teks):
@@ -116,9 +117,15 @@ def koreksi_typo_dari_respon(teks_ai, df_kamus):
                 return (pos_kandidat in valid_after) and (pos_sesudah in valid_before)
 
             # Step 1: cari ke LEMA/SUBLEMA
-            kandidat = cari_terdekat_leven(kata_bersih, semua_lema_sublema, max_typo=2)
-            if kandidat and is_valid_pos(kandidat):
-                hasil_akhir.append(f"<b>{kandidat}</b>")
+            semua_kandidat = [
+                k for k in semua_lema_sublema
+                if lev_dist(kata_bersih, k) <= 2
+            ]
+            
+            kandidat_konteks = pilih_berdasarkan_konteks(semua_kandidat, teks_ai, kata_typo_asli)
+            
+            if kandidat_konteks and is_valid_pos(kandidat_konteks):
+                hasil_akhir.append(f"<b>{kandidat_konteks}</b>")
                 continue
 
             # Step 2: cari ke ARTI EKUIVALEN → ganti ke LEMA
