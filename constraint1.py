@@ -36,22 +36,29 @@ def cari_terdekat_leven(kata, kandidat_list, max_typo=2):
     Mencari kata terdekat dalam list berdasarkan Levenshtein distance
     Mengembalikan None jika tidak ada yang memenuhi threshold
     """
-    if not kandidat_list:
+    from Levenshtein import distance as lev_dist
+    
+    # Handle empty array case properly for NumPy arrays
+    if kandidat_list is None or len(kandidat_list) == 0:
         return None
-
+    
+    # Convert to list if it's a NumPy array
+    if hasattr(kandidat_list, 'tolist'):
+        kandidat_list = kandidat_list.tolist()
+    
     # Hitung distance untuk semua kandidat
     distances = [(k, lev_dist(kata, k)) for k in kandidat_list]
-
+    
     # Filter berdasarkan max_typo dan urutkan berdasarkan distance
     filtered = sorted([(k, d) for k, d in distances if d <= max_typo], key=lambda x: x[1])
-
+    
     return filtered[0][0] if filtered else None
 
 
 def koreksi_typo_dari_respon(teks_ai, df_kamus):
     # Persiapkan daftar kata
-    lema_list = df_kamus["LEMA"].dropna().str.lower().unique()
-    sublema_list = df_kamus["SUBLEMA"].dropna().str.lower().unique()
+    lema_list = df_kamus["LEMA"].dropna().str.lower().unique().tolist()
+    sublema_list = df_kamus["SUBLEMA"].dropna().str.lower().unique().tolist()
     semua_lema_sublema = list(set(lema_list) | set(sublema_list))
 
     # Mapping kata ke KLAS (untuk pengecekan POS)
