@@ -3,7 +3,7 @@ import pandas as pd
 import re
 import pybase64
 from AI_chatbot import generate_text_deepseek, call_deepseek_api, kapitalisasi_awal_kalimat, bersihkan_superscript, ekstrak_teks, hitung_token
-from constraint1 import highlight_text, constraint_text, ubah_ke_lema, find_the_lema_pair, cari_arti_lema, bersihkan_kamus, koreksi_typo_dari_respon
+from constraint1 import highlight_text, constraint_text, ubah_ke_lema, find_the_lema_pair, cari_arti_lema, bersihkan_kamus, koreksi_typo_dari_respon, ganti_sinonim_berdasarkan_tingkat
 import streamlit.components.v1 as components
 from supabase_helper import *
 import uuid, time
