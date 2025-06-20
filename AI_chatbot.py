@@ -348,5 +348,29 @@ def ekstrak_teks(file):
 
     else:
         return "❌ Jenis file tidak didukung."
+
+def pilih_berdasarkan_konteks_llm(kandidat_list, kalimat_asli, kata_typo_asli):
+    if not kandidat_list:
+        return None
+
+    daftar_kandidat = ", ".join(kandidat_list)
+    prompt = f"""
+            Kalimat berikut mengandung kata salah tulis:
+            
+            "{kalimat_asli}"
+            
+            Bagian yang salah adalah: "{kata_typo_asli}" (ditulis dalam tag <i>...</i>).
+            
+            Berikut adalah daftar kandidat koreksi (dari kamus): {daftar_kandidat}.
+            
+            Pilih satu kata yang paling sesuai secara makna dengan konteks kalimat tersebut.
+            Jawab hanya dengan satu kata dari daftar, tanpa penjelasan.
+            """
+    hasil = call_deepseek_api(prompt, history=None,  system_instruction=None)  # Atau Groq, OpenAI
+    hasil_bersih = hasil.strip().lower()
+
+    if hasil_bersih in kandidat_list:
+        return hasil_bersih
+    return None
     
 
