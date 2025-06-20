@@ -170,11 +170,11 @@ def ganti_sinonim_berdasarkan_tingkat(teks, df_kamus):
 
         # Hitung dominan sesuai kategori
         tingkat_kata = [t.lower() for t in tingkat_kata]
-        dominan_halus = sum(t in ['HALUS', 'HALUS/LOMA', 'LOMA/HALUS'] for t in tingkat_kata)
-        dominan_loma = sum(t in ['LOMA', 'LOMA/KASAR', 'KASAR/LOMA'] for t in tingkat_kata)
+        dominan_halus = sum(t in ['halus', 'halus/loma', 'loma/halus'] for t in tingkat_kata)
+        dominan_loma = sum(t in ['loma', 'loma/kasar', 'kasar/loma'] for t in tingkat_kata)
 
         kategori = 'HALUS' if dominan_halus >= dominan_loma else 'LOMA'
-        kategori_filter = ['HALUS', 'HALUS/LOMA', 'LOMA/HALUS'] if kategori == 'HALUS' else ['LOMA', 'LOMA/KASAR', 'KASAR/LOMA']
+        kategori_filter = ['halus', 'halus/loma', 'loma/halus'] if kategori == 'HALUS' else ['loma', 'loma/kasar', 'kasar/loma']
 
         # 3. Ubah setiap kata dengan sinonim dari kategori yang cocok
         kata_baru = []
