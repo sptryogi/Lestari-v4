@@ -269,6 +269,7 @@ def koreksi_typo_dari_respon(teks_ai, df_kamus):
             kandidat = cari_terdekat_leven(kata_bersih, semua_lema_sublema, max_typo=2)
             if kandidat and is_valid_pos(kandidat):
                 hasil_akhir.append(f"<b>{kandidat}</b>")
+                continue
 
             # Step 2: cari ke ARTI EKUIVALEN → ganti ke LEMA
             kandidat_arti = cari_terdekat_leven(kata_bersih, semua_arti_ekuivalen_unik, max_typo=2)
