@@ -36,25 +36,24 @@ def cari_terdekat_leven(kata, kandidat_list, max_typo=2):
     Mencari kata terdekat dalam list berdasarkan Levenshtein distance
     Mengembalikan None jika tidak ada yang memenuhi threshold
     """
-    from Levenshtein import distance as lev_dist
-    
     if not kandidat_list:
         return None
-    
+
     # Hitung distance untuk semua kandidat
     distances = [(k, lev_dist(kata, k)) for k in kandidat_list]
-    
+
     # Filter berdasarkan max_typo dan urutkan berdasarkan distance
     filtered = sorted([(k, d) for k, d in distances if d <= max_typo], key=lambda x: x[1])
-    
+
     return filtered[0][0] if filtered else None
+
 
 def koreksi_typo_dari_respon(teks_ai, df_kamus):
     # Persiapkan daftar kata
     lema_list = df_kamus["LEMA"].dropna().str.lower().unique()
     sublema_list = df_kamus["SUBLEMA"].dropna().str.lower().unique()
     semua_lema_sublema = list(set(lema_list) | set(sublema_list))
-    
+
     # Mapping kata ke KLAS (untuk pengecekan POS)
     kata_ke_klas = {}
     for _, row in df_kamus.iterrows():
@@ -63,36 +62,36 @@ def koreksi_typo_dari_respon(teks_ai, df_kamus):
             klas = row.get("KLAS.")
             if pd.notna(kata):
                 kata_ke_klas[str(kata).lower()] = str(klas).strip() if pd.notna(klas) else None
-    
+
     # Mapping ARTI EKUIVALEN ke LEMA/SUBLEMA
     arti_ke_lema_sublema_map = {}
     arti_ekuivalen_data = []
-    
+
     for _, row in df_kamus.iterrows():
         lema_asli = row.get("LEMA")
         sublema_asli = row.get("SUBLEMA")
         arti_raw = row.get("ARTI EKUIVALEN 1", "")
-        
+
         kata_penukar_asli = None
         if pd.notna(lema_asli):
             kata_penukar_asli = str(lema_asli).lower()
         elif pd.notna(sublema_asli):
             kata_penukar_asli = str(sublema_asli).lower()
-        
+
         if pd.notna(arti_raw) and kata_penukar_asli:
             arti_list = [a.strip().lower() for a in str(arti_raw).split(",") if a.strip()]
             for arti in arti_list:
                 if arti not in arti_ke_lema_sublema_map:
                     arti_ke_lema_sublema_map[arti] = kata_penukar_asli
                 arti_ekuivalen_data.append(arti)
-    
+
     semua_arti_ekuivalen_unik = list(set(arti_ekuivalen_data))
-    
+
     # Pola untuk mendeteksi teks italic
     pola_italic = re.compile(r"<i>(.*?)</i>")
     parts = pola_italic.split(teks_ai)
     hasil_akhir = []
-    
+
     # Urutan POS yang valid
     valid_sequence = {
         "N": ["V", "Adj", "P", "Pro", None],
@@ -104,68 +103,64 @@ def koreksi_typo_dari_respon(teks_ai, df_kamus):
         "P": ["N", "V", "Adj", "Pro", "Modal", None],
         "Modal": ["V", None],
         None: ["N", "V", "Adj", "P", "Pro", "Adv", "Num", "Modal", None],
-     }
+    }
 
-     for i, part in enumerate(parts):
+    for i, part in enumerate(parts):
         if i % 2 == 1:  # bagian <i>...</i>
             kata_typo_asli = part
             kata_bersih = re.sub(r"[^\w-]", "", kata_typo_asli.lower())
-            
+
             # Cek konteks kata sebelum dan sesudah
             kata_sebelum = re.sub(r"[^\w-]", "", parts[i-1].split()[-1].lower()) if i-1 >= 0 and parts[i-1].split() else None
             kata_sesudah = re.sub(r"[^\w-]", "", parts[i+1].split()[0].lower()) if i+1 < len(parts) and parts[i+1].split() else None
-            
+
             pos_sebelum = kata_ke_klas.get(kata_sebelum, None)
             pos_sesudah = kata_ke_klas.get(kata_sesudah, None)
-            
+
             def is_valid_pos(kandidat):
                 pos_kandidat = kata_ke_klas.get(kandidat, None)
                 valid_after = valid_sequence.get(pos_sebelum, valid_sequence[None])
                 valid_before = valid_sequence.get(pos_kandidat, valid_sequence[None])
                 return (pos_kandidat in valid_after) and (pos_sesudah in valid_before)
-            
-            # Step 1: Cari di LEMA terlebih dahulu dengan threshold ketat (typo <= 1)
+
+            # Step 1: LEMA ketat
             kandidat_lema = cari_terdekat_leven(kata_bersih, lema_list, max_typo=1)
             if kandidat_lema and is_valid_pos(kandidat_lema):
                 hasil_akhir.append(f"<b>{kandidat_lema}</b>")
                 continue
-                
-            # Step 2: Jika tidak ada di LEMA, cari di SUBLEMA dengan threshold ketat
+
+            # Step 2: SUBLEMA ketat
             kandidat_sublema = cari_terdekat_leven(kata_bersih, sublema_list, max_typo=1)
             if kandidat_sublema and is_valid_pos(kandidat_sublema):
                 hasil_akhir.append(f"<b>{kandidat_sublema}</b>")
                 continue
-                
-            # Step 3: Coba lagi di LEMA dengan threshold lebih longgar (typo <= 2)
+
+            # Step 3: LEMA longgar
             kandidat_lema_longgar = cari_terdekat_leven(kata_bersih, lema_list, max_typo=2)
             if kandidat_lema_longgar and is_valid_pos(kandidat_lema_longgar):
                 hasil_akhir.append(f"<b>{kandidat_lema_longgar}</b>")
                 continue
-                
-            # Step 4: Coba lagi di SUBLEMA dengan threshold lebih longgar
+
+            # Step 4: SUBLEMA longgar
             kandidat_sublema_longgar = cari_terdekat_leven(kata_bersih, sublema_list, max_typo=2)
             if kandidat_sublema_longgar and is_valid_pos(kandidat_sublema_longgar):
                 hasil_akhir.append(f"<b>{kandidat_sublema_longgar}</b>")
                 continue
-                
-            # Step 5: Cari di ARTI EKUIVALEN hanya jika:
-            # - Tidak ditemukan di LEMA/SUBLEMA
-            # - Similarity sangat tinggi (typo <= 1)
+
+            # Step 5: Cari di ARTI EKUIVALEN
             kandidat_arti = cari_terdekat_leven(kata_bersih, semua_arti_ekuivalen_unik, max_typo=1)
             if kandidat_arti:
                 lemma_dari_arti = arti_ke_lema_sublema_map.get(kandidat_arti)
-                # Tambahkan pengecekan similarity antara kata typo dan lemma-nya
                 if lemma_dari_arti and is_valid_pos(lemma_dari_arti):
-                    # Pastikan lemma_dari_arti tidak terlalu berbeda dengan kata typo
                     if lev_dist(kata_bersih, lemma_dari_arti.lower()) <= 2:
                         hasil_akhir.append(f"<b>{lemma_dari_arti}</b>")
                         continue
-            
-            # Jika tidak ditemukan kandidat yang sesuai, pertahankan format italic
+
+            # Step terakhir: tetap italic
             hasil_akhir.append(f"<i>{kata_typo_asli}</i>")
         else:
             hasil_akhir.append(part)
-    
+
     return "".join(hasil_akhir)
  
 # def cari_terdekat_leven(kata_typo, kandidat_list, max_typo=2):
