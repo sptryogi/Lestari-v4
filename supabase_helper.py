@@ -1,7 +1,7 @@
 from supabase import create_client, Client
 import streamlit as st
 import time
-from supabase.lib.auth_client import SupabaseAuthException
+# from supabase.lib.auth_client import SupabaseAuthException
 from httpx import RequestError
 
 # SUPABASE_URL = st.secrets["SUPABASE_URL"]
