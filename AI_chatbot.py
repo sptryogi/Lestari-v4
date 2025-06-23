@@ -208,6 +208,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
                                                  - diajar = belajar 
                                                  - dinten = hari 
                                                  - ieu = ini
+                                         Selalu bertanya diakhir yang berkaitan dengan pembelajaran.
                                       """
         elif mode_bahasa == "Indonesia":
             if chat_mode == "Ngobrol":
