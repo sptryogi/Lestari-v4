@@ -426,7 +426,12 @@ with st.sidebar:
     room_labels = []
 
     for r in room_options:
-        preview = get_first_chat_preview(st.session_state.user.id, r)
+        # preview = get_first_chat_preview(st.session_state.user.id, r)
+        try:
+            preview = get_first_chat_preview(st.session_state.user.id, r)
+        except Exception as e:
+            st.warning("Tidak bisa menampilkan chat sebelumnya.")
+            preview = ""
         room_labels.append(f"💬 {preview}")
 
     selected_label = st.selectbox(
