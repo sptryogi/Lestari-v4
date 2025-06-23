@@ -322,7 +322,7 @@ def ganti_sinonim_berdasarkan_tingkat(teks, df_kamus):
         # Hitung dominan sesuai kategori
         tingkat_kata = [t.lower() for t in tingkat_kata]
         dominan_halus = sum(t in ['halus', 'halus/loma', 'loma/halus'] for t in tingkat_kata)
-        dominan_loma = sum(t in ['loma', 'loma/kasar', 'kasar/loma'] for t in tingkat_kata)
+        dominan_loma = sum(t in ['loma', 'loma/halus', 'loma/kasar'] for t in tingkat_kata)
 
         # kategori = 'HALUS' if dominan_halus >= dominan_loma else 'LOMA'
         # kategori_filter = ['halus', 'halus/loma', 'loma/halus'] if kategori == 'HALUS' else ['loma', 'loma/kasar', 'kasar/loma']
@@ -334,12 +334,12 @@ def ganti_sinonim_berdasarkan_tingkat(teks, df_kamus):
         persen_halus = dominan_halus / total
         persen_loma = dominan_loma / total
         
-        if persen_halus >= 0.55:
+        if persen_halus >= 0.60:
             kategori = 'halus'
             kategori_filter = ['halus', 'halus/loma', 'loma/halus']
-        elif persen_loma >= 0.55:
+        elif persen_loma >= 0.60:
             kategori = 'loma'
-            kategori_filter = ['loma', 'loma/kasar', 'kasar/loma']
+            kategori_filter = ['loma', 'loma/halus', 'loma/kasar']
         else:
             continue  # Tidak dominan, jangan ganti kutipan
 
