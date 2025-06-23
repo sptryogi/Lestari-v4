@@ -283,12 +283,12 @@ def koreksi_typo_dari_respon(teks_ai, df_kamus):
             #     if lemma and is_valid_pos(lemma):
             #         hasil_akhir.append(f"<b>{lemma}</b>")
             #         continue
-           cocok_arti = cari_terdekat_leven(kata_bersih, semua_arti_ekuivalen_unik, max_typo=2)
-           if cocok_arti:
-               lemma = arti_ke_lema_sublema_map.get(cocok_arti)
-               if lemma:
-                   hasil_akhir.append(f"<b>{lemma}</b>")
-                   continue
+            cocok_arti = cari_terdekat_leven(kata_bersih, semua_arti_ekuivalen_unik, max_typo=2)
+            if cocok_arti:
+                lemma = arti_ke_lema_sublema_map.get(cocok_arti)
+                if lemma:
+                    hasil_akhir.append(f"<b>{lemma}</b>")
+                    continue
 
             # Step 3: tetap italic
             hasil_akhir.append(f"<i>{kata_typo_asli}</i>")
