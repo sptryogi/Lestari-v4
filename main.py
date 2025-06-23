@@ -283,12 +283,24 @@ render_topbar()
 
 # Load kamus
 # df_kamus = pd.read_excel("dataset/data_kamus_full_14-5-25.xlsx")
-df_kamus = pd.read_excel("dataset/hasil_gabungan16Jun.xlsx")
-df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']] = df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']].apply(lambda col: col.str.lower())
-df_idiom = pd.read_excel("dataset/data_idiom (3).xlsx")
-df_kamus = bersihkan_kamus(df_kamus)
-df_kamus["LEMA"] = df_kamus["LEMA"].fillna("").astype(str).apply(bersihkan_superscript)
-df_kamus["SUBLEMA"] = df_kamus["SUBLEMA"].fillna("").astype(str).apply(bersihkan_superscript)
+# df_kamus = pd.read_excel("dataset/hasil_gabungan16Jun.xlsx")
+# df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']] = df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']].apply(lambda col: col.str.lower())
+# df_idiom = pd.read_excel("dataset/data_idiom (3).xlsx")
+# df_kamus = bersihkan_kamus(df_kamus)
+# df_kamus["LEMA"] = df_kamus["LEMA"].fillna("").astype(str).apply(bersihkan_superscript)
+# df_kamus["SUBLEMA"] = df_kamus["SUBLEMA"].fillna("").astype(str).apply(bersihkan_superscript)
+
+@st.cache_data
+def load_kamus_dan_idiom():
+    df_kamus = pd.read_excel("dataset/hasil_gabungan16Jun.xlsx")
+    df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']] = df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']].apply(lambda col: col.str.lower())
+    df_kamus = bersihkan_kamus(df_kamus)
+    df_kamus["LEMA"] = df_kamus["LEMA"].fillna("").astype(str).apply(bersihkan_superscript)
+    df_kamus["SUBLEMA"] = df_kamus["SUBLEMA"].fillna("").astype(str).apply(bersihkan_superscript)
+    df_idiom = pd.read_excel("dataset/data_idiom (3).xlsx")
+    return df_kamus, df_idiom
+
+df_kamus, df_idiom = load_kamus_dan_idiom()
 
 def auth_guard():
     if "user" not in st.session_state:
@@ -455,10 +467,37 @@ def clear_input():
 
 # Modifikasi handle_send()
 def handle_send():
+    # if "user" not in st.session_state or "email" not in st.session_state:
+    #     st.error("Silakan login terlebih dahulu")
+    #     st.warning("Silakan login terlebih dahulu.")
+    #     st.stop()
+    #     return
     if "user" not in st.session_state or "email" not in st.session_state:
-        st.error("Silakan login terlebih dahulu")
-        st.warning("Silakan login terlebih dahulu.")
+        st.error("Sesi Anda tidak ditemukan. Silakan login kembali.")
         st.stop()
+        return
+
+    # Dapatkan sesi terbaru dari Supabase untuk memastikan token masih valid
+    try:
+        current_session = supabase.auth.get_session()
+        # Jika tidak ada sesi aktif di Supabase, hentikan proses
+        if current_session is None or current_session.user is None:
+            st.warning("Sesi Anda telah berakhir. Harap segarkan halaman atau login kembali.")
+            # Hapus session state yang tidak valid untuk memaksa login ulang
+            del st.session_state['user']
+            del st.session_state['email']
+            st.rerun() # Jalankan ulang aplikasi untuk memicu auth_guard
+            return
+        
+        # (Opsional tapi direkomendasikan) Cocokkan ID user di session state dengan sesi Supabase
+        if current_session.user.id != st.session_state.user.id:
+            st.error("Terjadi ketidaksesuaian sesi. Silakan login kembali.")
+            st.session_state.clear()
+            st.rerun()
+            return
+
+    except Exception as e:
+        st.error(f"Gagal memvalidasi sesi: {e}. Silakan coba lagi.")
         return
 
     extracted = ""
