@@ -380,6 +380,68 @@ def ganti_sinonim_berdasarkan_tingkat(teks, df_kamus):
 
     return teks
 
+def ganti_halus_ke_loma_di_luar_kutipan(teks, df_kamus):
+    # 1. Pisahkan bagian dalam dan luar kutip
+    pola = r'"[^"]+"'
+    potongan = re.split(pola, teks)
+    kutipan = re.findall(pola, teks)
+
+    hasil_final = []
+
+    for i, bagian in enumerate(potongan):
+        # 2. Proses bagian di luar kutipan
+        kata_baru = []
+        for kata in bagian.split():
+            suffix = re.findall(r'[.,!?]$', kata)
+            tanda_akhir = suffix[0] if suffix else ''
+            kata_bersih = re.sub(r'[^\w-]', '', kata.lower())
+
+            # Cek kata di kamus
+            baris_kata = df_kamus[
+                (df_kamus['LEMA'].str.lower() == kata_bersih) |
+                (df_kamus['SUBLEMA'].str.lower() == kata_bersih)
+            ]
+
+            diganti = False
+            if not baris_kata.empty:
+                asal_tingkat = baris_kata.iloc[0]['(HALUS/LOMA/KASAR)']
+                if pd.notna(asal_tingkat) and asal_tingkat.lower() in ['halus', 'halus/loma', 'loma/halus']:
+                    sinonim_raw = baris_kata.iloc[0]['SINONIM'] if 'SINONIM' in baris_kata.columns else ""
+                    if pd.notna(sinonim_raw):
+                        sinonim_list = []
+                        for frag in sinonim_raw.split(","):
+                            sinonim_list += [s.strip().lower() for s in frag.split(".") if s.strip()]
+
+                        # Cari sinonim dengan tingkat tutur LOMA
+                        pengganti_ditemukan = False
+                        for s in sinonim_list:
+                            baris_sinonim = df_kamus[
+                                ((df_kamus['LEMA'].str.lower() == s) | (df_kamus['SUBLEMA'].str.lower() == s)) &
+                                (df_kamus['(HALUS/LOMA/KASAR)'].str.lower().isin(
+                                    ['loma', 'loma/kasar', 'kasar/loma', 'loma/halus']
+                                ))
+                            ]
+                            if not baris_sinonim.empty:
+                                pengganti = baris_sinonim.iloc[0]['LEMA'] if pd.notna(baris_sinonim.iloc[0]['LEMA']) else baris_sinonim.iloc[0]['SUBLEMA']
+                                kata_baru.append(pengganti + tanda_akhir)
+                                diganti = True
+                                pengganti_ditemukan = True
+                                break
+
+                        if not pengganti_ditemukan:
+                            kata_baru.append(kata)  # Tidak ada sinonim cocok → biarkan
+                            diganti = True
+
+            if not diganti:
+                kata_baru.append(kata)
+
+        hasil_final.append(" ".join(kata_baru))
+
+        # 3. Tambahkan kutipan jika ada
+        if i < len(kutipan):
+            hasil_final.append(kutipan[i])
+
+    return "".join(hasil_final)
 
 def urai_awalan(kata):
     """
