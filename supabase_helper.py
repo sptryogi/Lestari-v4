@@ -1,10 +1,17 @@
 from supabase import create_client, Client
 import streamlit as st
+import time
+from supabase.lib.auth_client import SupabaseAuthException
+from httpx import RequestError
 
-SUPABASE_URL = st.secrets["SUPABASE_URL"]
-SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
+# SUPABASE_URL = st.secrets["SUPABASE_URL"]
+# SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
 
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+@st.cache_resource
+def load_supabase():
+    return create_client(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
+supabase = load_supabase()
+# supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 def sign_in_with_email(email, password):
     return supabase.auth.sign_in_with_password({"email": email, "password": password})
@@ -89,20 +96,48 @@ def get_chat_history(user_id, room="default", limit=100):
     return result.data if result else []
 
 def get_first_chat_preview(user_id, room):
-    result = supabase.table("chat_history") \
-        .select("message, response") \
-        .eq("user_id", user_id) \
-        .eq("room", room) \
-        .order("created_at", desc=False) \
-        .limit(1) \
-        .execute()
+    # result = supabase.table("chat_history") \
+    #     .select("message, response") \
+    #     .eq("user_id", user_id) \
+    #     .eq("room", room) \
+    #     .order("created_at", desc=False) \
+    #     .limit(1) \
+    #     .execute()
+    retry = 3
+    last_error = None
 
-    if result.data:
-        msg = result.data[0]["message"] or ""
-        res = result.data[0]["response"] or ""
-        text = msg.strip() or res.strip()
-        # Ambil 5 kata pertama dari message/response
-        preview = " ".join(text.split()[:5]) + "..." if text else "Chat kosong..."
-        return preview
-    return "Chat kosong..."
+    for attempt in range(retry):
+        try:
+            result = supabase.table("chat_history") \
+                .select("message, response") \
+                .eq("user_id", user_id) \
+                .eq("room", room) \
+                .order("created_at", desc=False) \
+                .limit(1) \
+                .execute()
+            if result.data:
+                msg = result.data[0]["message"] or ""
+                res = result.data[0]["response"] or ""
+                text = msg.strip() or res.strip()
+                # Ambil 5 kata pertama dari message/response
+                preview = " ".join(text.split()[:5]) + "..." if text else "Chat kosong..."
+                return preview
+            return "Chat kosong..."
+        except RequestError as e:
+            last_error = e
+            time.sleep(2)  # jeda sebelum ulangi
+        except Exception as e:
+            last_error = e
+            time.sleep(2)
+    st.error(f"Gagal memuat chat pertama dari Supabase: {last_error}")
+    return ""
+
+    # if result.data:
+    #     msg = result.data[0]["message"] or ""
+    #     res = result.data[0]["response"] or ""
+    #     text = msg.strip() or res.strip()
+    #     # Ambil 5 kata pertama dari message/response
+    #     preview = " ".join(text.split()[:5]) + "..." if text else "Chat kosong..."
+    #     return preview
+    # return "Chat kosong..."
 
