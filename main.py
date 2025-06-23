@@ -1,4 +1,6 @@
 import streamlit as st
+st.set_page_config(page_title="Lestari Bahasa", page_icon="🌐", layout="centered")  # atau "centered"
+
 import pandas as pd
 import re
 import pybase64
@@ -8,7 +10,7 @@ import streamlit.components.v1 as components
 from supabase_helper import *
 import uuid, time
 
-st.set_page_config(page_title="Lestari Bahasa", page_icon="🌐", layout="centered")  # atau "centered"
+# st.set_page_config(page_title="Lestari Bahasa", page_icon="🌐", layout="centered")  # atau "centered"
     
 # UI Styling
 st.markdown("""
