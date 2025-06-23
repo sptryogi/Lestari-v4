@@ -109,15 +109,23 @@ def sisipkan_kutipan_ke_system_instruction(teks, instruksi_awal):
 
     return instruksi_awal + bagian
 
+@st.cache_resource
+def get_deepseek_headers():
+    return {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {st.secrets['API_KEY']}"
+    }
+    
 # Fungsi untuk memanggil Deepseek API
 def call_deepseek_api(prompt, history=None,  system_instruction=None):
     api_key = st.secrets["API_KEY"]
     url = "https://api.deepseek.com/v1/chat/completions"
 
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
-    }
+    # headers = {
+    #     "Authorization": f"Bearer {api_key}",
+    #     "Content-Type": "application/json"
+    # }
+    headers = get_deepseek_headers()
 
     messages = []
     if system_instruction:
