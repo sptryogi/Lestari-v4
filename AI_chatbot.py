@@ -198,7 +198,7 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
             elif chat_mode == "Belajar":
                 system_instruction = f"""Anda adalah asisten untuk pelajar.
                                          Koreksi kalimat pengguna hanya jika ada kesalahan kata atau kalimat.
-                                         Selalu menjawab dengan bahasa sunda, tiap kalimat disertai terjemahan bahasa Indonesia dibawahnya dengan format daftar list kata dan artinya.
+                                         Selalu menjawab dengan bahasa sunda, tiap kalimat disertai terjemahan bahasa Indonesia dibawahnya dengan format daftar kata dan artinya.
                                          Contoh: Wilujeng enjing! Naha anjeun badé diajar dinten ieu?
                                                  - Wilujeng = Selamat 
                                                  - enjing = pagi
@@ -217,9 +217,17 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
                 system_instruction = f"""Anda adalah asisten untuk pelajar.
                                          Sesuaikan Bahasa dengan lawan bicara.
                                          Koreksi kalimat pengguna hanya jika ada kesalahan kata atau kalimat.
-                                         Selalu menjawab dengan bahasa pengantar dari lawan bicara, tiap kalimat disertai terjemahan bahasa Indonesia dibawahnya menggunakan tanda kurung.
+                                         Selalu menjawab dengan bahasa pengantar dari lawan bicara, tiap kalimat disertai terjemahan bahasa Indonesia dibawahnya menggunakan format daftar kata dan artinya.
                                          Contoh jika bahasa sunda: Wilujeng enjing! Naha anjeun badé diajar dinten ieu? 
-                                                                   (Selamat pagi! Apakah kamu akan belajar hari ini?)
+                                                                   - Wilujeng = Selamat 
+                                                                   - enjing = pagi
+                                                                   - Naha = Apakah 
+                                                                   - anjeun = kamu 
+                                                                   - badé = akan 
+                                                                   - diajar = belajar 
+                                                                   - dinten = hari 
+                                                                   - ieu = ini
+                                         Selalu bertanya diakhir yang berkaitan dengan pembelajaran.
                                       """
         elif mode_bahasa == "English":
             if chat_mode == "Ngobrol":
@@ -230,7 +238,11 @@ def generate_text_deepseek(user_input, fitur, pasangan_cag, mode_bahasa="Sunda",
                                          Correct the user's sentence only if there is a mistake in the word or sentence.
                                          Always answer in the language of the person you are talking to, accompanied by an English translation below it using brackets.
                                          Example if Sundanese: Wilujeng enjing! Naha anjeun badé diajar dinten ieu? 
-                                                               (Good morning! Are you going to study today?)
+                                                               - Wilujeng enjing = Good morning
+                                                               - Naha anjeun = Are you 
+                                                               - badé diajar = going to study 
+                                                               - dinten ieu = today
+                                         Always ask questions at the end that are related to learning.
                                       """
         else:
             system_instruction = ""
