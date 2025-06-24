@@ -443,6 +443,64 @@ def ganti_halus_ke_loma_di_luar_kutipan(teks, df_kamus):
 
     return "".join(hasil_final)
 
+def ganti_kata_beretimologi_indonesia(teks, df_kamus):
+    # Persiapan
+    kata_ganti = {}
+    kata_token = re.findall(r"\w+|[^\w\s]", teks, re.UNICODE)
+
+    for i, token in enumerate(kata_token):
+        token_bersih = token.lower()
+
+        # Cari apakah token cocok dengan LEMA atau SUBLEMA + ETIMOLOGI Indonesia
+        cocok = df_kamus[
+            ((df_kamus['LEMA'].str.lower() == token_bersih) |
+             (df_kamus['SUBLEMA'].str.lower() == token_bersih)) &
+            (df_kamus['ETIMOLOGI'].str.lower() == 'indonesia')
+        ]
+
+        if cocok.empty:
+            continue
+
+        # Ambil baris terkait dan cari sinonimnya
+        sinonim_raw = cocok.iloc[0]['SINONIM']
+        if pd.isna(sinonim_raw):
+            continue
+
+        # Proses daftar sinonim
+        sinonim_list = [s.strip().lower() for s in re.split(r'[;,]', str(sinonim_raw)) if s.strip()]
+        ditemukan = None
+
+        for sinonim in sinonim_list:
+            # Cari sinonim ini ada di LEMA/SUBLEMA dari baris yang ETIMOLOGI-nya bukan Indonesia
+            baris_non_indo = df_kamus[
+                ((df_kamus['LEMA'].str.lower() == sinonim) |
+                 (df_kamus['SUBLEMA'].str.lower() == sinonim)) &
+                (~df_kamus['ETIMOLOGI'].str.lower().str.contains('indonesia', na=False))
+            ]
+            if not baris_non_indo.empty:
+                ditemukan = sinonim
+                break
+
+        if ditemukan:
+            kata_ganti[i] = ditemukan  # Simpan index token yang diganti
+
+    # Rekonstruksi kalimat
+    hasil = []
+    for i, token in enumerate(kata_token):
+        if i in kata_ganti:
+            # Pertahankan huruf kapital jika perlu
+            if token.istitle():
+                hasil.append(kata_ganti[i].capitalize())
+            else:
+                hasil.append(kata_ganti[i])
+        else:
+            hasil.append(token)
+
+    return ''.join([
+        token if re.fullmatch(r'\W', token) else ' ' + token
+        for token in hasil
+    ]).strip()
+
 def urai_awalan(kata):
     """
     Fungsi ini mengurai kata hasil imbuhan (misal: 'sublema') sehingga
