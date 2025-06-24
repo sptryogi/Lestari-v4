@@ -256,16 +256,17 @@ def koreksi_typo_dari_respon(teks_ai, df_kamus):
                 return (pos_kandidat in valid_after) and (pos_sesudah in valid_before)
 
             # Step 1: cari ke LEMA/SUBLEMA
-            # semua_kandidat = [
-            #     k for k in semua_lema_sublema
-            #     if lev_dist(kata_bersih, k) <= 2
-            # ]
+            semua_kandidat = [
+                k for k in semua_lema_sublema
+                if lev_dist(kata_bersih, k) <= 2
+            ]
             
-            # kandidat_konteks = pilih_berdasarkan_konteks(semua_kandidat, teks_ai, kata_typo_asli)
+            cocok_lema = pilih_berdasarkan_konteks(semua_kandidat, teks_ai, kata_typo_asli)
             
-            # if kandidat_konteks and is_valid_pos(kandidat_konteks):
-            #     hasil_akhir.append(f"<b>{kandidat_konteks}</b>")
-            #     continue
+            if cocok_lema and is_valid_pos(cocok_lema):
+                hasil_akhir.append(f"<b>{cocok_lema}</b>")
+                continue
+             
             # METODE 1
             # kandidat = cari_terdekat_leven(kata_bersih, semua_lema_sublema, max_typo=2)
             # if kandidat and is_valid_pos(kandidat):
