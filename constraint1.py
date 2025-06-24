@@ -443,59 +443,59 @@ def ganti_halus_ke_loma_di_luar_kutipan(teks, df_kamus):
 
     return "".join(hasil_final)
 
-def ganti_kata_beretimologi_indonesia(teks, df_kamus):
-    # Persiapan
-    kata_ganti = {}
+def ganti_kata_etimologi(teks, df_kamus):
+    # Tokenisasi kata & tanda baca
     kata_token = re.findall(r"\w+|[^\w\s]", teks, re.UNICODE)
+    kata_ganti = {}
 
     for i, token in enumerate(kata_token):
         token_bersih = token.lower()
 
-        # Cari apakah token cocok dengan LEMA atau SUBLEMA + ETIMOLOGI Indonesia
+        # Cari di kamus jika ETIMOLOGI-nya bukan 'sunda'
         cocok = df_kamus[
             ((df_kamus['LEMA'].str.lower() == token_bersih) |
              (df_kamus['SUBLEMA'].str.lower() == token_bersih)) &
-            (df_kamus['ETIMOLOGI'].str.lower() == 'indonesia')
+            (~df_kamus['ETIMOLOGI'].str.lower().str.contains('sunda', na=False))
         ]
 
         if cocok.empty:
             continue
 
-        # Ambil baris terkait dan cari sinonimnya
+        # Ambil sinonim
         sinonim_raw = cocok.iloc[0]['SINONIM']
         if pd.isna(sinonim_raw):
             continue
 
-        # Proses daftar sinonim
         sinonim_list = [s.strip().lower() for s in re.split(r'[;,]', str(sinonim_raw)) if s.strip()]
         ditemukan = None
 
-        for sinonim in sinonim_list:
-            # Cari sinonim ini ada di LEMA/SUBLEMA dari baris yang ETIMOLOGI-nya bukan Indonesia
-            baris_non_indo = df_kamus[
-                ((df_kamus['LEMA'].str.lower() == sinonim) |
-                 (df_kamus['SUBLEMA'].str.lower() == sinonim)) &
-                (~df_kamus['ETIMOLOGI'].str.lower().str.contains('indonesia', na=False))
-            ]
-            if not baris_non_indo.empty:
-                ditemukan = sinonim
+        # Urutan prioritas: cari yang ETIMOLOGI 'sunda', lalu 'indonesia'
+        for etimo_prioritas in ['sunda', 'indonesia']:
+            for sinonim in sinonim_list:
+                baris_sinonim = df_kamus[
+                    ((df_kamus['LEMA'].str.lower() == sinonim) |
+                     (df_kamus['SUBLEMA'].str.lower() == sinonim)) &
+                    (df_kamus['ETIMOLOGI'].str.lower().str.contains(etimo_prioritas, na=False))
+                ]
+                if not baris_sinonim.empty:
+                    ditemukan = sinonim
+                    break
+            if ditemukan:
                 break
 
         if ditemukan:
-            kata_ganti[i] = ditemukan  # Simpan index token yang diganti
+            kata_ganti[i] = ditemukan
 
-    # Rekonstruksi kalimat
+    # Rekonstruksi kalimat dengan mengganti token sesuai
     hasil = []
     for i, token in enumerate(kata_token):
         if i in kata_ganti:
-            # Pertahankan huruf kapital jika perlu
-            if token.istitle():
-                hasil.append(kata_ganti[i].capitalize())
-            else:
-                hasil.append(kata_ganti[i])
+            kata_baru = kata_ganti[i]
+            hasil.append(kata_baru.capitalize() if token.istitle() else kata_baru)
         else:
             hasil.append(token)
 
+    # Gabungkan kembali dengan spasi antar kata (kecuali tanda baca)
     return ''.join([
         token if re.fullmatch(r'\W', token) else ' ' + token
         for token in hasil
