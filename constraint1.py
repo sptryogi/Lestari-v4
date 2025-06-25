@@ -606,64 +606,111 @@ def ganti_halus_ke_loma_di_luar_kutipan(teks, df_kamus):
 
     return "".join(hasil_final)
 
-def ganti_kata_etimologi(teks, df_kamus):
-    # Tokenisasi kata & tanda baca
-    kata_token = re.findall(r"\w+|[^\w\s]", teks, re.UNICODE)
-    kata_ganti = {}
+# def ganti_kata_etimologi(teks, df_kamus):
+#     # Tokenisasi kata & tanda baca
+#     kata_token = re.findall(r"\w+|[^\w\s]", teks, re.UNICODE)
+#     kata_ganti = {}
 
-    for i, token in enumerate(kata_token):
-        token_bersih = token.lower()
+#     for i, token in enumerate(kata_token):
+#         token_bersih = token.lower()
 
-        # Cari di kamus jika ETIMOLOGI-nya bukan 'sunda'
-        cocok = df_kamus[
-            ((df_kamus['LEMA'].str.lower() == token_bersih) |
-             (df_kamus['SUBLEMA'].str.lower() == token_bersih)) &
-            (~df_kamus['ETIMOLOGI'].str.lower().str.contains('sunda', na=False))
-        ]
+#         # Cari di kamus jika ETIMOLOGI-nya bukan 'sunda'
+#         cocok = df_kamus[
+#             ((df_kamus['LEMA'].str.lower() == token_bersih) |
+#              (df_kamus['SUBLEMA'].str.lower() == token_bersih)) &
+#             (~df_kamus['ETIMOLOGI'].str.lower().str.contains('sunda', na=False))
+#         ]
 
-        if cocok.empty:
-            continue
+#         if cocok.empty:
+#             continue
 
-        # Ambil sinonim
-        sinonim_raw = cocok.iloc[0]['SINONIM']
-        if pd.isna(sinonim_raw):
-            continue
+#         # Ambil sinonim
+#         sinonim_raw = cocok.iloc[0]['SINONIM']
+#         if pd.isna(sinonim_raw):
+#             continue
 
-        sinonim_list = [s.strip().lower() for s in re.split(r'[;,]', str(sinonim_raw)) if s.strip()]
-        ditemukan = None
+#         sinonim_list = [s.strip().lower() for s in re.split(r'[;,]', str(sinonim_raw)) if s.strip()]
+#         ditemukan = None
 
-        # Urutan prioritas: cari yang ETIMOLOGI 'sunda', lalu 'indonesia'
-        for etimo_prioritas in ['sunda', 'indonesia']:
-            for sinonim in sinonim_list:
-                baris_sinonim = df_kamus[
-                    ((df_kamus['LEMA'].str.lower() == sinonim) |
-                     (df_kamus['SUBLEMA'].str.lower() == sinonim)) &
-                    (df_kamus['ETIMOLOGI'].str.lower().str.contains(etimo_prioritas, na=False))
-                ]
-                if not baris_sinonim.empty:
-                    ditemukan = sinonim
-                    break
-            if ditemukan:
-                break
+#         # Urutan prioritas: cari yang ETIMOLOGI 'sunda', lalu 'indonesia'
+#         for etimo_prioritas in ['sunda', 'indonesia']:
+#             for sinonim in sinonim_list:
+#                 baris_sinonim = df_kamus[
+#                     ((df_kamus['LEMA'].str.lower() == sinonim) |
+#                      (df_kamus['SUBLEMA'].str.lower() == sinonim)) &
+#                     (df_kamus['ETIMOLOGI'].str.lower().str.contains(etimo_prioritas, na=False))
+#                 ]
+#                 if not baris_sinonim.empty:
+#                     ditemukan = sinonim
+#                     break
+#             if ditemukan:
+#                 break
 
-        if ditemukan:
-            kata_ganti[i] = ditemukan
+#         if ditemukan:
+#             kata_ganti[i] = ditemukan
 
-    # Rekonstruksi kalimat dengan mengganti token sesuai
+#     # Rekonstruksi kalimat dengan mengganti token sesuai
+#     hasil = []
+#     for i, token in enumerate(kata_token):
+#         if i in kata_ganti:
+#             kata_baru = kata_ganti[i]
+#             hasil.append(kata_baru.capitalize() if token.istitle() else kata_baru)
+#         else:
+#             hasil.append(token)
+
+#     # Gabungkan kembali dengan spasi antar kata (kecuali tanda baca)
+#     return ''.join([
+#         token if re.fullmatch(r'\W', token) else ' ' + token
+#         for token in hasil
+#     ]).strip()
+def ganti_kata_dengan_sinonim_dari_arti_ekuivalen(teks, df_kamus):
     hasil = []
-    for i, token in enumerate(kata_token):
-        if i in kata_ganti:
-            kata_baru = kata_ganti[i]
-            hasil.append(kata_baru.capitalize() if token.istitle() else kata_baru)
+
+    # Tokenisasi kata + tanda baca tetap dipisah
+    tokens = re.findall(r'\w+|[^\w\s]', teks, re.UNICODE)
+
+    for i, token in enumerate(tokens):
+        # Cek apakah token adalah kata atau tanda baca
+        if re.fullmatch(r'\w+', token):
+            token_lc = token.lower()
+
+            # Cari baris di kamus: LEMA atau SUBLEMA == token & ARTI EKUIVALEN 1 == token
+            cocok = df_kamus[
+                ((df_kamus['LEMA'].str.lower() == token_lc) | (df_kamus['SUBLEMA'].str.lower() == token_lc)) &
+                (df_kamus['ARTI EKUIVALEN 1'].str.lower() == token_lc)
+            ]
+
+            if not cocok.empty:
+                sinonim_raw = cocok.iloc[0]['SINONIM']
+                if pd.isna(sinonim_raw):
+                    hasil.append(token)
+                    continue
+
+                # Ambil daftar sinonim
+                sinonim_list = [s.strip() for s in str(sinonim_raw).split(",") if s.strip()]
+                if sinonim_list:
+                    pengganti = random.choice(sinonim_list)
+                    pengganti = pengganti.capitalize() if token.istitle() else pengganti
+                    hasil.append(pengganti)
+                else:
+                    hasil.append(token)
+            else:
+                hasil.append(token)
         else:
+            # Tanda baca langsung dimasukkan
             hasil.append(token)
 
-    # Gabungkan kembali dengan spasi antar kata (kecuali tanda baca)
-    return ''.join([
-        token if re.fullmatch(r'\W', token) else ' ' + token
-        for token in hasil
-    ]).strip()
+    # Gabungkan ulang dengan aturan: spasi antar kata, tapi tidak di depan tanda baca
+    final_teks = ''
+    for i, token in enumerate(hasil):
+        if i > 0 and re.fullmatch(r'\w+', token) and re.fullmatch(r'\w+', hasil[i - 1]):
+            final_teks += ' '
+        elif i > 0 and re.fullmatch(r'\w+', token) and re.fullmatch(r'[^\w\s]', hasil[i - 1]):
+            final_teks += ' '
+        final_teks += token
 
+    return final_teks.strip()
+ 
 def urai_awalan(kata):
     """
     Fungsi ini mengurai kata hasil imbuhan (misal: 'sublema') sehingga
