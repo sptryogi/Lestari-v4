@@ -190,7 +190,7 @@ def koreksi_typo_dari_respon(teks_ai, df_kamus):
             typo_bersih = re.sub(r"[^\w-]", "", typo.lower())
 
             # Cari kandidat mirip di lema/sublema
-            kandidat_lema = difflib.get_close_matches(typo_bersih, semua_lema_sublema, n=5, cutoff=0.6)
+            kandidat_lema = difflib.get_close_matches(typo_bersih, semua_lema_sublema, n=5, cutoff=0.8)
 
             # Jika tidak ditemukan, cari di ARTI EKUIVALEN 1
             kandidat_arti = []
