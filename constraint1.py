@@ -286,7 +286,7 @@ def koreksi_typo_dari_respon(teks_ai, df_kamus_lengkap, df_kamus_pemendekan):
             sesudah = re.sub(r"[^\w-]", "", parts[i + 1].split()[0].lower()) if i + 1 < len(parts) and parts[i + 1].split() else None
 
             # Langkah 1: cari di kamus pemendekan
-            kandidat_pemendekan = difflib.get_close_matches(typo_bersih, semua_pemendekan, n=5, cutoff=1.0)
+            kandidat_pemendekan = difflib.get_close_matches(typo_bersih, semua_pemendekan, n=1, cutoff=1.0)
             if kandidat_pemendekan:
                 pilihan = pilih_berdasarkan_konteks_llm(kandidat_pemendekan, teks_ai, typo)
                 if pilihan:
@@ -315,7 +315,7 @@ def koreksi_typo_dari_respon(teks_ai, df_kamus_lengkap, df_kamus_pemendekan):
                     continue
 
             # Langkah 4: dari arti ekuivalen → lemma
-            kandidat_arti = difflib.get_close_matches(typo_bersih, list(semua_arti), n=5, cutoff=0.90)
+            kandidat_arti = difflib.get_close_matches(typo_bersih, list(semua_arti), n=5, cutoff=0.80)
             kandidat_arti_lev = [a for a in semua_arti if lev_dist(typo_bersih, a) <= 2]
             kandidat_arti_final = list(set(kandidat_arti + kandidat_arti_lev))
             kandidat_arti_final.sort(key=lambda x: lev_dist(typo_bersih, x))
