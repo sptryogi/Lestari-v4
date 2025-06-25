@@ -392,7 +392,7 @@ def pilih_berdasarkan_konteks_llm(kandidat_list, kalimat_asli, kata_typo_asli):
             Berikut adalah daftar kandidat koreksi (dari kamus): {daftar_kandidat}.
             
             Pilih satu kata yang paling sesuai secara makna dengan konteks kalimat tersebut.
-            Jawab hanya dengan satu kata dari daftar, tanpa penjelasan.
+            Jawab hanya dengan satu kata dari daftar, tanpa penjelasan dan tanpa catatan.
             """
     hasil = call_deepseek_api(prompt, history=None,  system_instruction=None)  # Atau Groq, OpenAI
     hasil_bersih = hasil.strip().lower()
