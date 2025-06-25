@@ -3,6 +3,7 @@ import re
 import pandas as pd
 import numpy as np
 import difflib
+from unidecode import unidecode
 from Levenshtein import distance as lev_dist
 from AI_chatbot import pilih_berdasarkan_konteks_llm
 
