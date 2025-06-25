@@ -597,13 +597,14 @@ def handle_send():
         f"<p style='color: yellow;'>{pasangan_cag}</p>",
     ]
     
-    st.session_state.chat_history.append((user_input, text_constraint))
+    st.session_state.chat_history.append((user_input, bot_response, text_constraint))
     # Simpan ke database
     
     result = save_chat_message(
         user_id=st.session_state.user.id,
         message=user_input,
         response=text_constraint,
+        response_raw=bot_response,
         room=st.session_state.get("room", "room-1")
     )
     
@@ -635,15 +636,28 @@ if "user" in st.session_state:
         )
         st.session_state.sudah_disapa = True
     
+    # for chat in chat_history:
+    #     st.markdown(
+    #         f"<div class='chat-container'><div class='chat-bubble-user'>{chat['message']}</div></div>",
+    #         unsafe_allow_html=True
+    #     )
+    #     st.markdown(
+    #         f"<div class='chat-container'><div class='chat-bubble-bot'>{chat['response']}</div></div>",
+    #         unsafe_allow_html=True
+    #     )
     for chat in chat_history:
-        st.markdown(
-            f"<div class='chat-container'><div class='chat-bubble-user'>{chat['message']}</div></div>",
-            unsafe_allow_html=True
-        )
-        st.markdown(
-            f"<div class='chat-container'><div class='chat-bubble-bot'>{chat['response']}</div></div>",
-            unsafe_allow_html=True
-        )
+        user_msg = chat['message']
+        bot_raw = chat.get('response_raw', chat['response'])  # fallback jika belum ada
+        bot_constraint = chat['response']
+    
+        # Bubble user
+        st.markdown(f"<div class='chat-container'><div class='chat-bubble-user'>{user_msg}</div></div>", unsafe_allow_html=True)
+    
+        # Bubble bot 1 - hasil AI murni
+        st.markdown(f"<div class='chat-container'><div class='chat-bubble-bot'>{bot_raw}</div></div>", unsafe_allow_html=True)
+    
+        # Bubble bot 2 - hasil setelah constraint
+        st.markdown(f"<div class='chat-container'><div class='chat-bubble-bot'>{bot_constraint}</div></div>", unsafe_allow_html=True)
 
 st.markdown("</div>", unsafe_allow_html=True)  # ⬅️ END OF chat-container-outer
 
