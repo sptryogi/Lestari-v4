@@ -300,9 +300,10 @@ def load_kamus_dan_idiom():
     df_kamus["LEMA"] = df_kamus["LEMA"].fillna("").astype(str).apply(bersihkan_superscript)
     df_kamus["SUBLEMA"] = df_kamus["SUBLEMA"].fillna("").astype(str).apply(bersihkan_superscript)
     df_idiom = pd.read_excel("dataset/data_idiom (3).xlsx")
-    return df_kamus, df_idiom
+    df_pemendekan = pd.read_excel("dataset/PEMENDEKAN-Lema.xlsx")
+    return df_kamus, df_idiom, df_pemendekan
 
-df_kamus, df_idiom = load_kamus_dan_idiom()
+df_kamus, df_idiom, df_pemendekan = load_kamus_dan_idiom()
 
 def auth_guard():
     if "user" not in st.session_state:
@@ -579,7 +580,7 @@ def handle_send():
         text_constraint = ganti_sinonim_berdasarkan_tingkat(bot_response, df_kamus)
         text_constraint, kata_terdapat, kata_tidak_terdapat, pasangan_kata, pasangan_ekuivalen = highlight_text(text_constraint, df_kamus, df_idiom, fitur)
         text_constraint = kapitalisasi_awal_kalimat(text_constraint)
-        text_constraint = koreksi_typo_dari_respon(text_constraint, df_kamus)
+        text_constraint = koreksi_typo_dari_respon(text_constraint, df_kamus, df_pemendekan)
         # text_constraint = kapitalisasi_awal_kalimat(text_constraint)
         pasangan_kata = {}
         pasangan_ekuivalen = {}
