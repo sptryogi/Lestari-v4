@@ -157,29 +157,122 @@ def bersihkan_superscript(teks):
 #             hasil_akhir.append(part)
 
 #     return "".join(hasil_akhir)
-def koreksi_typo_dari_respon(teks_ai, df_kamus):
-    lema_list = df_kamus["LEMA"].dropna().str.lower().unique()
-    sublema_list = df_kamus["SUBLEMA"].dropna().str.lower().unique()
+# def koreksi_typo_dari_respon(teks_ai, df_kamus):
+#     lema_list = df_kamus["LEMA"].dropna().str.lower().unique()
+#     sublema_list = df_kamus["SUBLEMA"].dropna().str.lower().unique()
+#     semua_lema_sublema = list(set(lema_list) | set(sublema_list))
+
+#     # Buat mapping ARTI → LEMA/SUBLEMA
+#     arti_ke_lema = {}
+#     semua_arti = set()
+
+#     for _, row in df_kamus.iterrows():
+#         lemma = row.get("LEMA")
+#         sublema = row.get("SUBLEMA")
+#         arti_raw = row.get("ARTI EKUIVALEN 1")
+
+#         target_kata = lemma or sublema
+#         if pd.notna(arti_raw) and target_kata:
+#             for arti in str(arti_raw).lower().split(","):
+#                 arti = arti.strip()
+#                 if arti:
+#                     arti_ke_lema[arti] = target_kata.lower()
+#                     semua_arti.add(arti)
+
+#     # Proses teks
+#     pola_italic = re.compile(r"<i>(.*?)</i>")
+#     parts = pola_italic.split(teks_ai)
+#     hasil = []
+
+#     for i, part in enumerate(parts):
+#         if i % 2 == 1:
+#             typo = part.strip()
+#             typo_bersih = re.sub(r"[^\w-]", "", typo.lower())
+
+#             # Cari kandidat mirip di lema/sublema
+#             kandidat_lema = difflib.get_close_matches(typo_bersih, semua_lema_sublema, n=5, cutoff=0.8)
+
+#             # Jika tidak ditemukan, cari di ARTI EKUIVALEN 1
+#             kandidat_arti = []
+#             if not kandidat_lema:
+#                 kandidat_arti = difflib.get_close_matches(typo_bersih, semua_arti, n=5, cutoff=0.8)
+
+#             kandidat_final = kandidat_lema or kandidat_arti
+
+#             if kandidat_final:
+#                 pilihan = pilih_berdasarkan_konteks_llm(kandidat_final, teks_ai, typo)
+#                 if not pilihan:
+#                     hasil.append(f"<i>{typo}</i>")
+#                 elif kandidat_arti and pilihan in kandidat_arti:
+#                     hasil.append(f"<b>{arti_ke_lema.get(pilihan, pilihan)}</b>")
+#                 else:
+#                     hasil.append(f"<b>{pilihan}</b>")
+#             else:
+#                 hasil.append(f"<i>{typo}</i>")
+#         else:
+#             hasil.append(part)
+
+#     return "".join(hasil)
+def koreksi_typo_dari_respon(teks_ai, df_kamus_lengkap, df_kamus_pemendekan):
+    lema_list = df_kamus_lengkap["LEMA"].dropna().str.lower().unique()
+    sublema_list = df_kamus_lengkap["SUBLEMA"].dropna().str.lower().unique()
     semua_lema_sublema = list(set(lema_list) | set(sublema_list))
 
-    # Buat mapping ARTI → LEMA/SUBLEMA
+    semua_pemendekan = df_kamus_pemendekan["PEMENDEKAN"].dropna().str.lower().unique()
+    arti_ke_pemendekan = {}
+    semua_arti_pemendekan = set()
+
+    for _, row in df_kamus_pemendekan.iterrows():
+        pemendekan = row.get("PEMENDEKAN")
+        arti_raw = row.get("ARTI EKUIVALEN 1")
+        if pd.notna(arti_raw) and pd.notna(pemendekan):
+            for arti in str(arti_raw).lower().split(","):
+                arti = arti.strip()
+                if arti:
+                    arti_ke_pemendekan[arti] = str(pemendekan).lower()
+                    semua_arti_pemendekan.add(arti)
+
     arti_ke_lema = {}
     semua_arti = set()
+    kata_ke_klas = {}
 
-    for _, row in df_kamus.iterrows():
+    for _, row in df_kamus_lengkap.iterrows():
         lemma = row.get("LEMA")
         sublema = row.get("SUBLEMA")
         arti_raw = row.get("ARTI EKUIVALEN 1")
+        klas = row.get("KLAS.")
 
         target_kata = lemma or sublema
+        if pd.notna(target_kata):
+            kata_ke_klas[str(target_kata).lower()] = str(klas).strip() if pd.notna(klas) else None
+
         if pd.notna(arti_raw) and target_kata:
             for arti in str(arti_raw).lower().split(","):
                 arti = arti.strip()
                 if arti:
-                    arti_ke_lema[arti] = target_kata.lower()
+                    arti_ke_lema[arti] = str(target_kata).lower()
                     semua_arti.add(arti)
 
-    # Proses teks
+    valid_sequence = {
+        "N": ["V", "Adj", "P", "Pro", None],
+        "Pro": ["V", "Adj", "Adv", "P", "Modal", None],
+        "V": ["N", "Pro", "Num", "Adv", "Adj", None],
+        "Adj": ["P", "N", None],
+        "Adv": ["V", "Adj", "Adv", "Modal", None],
+        "Num": ["N", None],
+        "P": ["N", "V", "Adj", "Pro", "Modal", None],
+        "Modal": ["V", None],
+        None: ["N", "V", "Adj", "P", "Pro", "Adv", "Num", "Modal", None],
+    }
+
+    def is_valid_pos(kandidat, sebelum, sesudah):
+        pos_kandidat = kata_ke_klas.get(kandidat)
+        pos_sebelum = kata_ke_klas.get(sebelum)
+        pos_sesudah = kata_ke_klas.get(sesudah)
+        valid_after = valid_sequence.get(pos_sebelum, valid_sequence[None])
+        valid_before = valid_sequence.get(pos_kandidat, valid_sequence[None])
+        return (pos_kandidat in valid_after) and (pos_sesudah in valid_sequence.get(pos_kandidat, valid_sequence[None]))
+
     pola_italic = re.compile(r"<i>(.*?)</i>")
     parts = pola_italic.split(teks_ai)
     hasil = []
@@ -189,31 +282,55 @@ def koreksi_typo_dari_respon(teks_ai, df_kamus):
             typo = part.strip()
             typo_bersih = re.sub(r"[^\w-]", "", typo.lower())
 
-            # Cari kandidat mirip di lema/sublema
-            kandidat_lema = difflib.get_close_matches(typo_bersih, semua_lema_sublema, n=5, cutoff=0.8)
+            sebelum = re.sub(r"[^\w-]", "", parts[i - 1].split()[-1].lower()) if i - 1 >= 0 and parts[i - 1].split() else None
+            sesudah = re.sub(r"[^\w-]", "", parts[i + 1].split()[0].lower()) if i + 1 < len(parts) and parts[i + 1].split() else None
 
-            # Jika tidak ditemukan, cari di ARTI EKUIVALEN 1
-            kandidat_arti = []
-            if not kandidat_lema:
-                kandidat_arti = difflib.get_close_matches(typo_bersih, semua_arti, n=5, cutoff=0.8)
-
-            kandidat_final = kandidat_lema or kandidat_arti
-
-            if kandidat_final:
-                pilihan = pilih_berdasarkan_konteks_llm(kandidat_final, teks_ai, typo)
-                if not pilihan:
-                    hasil.append(f"<i>{typo}</i>")
-                elif kandidat_arti and pilihan in kandidat_arti:
-                    hasil.append(f"<b>{arti_ke_lema.get(pilihan, pilihan)}</b>")
-                else:
+            # Langkah 1: cari di kamus pemendekan
+            kandidat_pemendekan = difflib.get_close_matches(typo_bersih, semua_pemendekan, n=5, cutoff=0.80)
+            if kandidat_pemendekan:
+                pilihan = pilih_berdasarkan_konteks_llm(kandidat_pemendekan, teks_ai, typo)
+                if pilihan:
                     hasil.append(f"<b>{pilihan}</b>")
-            else:
-                hasil.append(f"<i>{typo}</i>")
+                    continue
+
+            # Langkah 2: dari arti ekuivalen → pemendekan
+            kandidat_arti_pemendekan = difflib.get_close_matches(typo_bersih, list(semua_arti_pemendekan), n=5, cutoff=0.80)
+            if kandidat_arti_pemendekan:
+                pilihan = pilih_berdasarkan_konteks_llm(kandidat_arti_pemendekan, teks_ai, typo)
+                if pilihan and pilihan in arti_ke_pemendekan:
+                    hasil.append(f"<b>{arti_ke_pemendekan[pilihan]}</b>")
+                    continue
+
+            # Langkah 3: cari di kamus lengkap
+            kandidat_difflib = difflib.get_close_matches(typo_bersih, semua_lema_sublema, n=5, cutoff=0.80)
+            kandidat_lev = [k for k in semua_lema_sublema if lev_dist(typo_bersih, k) <= 2]
+            kandidat_semua = list(set(kandidat_difflib + kandidat_lev))
+            kandidat_semua.sort(key=lambda x: lev_dist(typo_bersih, x))
+
+            kandidat_valid = [k for k in kandidat_semua if is_valid_pos(k, sebelum, sesudah)]
+            if kandidat_valid:
+                pilihan = pilih_berdasarkan_konteks_llm(kandidat_valid[:5], teks_ai, typo)
+                if pilihan:
+                    hasil.append(f"<b>{pilihan}</b>")
+                    continue
+
+            # Langkah 4: dari arti ekuivalen → lemma
+            kandidat_arti = difflib.get_close_matches(typo_bersih, list(semua_arti), n=5, cutoff=0.80)
+            kandidat_arti_lev = [a for a in semua_arti if lev_dist(typo_bersih, a) <= 2]
+            kandidat_arti_final = list(set(kandidat_arti + kandidat_arti_lev))
+            kandidat_arti_final.sort(key=lambda x: lev_dist(typo_bersih, x))
+
+            if kandidat_arti_final:
+                pilihan_arti = pilih_berdasarkan_konteks_llm(kandidat_arti_final[:5], teks_ai, typo)
+                if pilihan_arti and pilihan_arti in arti_ke_lema:
+                    hasil.append(f"<b>{arti_ke_lema[pilihan_arti]}</b>")
+                    continue
+
+            hasil.append(f"<i>{typo}</i>")
         else:
             hasil.append(part)
 
     return "".join(hasil)
-
 
 def ganti_sinonim_berdasarkan_tingkat(teks, df_kamus):
     # 1. Deteksi kalimat langsung dalam tanda petik
