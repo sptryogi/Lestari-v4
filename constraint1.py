@@ -33,7 +33,7 @@ def bersihkan_superscript(teks):
     return re.sub(r'([^\d\s])[\u00B9\u00B2\u00B3\u2070\u2074-\u2079\d]+', r'\1', teks)
  
 def normalisasi_teks(text):
-    return text.strip()
+    return unidecode(text.lower().strip())
 
 def pecah_arti_ekuivalen(arti_raw):
     # Boleh satu kata atau frasa, pisahkan berdasarkan koma
@@ -142,7 +142,7 @@ def koreksi_typo_dari_respon(teks_ai, df_kamus_lengkap, df_kamus_pemendekan):
                 hasil.append(f"<b>{kandidat_dari_arti[0]}</b>")
                 continue
 
-            kandidat_difflib = difflib.get_close_matches(typo_bersih, semua_lema_sublema, n=5, cutoff=0.8)
+            kandidat_difflib = difflib.get_close_matches(typo_bersih, semua_lema_sublema, n=10, cutoff=0.6)
             kandidat_lev = [k for k in semua_lema_sublema if lev_dist(typo_bersih, k) <= 2]
             kandidat_semua = list(set(kandidat_difflib + kandidat_lev))
 
