@@ -431,13 +431,29 @@ def koreksi_typo_dari_respon(teks_ai, df_kamus_lengkap, df_kamus_pemendekan):
                 continue
 
             # 5. Coba kemiripan ke LEMA/SUBLEMA dengan konteks
-            kandidat_difflib = difflib.get_close_matches(typo_bersih, semua_lema_sublema, n=10, cutoff=0.6)
+            # kandidat_difflib = difflib.get_close_matches(typo_bersih, semua_lema_sublema, n=5, cutoff=0.8)
+            # kandidat_lev = [k for k in semua_lema_sublema if lev_dist(typo_bersih, k) <= 2]
+            # kandidat_semua = list(set(kandidat_difflib + kandidat_lev))
+            # kandidat_semua.sort(key=lambda x: lev_dist(typo_bersih, x))
+            # kandidat_valid = [k for k in kandidat_semua if is_valid_pos(k, sebelum, sesudah)]
+            # if kandidat_valid:
+            #     pilihan = pilih_berdasarkan_konteks_llm(kandidat_valid[:5], teks_ai, typo)
+            #     if pilihan:
+            #         hasil.append(f"<b>{pilihan}</b>")
+            #         continue
+            kandidat_difflib = difflib.get_close_matches(typo_bersih, semua_lema_sublema, n=5, cutoff=0.8)
             kandidat_lev = [k for k in semua_lema_sublema if lev_dist(typo_bersih, k) <= 2]
             kandidat_semua = list(set(kandidat_difflib + kandidat_lev))
-            kandidat_semua.sort(key=lambda x: lev_dist(typo_bersih, x))
-            kandidat_valid = [k for k in kandidat_semua if is_valid_pos(k, sebelum, sesudah)]
-            if kandidat_valid:
-                pilihan = pilih_berdasarkan_konteks_llm(kandidat_valid[:5], teks_ai, typo)
+
+            # JANGAN FILTER, TAPI SORTING BERDASARKAN VALIDITAS DAN JARAK
+            # Kandidat yang valid secara POS akan mendapat skor prioritas (0), yang tidak valid (1)
+            # Lalu urutkan berdasarkan jarak Levenshtein
+            kandidat_semua.sort(key=lambda k: (0 if is_valid_pos(k, sebelum, sesudah) else 1, lev_dist(typo_bersih, k)))
+
+            # Jika ada kandidat setelah diurutkan
+            if kandidat_semua:
+                # Ambil 5 kandidat teratas (campuran valid dan tidak valid) untuk diberikan ke LLM
+                pilihan = pilih_berdasarkan_konteks_llm(kandidat_semua[:5], teks_ai, typo)
                 if pilihan:
                     hasil.append(f"<b>{pilihan}</b>")
                     continue
