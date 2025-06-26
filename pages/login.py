@@ -1,9 +1,11 @@
 import streamlit as st
+# Main
+st.set_page_config(page_title="Lestari Bahasa", layout="wide")
 from supabase_helper import *
 import uuid, time
 
-# Main
-st.set_page_config(page_title="Lestari Bahasa", layout="wide")
+# # Main
+# st.set_page_config(page_title="Lestari Bahasa", layout="wide")
 
 st.markdown("""
     <style>
