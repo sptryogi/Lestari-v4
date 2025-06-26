@@ -39,6 +39,9 @@ def pecah_arti_ekuivalen(arti_raw):
     # Boleh satu kata atau frasa, pisahkan berdasarkan koma
     return [normalisasi_teks(a) for a in re.split(r",|\n", str(arti_raw)) if a.strip()]
 
+def rasio_typo_diterima(salah, benar, max_jarak=2):
+    return lev_dist(salah, benar) <= max_jarak and lev_dist(salah, benar) <= round(0.3 * len(benar))
+
 def koreksi_typo_dari_respon(teks_ai, df_kamus_lengkap, df_kamus_pemendekan):
     lema_list = df_kamus_lengkap["LEMA"].dropna().apply(normalisasi_teks).unique()
     sublema_list = df_kamus_lengkap["SUBLEMA"].dropna().apply(normalisasi_teks).unique()
@@ -142,7 +145,7 @@ def koreksi_typo_dari_respon(teks_ai, df_kamus_lengkap, df_kamus_pemendekan):
                 hasil.append(f"<b>{kandidat_dari_arti[0]}</b>")
                 continue
 
-            kandidat_difflib = difflib.get_close_matches(typo_bersih, semua_lema_sublema, n=10, cutoff=0.6)
+            kandidat_difflib = difflib.get_close_matches(typo_bersih, semua_lema_sublema, n=10, cutoff=0.8)
             kandidat_lev = [k for k in semua_lema_sublema if lev_dist(typo_bersih, k) <= 2]
             kandidat_semua = list(set(kandidat_difflib + kandidat_lev))
 
