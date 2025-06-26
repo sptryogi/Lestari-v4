@@ -334,7 +334,7 @@ def bersihkan_superscript(teks):
 #     return "".join(hasil)
 
 def normalisasi_teks(text):
-    return unidecode(text.lower().strip())
+    return text.strip()
 
 def pecah_arti_ekuivalen(arti_raw):
     # Boleh satu kata atau frasa, pisahkan berdasarkan koma
