@@ -477,15 +477,13 @@ def koreksi_typo_dari_respon(teks_ai, df_kamus_lengkap, df_kamus_pemendekan):
     return "".join(hasil)
  
 def ganti_sinonim_berdasarkan_tingkat(teks, df_kamus):
-    # 1. Deteksi kalimat langsung dalam tanda petik
     pola = r'"([^"]+)"'
     kutipan_list = re.findall(pola, teks)
 
     for kutipan in kutipan_list:
         kata_kutipan = kutipan.split()
-
-        # 2. Deteksi tingkat tutur dominan di kutipan
         tingkat_kata = []
+
         for kata in kata_kutipan:
             kata_bersih = re.sub(r"[^\w-]", "", kata.lower())
             cocok = df_kamus[
@@ -496,23 +494,18 @@ def ganti_sinonim_berdasarkan_tingkat(teks, df_kamus):
                 tingkat_kata += cocok['(HALUS/LOMA/KASAR)'].dropna().tolist()
 
         if not tingkat_kata:
-            continue  # Skip kalau tidak ada cocok sama sekali
+            continue
 
-        # Hitung dominan sesuai kategori
         tingkat_kata = [t.lower() for t in tingkat_kata]
         dominan_halus = sum(t in ['halus', 'halus/loma', 'loma/halus'] for t in tingkat_kata)
         dominan_loma = sum(t in ['loma', 'loma/halus', 'loma/kasar'] for t in tingkat_kata)
-
-        # kategori = 'HALUS' if dominan_halus >= dominan_loma else 'LOMA'
-        # kategori_filter = ['halus', 'halus/loma', 'loma/halus'] if kategori == 'HALUS' else ['loma', 'loma/kasar', 'kasar/loma']
         total = dominan_halus + dominan_loma
         if total == 0:
-            continue  # Skip jika tidak ada nilai relevan
-        
-        # Hitung rasio persen dominasi
+            continue
+
         persen_halus = dominan_halus / total
         persen_loma = dominan_loma / total
-        
+
         if persen_halus >= 0.60:
             kategori = 'halus'
             kategori_filter = ['halus', 'halus/loma', 'loma/halus']
@@ -520,9 +513,8 @@ def ganti_sinonim_berdasarkan_tingkat(teks, df_kamus):
             kategori = 'loma'
             kategori_filter = ['loma', 'loma/halus', 'loma/kasar']
         else:
-            continue  # Tidak dominan, jangan ganti kutipan
+            continue
 
-        # 3. Ubah setiap kata dengan sinonim dari kategori yang cocok
         kata_baru = []
         for kata in kata_kutipan:
             tanda = re.findall(r'[.,!?]$', kata)
@@ -536,9 +528,18 @@ def ganti_sinonim_berdasarkan_tingkat(teks, df_kamus):
             diganti = False
 
             if not row_kamus.empty:
+                tingkat_asal = str(row_kamus.iloc[0]['(HALUS/LOMA/KASAR)']).lower()
+                # Skip jika sudah sesuai kategori
+                if kategori == 'halus' and tingkat_asal in ['halus', 'halus/loma', 'loma/halus']:
+                    kata_baru.append(kata)
+                    continue
+                elif kategori == 'loma' and tingkat_asal in ['loma', 'loma/halus', 'loma/kasar']:
+                    kata_baru.append(kata)
+                    continue
+
                 sinonim_raw = row_kamus.iloc[0]['SINONIM'] if 'SINONIM' in row_kamus.columns else ""
                 if pd.notna(sinonim_raw):
-                    sinonim_list = [s.strip().lower() for s in sinonim_raw.split(".") if s.strip()]
+                    sinonim_list = [s.strip().lower() for s in re.split(r'[.,]', sinonim_raw) if s.strip()]
                     for s in sinonim_list:
                         match_row = df_kamus[
                             ((df_kamus['LEMA'].str.lower() == s) | (df_kamus['SUBLEMA'].str.lower() == s)) &
@@ -551,9 +552,8 @@ def ganti_sinonim_berdasarkan_tingkat(teks, df_kamus):
                             break
 
             if not diganti:
-                kata_baru.append(kata)  # Tetap
+                kata_baru.append(kata)
 
-        # 4. Ganti di teks asli
         hasil_ganti = " ".join(kata_baru)
         teks = teks.replace(f'"{kutipan}"', f'"{hasil_ganti}"')
 
