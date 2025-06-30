@@ -127,45 +127,20 @@ def auth_flow():
             unsafe_allow_html=True
         )   
     else:
-        # st.subheader("Login")
-        # email = st.text_input("Email").strip()
-        # password = st.text_input("Password", type="password").strip()
-        # if st.button("Login"):
-        #     try:
-        #         result = sign_in_with_email(email, password)
-        #         if result.user:
-        #             st.session_state.user = result.user
-        #             st.session_state.email = email
-        #             st.switch_page("main.py")  # Redirect ke main.py setelah login
-        #         else:
-        #             st.error("Login gagal.")
-        #     except Exception as e:
-        #         st.error(f"Login gagal: {str(e)}")
-        # if st.button("Belum punya akun? Daftar"):
-        #     st.session_state.register_mode = True
-        #     st.rerun()
-        # st.markdown(
-        #     "<small style='color:gray'>*Jika belum muncul, klik tombol sekali lagi.</small>",
-        #     unsafe_allow_html=True
-        # )
         st.subheader("Login")
         email = st.text_input("Email").strip()
         password = st.text_input("Password", type="password").strip()
         if st.button("Login"):
             try:
                 result = sign_in_with_email(email, password)
-                if result.user and result.session:
-                    # INI BAGIAN PALING PENTING
+                if result.user:
                     st.session_state.user = result.user
-                    st.session_state.email = result.user.email
-                    st.session_state.access_token = result.session.access_token
-                    st.session_state.refresh_token = result.session.refresh_token
-                    st.switch_page("main.py")
+                    st.session_state.email = email
+                    st.switch_page("main.py")  # Redirect ke main.py setelah login
                 else:
-                    st.error("Login gagal. Periksa kembali email dan password Anda.")
+                    st.error("Login gagal.")
             except Exception as e:
                 st.error(f"Login gagal: {str(e)}")
-                
         if st.button("Belum punya akun? Daftar"):
             st.session_state.register_mode = True
             st.rerun()
@@ -186,25 +161,10 @@ def auth_flow():
 # if "user" in st.session_state and "logout" not in st.query_params:
 #     with st.spinner("Mengarahkan ke halaman utama..."):
 #         st.switch_page("main.py")
-# --- Logika Logout dan Redirect ---
-# Cek apakah parameter `logout` ada di URL
-if 'logout' in st.query_params:
-    # Hapus semua state sesi untuk memastikan logout bersih
-    for key in list(st.session_state.keys()):
-        del st.session_state[key]
-    
-    # Arahkan kembali ke halaman login tanpa parameter logout
-    st.query_params.clear()
-    st.rerun()
-    
-# if st.session_state.get("user"):
-#     with st.spinner("Mengarahkan ke halaman utama..."):
-#         st.switch_page("main.py")  # Redirect ke main jika sudah login
 
-# else:
-#     auth_flow() 
-if st.session_state.get("access_token"):
+if st.session_state.get("user"):
     with st.spinner("Mengarahkan ke halaman utama..."):
-        st.switch_page("main.py")
+        st.switch_page("main.py")  # Redirect ke main jika sudah login
+
 else:
-    auth_flow()
+    auth_flow() 
