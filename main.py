@@ -305,20 +305,16 @@ def load_kamus_dan_idiom():
 
 df_kamus, df_idiom, df_pemendekan = load_kamus_dan_idiom()
 
-# def auth_guard():
-#     if "user" not in st.session_state:
-#         session = supabase.auth.get_session()
-#         if session and session.user:
-#             st.session_state["user"] = session.user
-#             st.session_state["email"] = session.user.email
-#         else:
-#             st.warning("Silakan login terlebih dahulu.")
-#             st.session_state.clear()
-#             st.switch_page("pages/login.py")
 def auth_guard():
-    if "access_token" not in st.session_state:
-        st.warning("Sesi tidak ditemukan atau telah berakhir. Silakan login kembali.")
-        st.switch_page("pages/login.py")
+    if "user" not in st.session_state:
+        session = supabase.auth.get_session()
+        if session and session.user:
+            st.session_state["user"] = session.user
+            st.session_state["email"] = session.user.email
+        else:
+            st.warning("Silakan login terlebih dahulu.")
+            st.session_state.clear()
+            st.switch_page("pages/login.py")
 auth_guard()
         
 if "show_file_uploader" not in st.session_state:
@@ -435,8 +431,7 @@ with st.sidebar:
     for r in room_options:
         # preview = get_first_chat_preview(st.session_state.user.id, r)
         try:
-            # preview = get_first_chat_preview(st.session_state.user.id, r)
-            preview = get_first_chat_preview(st.session_state.user.id, r, st.session_state.access_token)
+            preview = get_first_chat_preview(st.session_state.user.id, r)
         except Exception as e:
             st.warning("Tidak bisa menampilkan chat sebelumnya.")
             preview = ""
@@ -485,7 +480,6 @@ def handle_send():
     #     st.warning("Silakan login terlebih dahulu.")
     #     st.stop()
     #     return
-    auth_guard()
     if "user" not in st.session_state or "email" not in st.session_state:
         st.error("Sesi Anda tidak ditemukan. Silakan login kembali.")
         st.stop()
@@ -540,7 +534,7 @@ def handle_send():
     current_room = st.session_state.get("room", "default")
     
     # Ambil history dari database
-    history = get_chat_history(st.session_state.user.id, current_room, st.session_state.access_token)
+    history = get_chat_history(st.session_state.user.id, current_room)
     # max_history = 10
     # recent_history = history[-max_history:]
     # history_for_prompt = [{"message": msg["message"], "response": msg["response"]} for msg in recent_history]
@@ -611,8 +605,7 @@ def handle_send():
         message=user_input,
         response=text_constraint,
         response_raw=bot_response,
-        room=st.session_state.get("room", "room-1"),
-        access_token=st.session_state.access_token
+        room=st.session_state.get("room", "room-1")
     )
     
     if result.get("error") == "limit_exceeded":
@@ -628,8 +621,7 @@ if "user" in st.session_state:
     current_room = st.session_state.get("room", "room-1")
     chat_history = get_chat_history(
         user_id=st.session_state.user.id,
-        room=st.session_state.get("room", "room-1"),
-        access_token=st.session_state.access_token
+        room=st.session_state.get("room", "room-1")
     )
 
     if (
@@ -696,8 +688,6 @@ with col_left:
             st.success(f"📎 File '{uploaded.name}' terunggah")
 with col_right:
     if st.button("🔄 Delete Chat History"):
-        supabase = get_supabase_client()
-        supabase.auth.set_session(st.session_state.access_token, st.session_state.refresh_token)
         supabase.table("chat_history") \
             .delete() \
             .eq("user_id", st.session_state.user.id) \
