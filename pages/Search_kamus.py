@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import difflib
 
 # --- Konfigurasi halaman ---
 st.set_page_config(page_title="SundaLex", page_icon="🔍", layout="wide")
@@ -24,10 +23,6 @@ st.markdown("""
         text-align: center;
         color: #7f8c8d;
         margin-bottom: 30px;
-    }
-    .search-box input {
-        font-size: 18px !important;
-        padding: 0.5em 1em !important;
     }
     .stDataFrame {
         background-color: white;
@@ -57,31 +52,22 @@ kata_input = st.text_input("Masukkan kata Sunda yang ingin dicari:", "", key="in
 if kata_input:
     kata_input_norm = kata_input.strip().lower()
 
+    # Cari hanya kata yang cocok persis (bukan mirip)
     cocok = df_kamus[
-        df_kamus['LEMA_LOWER'].str.contains(kata_input_norm) |
-        df_kamus['SUBLEMA_LOWER'].str.contains(kata_input_norm)
+        df_kamus['LEMA_LOWER'].str.contains(fr'\b{kata_input_norm}\b', na=False) |
+        df_kamus['SUBLEMA_LOWER'].str.contains(fr'\b{kata_input_norm}\b', na=False)
     ]
 
-    if cocok.empty:
-        semua_kata = pd.concat([df_kamus['LEMA_LOWER'], df_kamus['SUBLEMA_LOWER']]).dropna().unique()
-        kata_mirip = difflib.get_close_matches(kata_input_norm, semua_kata, n=5, cutoff=0.6)
-
-        if kata_mirip:
-            st.warning(f"🙁 Tidak ditemukan kata persis '{kata_input}'. Namun mirip dengan: {', '.join(kata_mirip)}")
-            cocok = df_kamus[
-                df_kamus['LEMA_LOWER'].isin(kata_mirip) | df_kamus['SUBLEMA_LOWER'].isin(kata_mirip)
-            ]
-        else:
-            st.error(f"🚫 Tidak ditemukan hasil untuk kata: '{kata_input}'")
-
     if not cocok.empty:
-        st.success(f"✅ Ditemukan {len(cocok)} hasil yang relevan.")
+        st.success(f"✅ Ditemukan {len(cocok)} hasil.")
         st.dataframe(
             cocok[
                 ['LEMA', 'SUBLEMA', '(HALUS/LOMA/KASAR)', 'KLAS.', 'ARTI EKUIVALEN 1', 'ARTI 1', 'SINONIM']
             ].reset_index(drop=True),
             use_container_width=True
         )
+    else:
+        st.error(f"🚫 Tidak ditemukan hasil untuk kata: '{kata_input}'")
 
 else:
     st.info("Masukkan kata di atas untuk mulai mencari.")
