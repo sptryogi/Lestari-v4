@@ -294,7 +294,7 @@ render_topbar()
 
 @st.cache_data
 def load_kamus_dan_idiom():
-    df_kamus = pd.read_excel("dataset/hasil_gabungan16Jun.xlsx")
+    df_kamus = pd.read_excel("dataset/hasil_gabungan1Juli2025.xlsx")
     df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']] = df_kamus[['ARTI EKUIVALEN 1', 'ARTI 1']].apply(lambda col: col.str.lower())
     df_kamus = bersihkan_kamus(df_kamus)
     df_kamus["LEMA"] = df_kamus["LEMA"].fillna("").astype(str).apply(bersihkan_superscript)
