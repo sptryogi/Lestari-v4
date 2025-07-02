@@ -58,7 +58,7 @@ def normalisasi_kata(kata):
 # -------------------------------
 @st.cache_data
 def load_kamus():
-    df = pd.read_excel("dataset/hasil_gabungan16Jun.xlsx")
+    df = pd.read_excel("dataset/hasil_gabungan1Juli2025.xlsx")
     df["LEMA_NORM"] = df["LEMA"].fillna("").apply(normalisasi_kata)
     df["SUBLEMA_NORM"] = df["SUBLEMA"].fillna("").apply(normalisasi_kata)
     return df
